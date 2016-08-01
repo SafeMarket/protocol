@@ -1,1 +1,1 @@
-# ChainSend
+# SafeMarket Protocol
