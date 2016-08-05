@@ -6,7 +6,7 @@ contract Order{
 	Ticker ticker;
 
 	bool isCreated;
-	
+
 	address public buyer;
 	address public storeAddr;
 	bytes4 public storeCurrency;
@@ -22,13 +22,13 @@ contract Order{
 	}
 	Product[] products;
 
-	
+
 	uint public transportTeraprice;
 	bytes32 public transportFileHash;
 
 	uint public buyerAmountCentiperun;
 	uint public escrowFeeTerabase;
-	uint public escrowFeeCentiperun; 
+	uint public escrowFeeCentiperun;
 	uint public affiliateFeeCentiperun;
 	uint public bufferCentiperun;
 	uint public safemarketFee;
@@ -58,7 +58,7 @@ contract Order{
 	uint public received;
 	uint public shippedAt;
 	uint public disputedAt;
-	
+
 	uint public blockNumber;
 
 	struct Message{
@@ -93,11 +93,13 @@ contract Order{
 		,address _storeAddr
 		,address _submarketAddr
 		,address _affiliate
+     //TODO: possible vulnerability, the seller could reorder atteempt to products to force someone to buy a different product, may be an opportunity to use product hashes instead
 		,uint[] _productIndexes
 		,uint[] _productQuantities
+    //TODO: again, maybe the following can be gamed
 		,uint _transportIndex
 		,address tickerAddr
-	){
+	) {
 
 		if(isCreated)
 			throw;
@@ -111,6 +113,7 @@ contract Order{
 		submarketAddr = _submarketAddr;
 		affiliate = _affiliate;
 
+    //TODO: ticker needs to be somehow approved by both buyer and seller, maybe it should be an option alowing the resolution market
 		ticker = Ticker(tickerAddr);
 
 		var store = Store(_storeAddr);
@@ -120,7 +123,7 @@ contract Order{
 
 		storeCurrency = bytes4(store.getBytes32('currency'));
 
-		for(uint i = 0; i< _productIndexes.length; i++){
+		for(uint i = 0; i< _productIndexes.length; i++) {
 
 			uint[3] memory productParams = [
 				_productIndexes[i],									//productIndex
@@ -157,7 +160,8 @@ contract Order{
 			affiliateFeeCentiperun = store.getUint('affiliateFeeCentiperun');
 		}
 
-		if(submarketAddr != address(0)){
+		if(submarketAddr != address(0)) {
+      //TODO: change this to use an instance of the submarket not infosphered
 			var submarket = infosphered(_submarketAddr);
 			if(!submarket.getBool('isOpen'))
 				throw;
@@ -167,8 +171,11 @@ contract Order{
 			disputeSeconds = store.getUint('disputeSeconds');
 		}
 
+    //TDDO: the wording on the transportTeraprice variable may need to be fixed to match the other parameters
 		storeTeratotal = productsTeratotal + transportTeraprice;
 
+    //TODO: it would be slightly more readable to use a struct instead of an array
+    //research whether in memory structs are possible
 		uint[5] memory totals = [
 			ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI')) / 1000000000000, 	//Store total in wei
 			0,																				//Escrow base in wei
@@ -177,6 +184,7 @@ contract Order{
 			0																				//Buffer
 		];
 
+    //TODO:...what is this calculated magic
 		if (escrowFeeTerabase > 0) {
 			totals[1] = (ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI')) / 1000000000000);
 		}
@@ -196,13 +204,16 @@ contract Order{
 
 	}
 
-	function getProductsLength() constant returns (uint){ return products.length; }
-	function getProductIndex(uint _index) constant returns (uint){ return products[_index].index; }
-	function getProductTeraprice(uint _index) constant returns (uint){ return products[_index].teraprice; }
-	function getProductFileHash(uint _index) constant returns (bytes32){ return products[_index].fileHash; }
-	function getProductQuantity(uint _index) constant returns (uint){ return products[_index].quantity; }
+	function getProductsCount() constant returns (uint) { return products.length; }
+	function getProductIndex(uint _index) constant returns (uint) { return products[_index].index; }
+	function getProductTeraprice(uint _index) constant returns (uint) { return products[_index].teraprice; }
+	function getProductFileHash(uint _index) constant returns (bytes32) { return products[_index].fileHash; }
+	function getProductQuantity(uint _index) constant returns (uint) { return products[_index].quantity; }
 
-	function addMessage(bytes32 fileHash, address user){
+	function addMessage(bytes32 fileHash, address user) {
+    //TODO: If it's required that the message sender is the user, then we don't have to have user as a parameter
+    //maybe...but it depends on which funtions call this in practice
+    //also, tx.origin probably shouldn't be used
 		if(tx.origin != user && msg.sender != user)
 			throw;
 
@@ -216,15 +227,15 @@ contract Order{
 		messages.push(Message(block.number, user, fileHash));
 	}
 
-	function isComplete() constant returns(bool){
+	function isComplete() constant returns(bool) {
 		return (status == cancelled || status == resolved || status == finalized);
 	}
 
-	function(){
+	function() {
 
 		if(isComplete())
 			throw;
-	
+
 	}
 
 	function addUpdate(uint _status) private{
@@ -232,16 +243,17 @@ contract Order{
 		updates.push(Update(block.number, msg.sender, _status));
 	}
 
-	function cancel(){
+	function cancel() {
 
 		if(status != initialized)
 			throw;
 
+    //TODO: check all cases in which a storeAddr could send this request
 		if(msg.sender != buyer && msg.sender != storeAddr)
 			throw;
 
 		Store store = Store(storeAddr);
-		for(uint i = 0; i< products.length; i++){
+		for(uint i = 0; i< products.length; i++) {
 			store.restoreProductUnits(products[i].index, products[i].quantity);
 		}
 
@@ -250,11 +262,12 @@ contract Order{
 		addUpdate(cancelled);
 	}
 
-	function markAsShipped(){
+	function markAsShipped() {
 
 		if(status !=  initialized)
 			throw;
 
+    //TODO: check all cases in which a storeAddr could send this request
 		if(msg.sender != storeAddr)
 			throw;
 
@@ -266,7 +279,7 @@ contract Order{
 		addUpdate(shipped);
 	}
 
-	function finalize(){
+	function finalize() {
 
 		if(status !=  shipped)
 			throw;
@@ -275,11 +288,11 @@ contract Order{
 			throw;
 
 		//setAmounts();
-		
+
 		addUpdate(finalized);
 	}
 
-	function dispute(){
+	function dispute() {
 
 		if(msg.sender != buyer)
 			throw;
@@ -298,7 +311,7 @@ contract Order{
 
 	}
 
-	function resolve(uint _buyerAmountCentiperun){
+	function resolve(uint _buyerAmountCentiperun) {
 
 		if(status!=disputed)
 			throw;
@@ -311,12 +324,13 @@ contract Order{
 		finalize();
 	}
 
-	function getAmounts() constant returns(uint, uint, uint, uint){
+  //TODO: this function should use a struct
+	function getAmounts() constant returns(uint, uint, uint, uint) {
 
 		uint amountRemaining = getReceived();
 		uint[5] memory amounts = [
 			getReceived(), 	//remaining
-			0,				//buyer 
+			0,				//buyer
 			0,				//store
 			0,				//submarket
 			0				//affiliate
@@ -337,14 +351,14 @@ contract Order{
 		return (amounts[1], amounts[2], amounts[3], amounts[4]);
 	}
 
-	// function setAmounts(){
+	// function setAmounts() {
 	// 	if(areAmountsSet)
 	// 		throw;
 
 	// 	received = this.balance;
 
 	// 	var amounts = getAmounts();
-		
+
 	// 	buyerAmount = amounts[0];
 	// 	storeAmount = amounts[1];
 	// 	escrowAmount = amounts[2];
@@ -377,72 +391,75 @@ contract Order{
 
 	// }
 
-	// function releaseBuyerAmount(){
+	// function releaseBuyerAmount() {
 	// 	release(isBuyerAmountReleased,buyer,buyerAmount);
 	// 	isBuyerAmountReleased = true;
 	// }
 
-	// function releaseStoreAmount(){
+	// function releaseStoreAmount() {
 	// 	release(isStoreAmountReleased,storeAddr,storeAmount);
 	// 	isStoreAmountReleased = true;
 	// }
 
-	// function releaseEscrowAmount(){
+	// function releaseEscrowAmount() {
 	// 	release(isEscrowAmountReleased,submarketAddr,escrowAmount);
 	// 	isEscrowAmountReleased = true;
 	// }
 
-	// function releaseAffiliateAmount(){
+	// function releaseAffiliateAmount() {
 	// 	release(isAffiliateAmountReleased,affiliate,affiliateAmount);
 	// 	isAffiliateAmountReleased = true;
 	// }
 
-	function getReceived() constant returns (uint){
+	function getReceived() constant returns (uint) {
 		if(areAmountsSet)
 			return received;
 		else
 			return this.balance;
 	}
 
-	function getMessagesLength() constant returns(uint) {
+	function getMessagesCount() constant returns(uint) {
 		return messages.length;
 	}
 
-	function getMessageBlockNumber(uint index) constant returns(uint){
+	function getMessageBlockNumber(uint index) constant returns(uint) {
 		return messages[index].blockNumber;
 	}
 
-	function getMessageSender(uint index) constant returns(address){
+	function getMessageSender(uint index) constant returns(address) {
 		return messages[index].sender;
 	}
 
-	function getMessageFileHash(uint index) constant returns(bytes32){
+	function getMessageFileHash(uint index) constant returns(bytes32) {
 		return messages[index].fileHash;
 	}
 
-	function getUpdatesLength() constant returns(uint) {
+	function getUpdatesCount() constant returns(uint) {
 		return updates.length;
 	}
 
-	function getUpdateBlockNumber(uint index) constant returns(uint){
+	function getUpdateBlockNumber(uint index) constant returns(uint) {
 		return updates[index].blockNumber;
 	}
 
-	function getUpdateSender(uint index) constant returns(address){
+	function getUpdateSender(uint index) constant returns(address) {
 		return updates[index].sender;
 	}
 
-	function getUpdateStatus(uint index) constant returns(uint){
+	function getUpdateStatus(uint index) constant returns(uint) {
 		return updates[index].status;
 	}
 
 	function setReview(uint8 storeScore, uint8 submarketScore, bytes32 fileHash) {
+    //TODO: probably shouldn't use tx.origin here
 		if(msg.sender != buyer && tx.origin != buyer)
 			throw;
 
+    //TODO: magic numbers are bad, 5 should be a constant
 		if(storeScore > 5 || submarketScore > 5)
 			throw;
 
+    //TODO: change this logic so it just ignores the parameter instead of throwing
 		if(submarketAddr == address(0) && submarketScore != 0)
 			throw;
 
@@ -451,5 +468,21 @@ contract Order{
 		reviewSubmarketScore = submarketScore;
 		reviewFileHash = fileHash;
 	}
+
+  function getReviewBlockNumber() constant returns(uint) {
+    return reviewBlockNumber;
+  }
+
+  function getReviewStoreScore() constant returns(uint8) {
+    return reviewStoreScore;
+  }
+
+  function getReviewSubmarketScore() constant returns(uint8) {
+    return reviewSubmarketScore;
+  }
+
+  function getReviewFileHash() constant returns(bytes32) {
+    return reviewFileHash;
+  }
 
 }

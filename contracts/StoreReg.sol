@@ -10,17 +10,17 @@ contract StoreReg is owned{
 	address public aliasRegAddr;
 	address public orderRegAddr;
 
-	function setInfosphereAddr(address _infosphereAddr){
+	function setInfosphereAddr(address _infosphereAddr) {
 		requireOwnership();
 		infosphereAddr = _infosphereAddr;
 	}
 
-	function setAliasRegAddr(address _aliasRegAddr){
+	function setAliasRegAddr(address _aliasRegAddr) {
 		requireOwnership();
 		aliasRegAddr = _aliasRegAddr;
 	}
 
-	function setOrderRegAddr(address _orderRegAddr){
+	function setOrderRegAddr(address _orderRegAddr) {
 		requireOwnership();
 		orderRegAddr = _orderRegAddr;
 	}
@@ -40,7 +40,7 @@ contract StoreReg is owned{
 		bytes32[] productParams,
 		bytes32[] transportParams,
 		bytes32[] approvedSubmarkets
-	 ){
+	 ) {
 
 		var store = new Store(
 			productParams,
@@ -49,7 +49,7 @@ contract StoreReg is owned{
 		);
 
 		var storeAddr = address(store);
-		
+
 		store.setOrderReg(orderRegAddr);
 		store.setInfosphere(infosphereAddr);
 		store.setAliasReg(aliasRegAddr);
@@ -74,15 +74,15 @@ contract StoreReg is owned{
 
 	}
 
-	function isRegistered(address addr) constant returns(bool){
+	function isRegistered(address addr) constant returns(bool) {
 		return registeredAddrsMap[addr];
 	}
 
-	function count() constant returns(uint){
+	function getStoreCount() constant returns(uint) {
 		return registeredAddrsArray.length;
 	}
 
-	function getStoreAddr(uint index) constant returns(address){
+	function getStoreAddr(uint index) constant returns(address) {
 		return registeredAddrsArray[index];
 	}
 }

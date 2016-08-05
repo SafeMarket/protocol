@@ -1,16 +1,16 @@
-contract owned{
+contract owned {
 
 	address public owner;
 
-	function owned(){
+	function owned() {
 		owner = msg.sender;
 	}
 
-	function requireOwnership(){
-		if(msg.sender!=owner && tx.origin!=owner) throw;
+	function requireOwnership() {
+		if(msg.sender!=owner) throw;
 	}
 
-	function setOwner(address _owner){
+	function setOwner(address _owner) {
 		requireOwnership();
 		owner = _owner;
 	}

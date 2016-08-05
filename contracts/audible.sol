@@ -3,9 +3,13 @@ import "Forum.sol";
 
 contract audible is owned{
 
-	function addComment(address forumAddr, bytes32 parentId, bytes data){
+	function addComment(address forumAddr, bytes32 parentId, bytes data) {
 		this.requireOwnership();
 		Forum(forumAddr).addComment(parentId,data);
 	}
 
 }
+
+
+//TODO: revisit this code and decide where there is another way to wirite this and
+//the Forum class so the addComment function can be part of the Forum

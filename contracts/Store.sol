@@ -34,9 +34,10 @@ contract Store is forumable, audible, infosphered, permissioned, aliasable, orde
 		bytes32[] productParams,
 		bytes32[] transportParams,
 		bytes32[] _approvedAliases
-	){
+	) {
 
-		for(uint i = 0; i< productParams.length; i=i+3){
+    //TODO: by now solidity should have a better way of sending nested values that a list
+		for(uint i = 0; i< productParams.length; i=i+3) {
 			products.push(Product(
 				true,
 				uint(productParams[i]),
@@ -45,7 +46,7 @@ contract Store is forumable, audible, infosphered, permissioned, aliasable, orde
 			));
 		}
 
-		for(uint j = 0; j< transportParams.length; j=j+2){
+		for(uint j = 0; j< transportParams.length; j=j+2) {
 			transports.push(Transport(
 				true,
 				uint(transportParams[j]),
@@ -56,88 +57,88 @@ contract Store is forumable, audible, infosphered, permissioned, aliasable, orde
 		approvedAliases = _approvedAliases;
 	}
 
-	function getProductsLength() constant returns(uint){
+	function getProductsCount() constant returns(uint) {
 		return products.length;
 	}
 
-	function getProductIsActive(uint index) constant returns(bool){
+	function getProductIsActive(uint index) constant returns(bool) {
 		return products[index].isActive;
 	}
 
-	function getProductTeraprice(uint index) constant returns(uint){
+	function getProductTeraprice(uint index) constant returns(uint) {
 		return products[index].teraprice;
 	}
 
-	function getProductUnits(uint index) constant returns(uint){
+	function getProductUnits(uint index) constant returns(uint) {
 		return products[index].units;
 	}
 
-	function getProductFileHash(uint index) constant returns(bytes32){
+	function getProductFileHash(uint index) constant returns(bytes32) {
 		return products[index].fileHash;
 	}
 
-	function addProduct(uint teraprice, uint units, bytes32 fileHash){
+	function addProduct(uint teraprice, uint units, bytes32 fileHash) {
 		requireOwnership();
 		products.push(Product(true, teraprice, units, fileHash));
 	}
 
-	function setProductIsActive(uint index, bool isActive){
+	function setProductIsActive(uint index, bool isActive) {
 		requireOwnership();
 		products[index].isActive = isActive;
 	}
 
-	function setProductTeraprice(uint index, uint teraprice){
+	function setProductTeraprice(uint index, uint teraprice) {
 		requireOwnership();
 		products[index].teraprice = teraprice;
 	}
 
-	function setProductUnits(uint index, uint units){
+	function setProductUnits(uint index, uint units) {
 		requireOwnership();
 		products[index].units = units;
 	}
 
-	function setProductFileHash(uint index, bytes32 fileHash){
+	function setProductFileHash(uint index, bytes32 fileHash) {
 		requireOwnership();
 		products[index].fileHash = fileHash;
 	}
 
-	function getTransportsLength() constant returns(uint){
+	function getTransportsCount() constant returns(uint) {
 		return transports.length;
 	}
 
-	function getTransportIsActive(uint index) constant returns(bool){
+	function getTransportIsActive(uint index) constant returns(bool) {
 		return transports[index].isActive;
 	}
 
-	function getTransportTeraprice(uint index) constant returns(uint){
+	function getTransportTeraprice(uint index) constant returns(uint) {
 		return transports[index].teraprice;
 	}
 
-	function getTransportFileHash(uint index) constant returns(bytes32){
+	function getTransportFileHash(uint index) constant returns(bytes32) {
 		return transports[index].fileHash;
 	}
 
-	function addTransport(uint teraprice, bytes32 fileHash){
+	function addTransport(uint teraprice, bytes32 fileHash) {
 		requireOwnership();
 		transports.push(Transport(true, teraprice, fileHash));
 	}
 
-	function setTransportIsActive(uint index, bool isActive){
+	function setTransportIsActive(uint index, bool isActive) {
 		requireOwnership();
 		transports[index].isActive = isActive;
 	}
 
-	function setTransportTeraprice(uint index, uint teraprice){
+	function setTransportTeraprice(uint index, uint teraprice) {
 		requireOwnership();
 		transports[index].teraprice = teraprice;
 	}
 
-	function setTransportFileHash(uint index, bytes32 fileHash){
+	function setTransportFileHash(uint index, bytes32 fileHash) {
 		requireOwnership();
 		transports[index].fileHash = fileHash;
 	}
 
-	function depleteProductUnits(uint index, uint quantity){
+	function depleteProductUnits(uint index, uint quantity) {
 		if(!orderReg.isRegistered(msg.sender))
 			throw;
 
@@ -147,7 +148,7 @@ contract Store is forumable, audible, infosphered, permissioned, aliasable, orde
 		products[index].units = products[index].units - quantity;
 	}
 
-	function restoreProductUnits(uint index, uint quantity){
+	function restoreProductUnits(uint index, uint quantity) {
 		if(!orderReg.isRegistered(msg.sender))
 			throw;
 
@@ -163,5 +164,5 @@ contract Store is forumable, audible, infosphered, permissioned, aliasable, orde
 		requireOwnership();
 		StoreOrderInterface(order).markAsShipped();
 	}
- 
+
 }

@@ -5,12 +5,13 @@ contract forumable is owned{
 
 	address public forumAddr;
 
-	function forumable(){
+	function forumable() {
 		var forum = new Forum();
 		forumAddr = address(forum);
 	}
 
-	function setForumAddr(address _forumAddr){
+  //TODO: make sure someone can't change the forum and hide responses
+	function setForumAddr(address _forumAddr) {
 		requireOwnership();
 		forumAddr = _forumAddr;
 	}

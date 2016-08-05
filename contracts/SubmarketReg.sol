@@ -1,9 +1,7 @@
 import "owned.sol";
 import "Submarket.sol";
 
-contract SubmarketReg is owned{
-
-	uint version1;
+contract SubmarketReg is owned {
 
 	address[] registeredAddrsArray;
 	mapping(address=>bool) registeredAddrsMap;
@@ -11,12 +9,12 @@ contract SubmarketReg is owned{
 	address public infosphereAddr;
 	address public aliasRegAddr;
 
-	function setInfosphereAddr(address _infosphereAddr){
+	function setInfosphereAddr(address _infosphereAddr) {
 		requireOwnership();
 		infosphereAddr = _infosphereAddr;
 	}
 
-	function setAliasRegAddr(address _aliasRegAddr){
+	function setAliasRegAddr(address _aliasRegAddr) {
 		requireOwnership();
 		aliasRegAddr = _aliasRegAddr;
 	}
@@ -25,15 +23,15 @@ contract SubmarketReg is owned{
 
 	bytes[] calls;
 
-	function pushCall(bytes call){
+	function pushCall(bytes call) {
 		calls.push(call);
 	}
 
-	function create(address owner, bool isOpen, bytes32 currency, uint escrowFeeTerabase, uint escrowFeeCentiperun, bytes32 fileHash, bytes32 alias){
+	function create(address owner, bool isOpen, bytes32 currency, uint escrowFeeTerabase, uint escrowFeeCentiperun, bytes32 fileHash, bytes32 alias) {
 
 		var submarket = new Submarket();
 		var submarketAddr = address(submarket);
-		
+
 		submarket.setInfosphere(infosphereAddr);
 		submarket.setAliasReg(aliasRegAddr);
 
@@ -55,15 +53,15 @@ contract SubmarketReg is owned{
 
 	}
 
-	function isRegistered(address addr) constant returns(bool){
+	function isRegistered(address addr) constant returns(bool) {
 		return registeredAddrsMap[addr];
 	}
 
-	function count() constant returns(uint){
+	function getSubmarketCount() constant returns(uint) {
 		return registeredAddrsArray.length;
 	}
 
-	function getStoreAddr(uint index) constant returns(address){
+	function getSubmarketAddr(uint index) constant returns(address) {
 		return registeredAddrsArray[index];
 	}
 }

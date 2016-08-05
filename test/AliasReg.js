@@ -28,6 +28,15 @@ describe('AliasReg', () => {
     return aliasReg.claimAlias.q('myalias').should.eventually.be.fullfilled
   })
 
+  it('denies others claiming rights to "myalias"', () => {
+    return chaithereum.web3.Q.all([
+      aliasReg.claimAlias.q('myalias'),
+      aliasReg.claimAlias.q('myalias', {
+        from: chaithereum.accounts[2]
+      }),
+    ]).should.eventually.be.rejected
+  })
+
   it('can retreive address associated with "myalias"', () => {
     return aliasReg.getAddr.q('myalias').should.eventually.equal(chaithereum.web3.eth.defaultAccount)
   })

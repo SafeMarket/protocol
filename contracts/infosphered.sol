@@ -5,18 +5,19 @@ contract infosphered is owned{
 
     Infosphere infosphere;
 
-    function setInfosphere(address infosphereAddr){
+    //TODO: make sure this onlu happens once per contract
+    function setInfosphere(address infosphereAddr) {
         requireOwnership();
         infosphere = Infosphere(infosphereAddr);
     }
 
-    function getInfosphereAddr() constant returns(address){
+    function getInfosphereAddr() constant returns(address) {
         return address(infosphere);
     }
 
     // ================ bool ================
 
-    function setBool(bytes32 key, bool value){
+    function setBool(bytes32 key, bool value) {
         requireOwnership();
         infosphere.setBool(key,value);
     }
@@ -25,13 +26,13 @@ contract infosphered is owned{
         infosphere.setBool(key,value);
     }
 
-    function getBool(bytes32 key) constant returns(bool){
+    function getBool(bytes32 key) constant returns(bool) {
         return infosphere.getMyBool(key);
     }
 
     // ================ address ================
 
-    function setAddress(bytes32 key, address value){
+    function setAddress(bytes32 key, address value) {
         requireOwnership();
         infosphere.setAddress(key,value);
     }
@@ -40,13 +41,13 @@ contract infosphered is owned{
         infosphere.setAddress(key,value);
     }
 
-    function getAddress(bytes32 key) constant returns(address){
+    function getAddress(bytes32 key) constant returns(address) {
         return infosphere.getMyAddress(key);
     }
 
     // ================ bytes32 ================
 
-    function setBytes32(bytes32 key, bytes32 value){
+    function setBytes32(bytes32 key, bytes32 value) {
         requireOwnership();
         infosphere.setBytes32(key,value);
     }
@@ -55,13 +56,13 @@ contract infosphered is owned{
         infosphere.setBytes32(key,value);
     }
 
-    function getBytes32(bytes32 key) constant returns(bytes32){
+    function getBytes32(bytes32 key) constant returns(bytes32) {
         return infosphere.getMyBytes32(key);
     }
 
     // ================ int ================
 
-    function setInt(bytes32 key, int value){
+    function setInt(bytes32 key, int value) {
         requireOwnership();
         infosphere.setInt(key,value);
     }
@@ -70,13 +71,13 @@ contract infosphered is owned{
         infosphere.setInt(key,value);
     }
 
-    function getInt(bytes32 key) constant returns(int){
+    function getInt(bytes32 key) constant returns(int) {
         return infosphere.getMyInt(key);
     }
 
     // ================ uint ================
 
-    function setUint(bytes32 key, uint value){
+    function setUint(bytes32 key, uint value) {
         requireOwnership();
         infosphere.setUint(key,value);
     }
@@ -85,7 +86,7 @@ contract infosphered is owned{
         infosphere.setUint(key,value);
     }
 
-    function getUint(bytes32 key) constant returns(uint){
+    function getUint(bytes32 key) constant returns(uint) {
         return infosphere.getMyUint(key);
     }
 }
