@@ -1,8 +1,8 @@
-contract owned {
+contract ownable {
 
 	address public owner;
 
-	function owned() {
+	function ownable() {
 		owner = msg.sender;
 	}
 

@@ -1,6 +1,7 @@
-import "owned.sol";
+import "ownable.sol";
 //TODO: merge this contract with aliasable
-contract approvesAliases is owned{
+//or make it use AliasReg in some way
+contract approvesAliases is ownable{
 
   bytes32[] approvedAliases;
   mapping (bytes32 => bool) isApprovedMap;
@@ -25,7 +26,7 @@ contract approvesAliases is owned{
     return isApprovedMap[alias];
   }
 
-  function getApprovedAliasesCount() constant returns (uint) {
+  function getApprovedAliasCount() constant returns (uint) {
     return approvedAliases.length;
   }
 

@@ -1,7 +1,7 @@
-import "owned.sol";
+import "ownable.sol";
 import "Submarket.sol";
 
-contract SubmarketReg is owned {
+contract SubmarketReg is ownable {
 
 	address[] registeredAddrsArray;
 	mapping(address=>bool) registeredAddrsMap;

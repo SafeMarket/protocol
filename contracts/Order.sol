@@ -134,6 +134,7 @@ contract Order{
 			if(!store.getProductIsActive(productParams[0]))
 				throw;
 
+      //this depletion may need to be moved to the store contract for verification purposes
 			store.depleteProductUnits(productParams[0], productParams[2]);
 
 			products.push(Product(
@@ -142,6 +143,7 @@ contract Order{
 				store.getProductFileHash(productParams[0]),
 				productParams[2]
 			));
+
 			productsTeratotal = productsTeratotal + (productParams[1] * productParams[2]);
 		}
 
@@ -204,18 +206,14 @@ contract Order{
 
 	}
 
-	function getProductsCount() constant returns (uint) { return products.length; }
+	function getProductCount() constant returns (uint) { return products.length; }
 	function getProductIndex(uint _index) constant returns (uint) { return products[_index].index; }
 	function getProductTeraprice(uint _index) constant returns (uint) { return products[_index].teraprice; }
 	function getProductFileHash(uint _index) constant returns (bytes32) { return products[_index].fileHash; }
 	function getProductQuantity(uint _index) constant returns (uint) { return products[_index].quantity; }
 
-	function addMessage(bytes32 fileHash, address user) {
-    //TODO: If it's required that the message sender is the user, then we don't have to have user as a parameter
-    //maybe...but it depends on which funtions call this in practice
-    //also, tx.origin probably shouldn't be used
-		if(tx.origin != user && msg.sender != user)
-			throw;
+	function addMessage(bytes32 fileHash) {
+    address user = msg.sender;
 
 		if(
 			user != buyer

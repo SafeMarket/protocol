@@ -1,6 +1,6 @@
-import "owned.sol";
+import "ownable.sol";
 
-contract Forum is owned{
+contract Forum is ownable{
 	
 	event Comment(address indexed author, bytes32 indexed parentId, bytes data);
 	event Moderation(bytes indexed comment, uint8 direction);

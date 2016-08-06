@@ -1,8 +1,9 @@
-import "owned.sol";
+import "ownable.sol";
 import "Store.sol";
 
-contract StoreReg is owned{
+contract StoreReg is ownable {
 
+  mapping(address => address[]) created;
 	address[] registeredAddrsArray;
 	mapping(address=>bool) registeredAddrsMap;
 
@@ -65,17 +66,14 @@ contract StoreReg is owned{
 		if(alias!='')
 			store.setAlias(alias);
 
-		store.setOwner(owner);
+		store.setOwner(msg.sender);
 
 		registeredAddrsArray.push(storeAddr);
 		registeredAddrsMap[storeAddr] = true;
 
 		Registration(storeAddr);
 
-	}
-
-	function isRegistered(address addr) constant returns(bool) {
-		return registeredAddrsMap[addr];
+    created[msg.sender].push(storeAddr);
 	}
 
 	function getStoreCount() constant returns(uint) {
@@ -85,4 +83,17 @@ contract StoreReg is owned{
 	function getStoreAddr(uint index) constant returns(address) {
 		return registeredAddrsArray[index];
 	}
+
+  function getCreatedStoreCount(address creator) constant returns(uint) {
+    return created[creator].length;
+  }
+
+  function getCreatedStoreAddr(address creator, uint index) constant returns(address) {
+    return created[creator][index];
+  }
+
+	function isRegistered(address addr) constant returns(bool) {
+		return registeredAddrsMap[addr];
+	}
+
 }

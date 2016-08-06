@@ -1,7 +1,7 @@
-import "owned.sol";
+import "ownable.sol";
 import "Forum.sol";
 
-contract forumable is owned{
+contract forumable is ownable{
 
 	address public forumAddr;
 

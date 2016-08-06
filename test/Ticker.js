@@ -12,12 +12,28 @@ before(() => {
 
 describe('Ticker', () => {
 
+  let tickerArgs = {}
+
+  createTicker(tickerArgs)
+  runTickerTests(tickerArgs)
+
+})
+
+function createTicker(args) {
+  it('successfully instantiates', () => {
+    return chaithereum.web3.eth.contract(contracts.Ticker.abi).new.q({ data: contracts.Ticker.bytecode })
+    .should.eventually.be.contract.then((_ticker) => {
+      args.address = _ticker.address
+      args.contract = _ticker
+    })
+  })
+}
+
+function runTickerTests(args) {
   let ticker
 
-  it('successfully instantiates', () => {
-    return chaithereum.web3.eth.contract(contracts.Ticker.abi).new.q({ data: contracts.Ticker.bytecode }).should.eventually.be.contract.then((_ticker) => {
-      ticker = _ticker
-    })
+  it('gets the order from the arguments', () => {
+    ticker = args.contract
   })
 
   it('can set prices', () => {
@@ -50,5 +66,6 @@ describe('Ticker', () => {
       ticker.convert.q(1, 'X', 'P').should.eventually.be.rejected
     ])
   })
+}
 
-})
+module.exports = {runTickerTests: runTickerTests, createTicker: createTicker}

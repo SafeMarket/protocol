@@ -1,7 +1,7 @@
-import "owned.sol";
+import "ownable.sol";
 import "Forum.sol";
 
-contract audible is owned{
+contract audible is ownable{
 
 	function addComment(address forumAddr, bytes32 parentId, bytes data) {
 		this.requireOwnership();

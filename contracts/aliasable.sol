@@ -1,7 +1,7 @@
-import "owned.sol";
+import "ownable.sol";
 import "AliasReg.sol";
 
-contract aliasable is owned {
+contract aliasable is ownable {
 
 	AliasReg aliasReg;
 

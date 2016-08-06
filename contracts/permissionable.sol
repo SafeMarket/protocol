@@ -1,6 +1,6 @@
-import "owned.sol";
+import "ownable.sol";
 
-contract permissioned is owned{
+contract permissionable is ownable{
 
 	struct User{
 		mapping(bytes32=>bool) actionToPermissionMap;
@@ -10,7 +10,7 @@ contract permissioned is owned{
 	mapping(address=>User) userMap;
 
 	function getPermission(address addr, bytes32 action) constant returns(bool) {
-    //TODO: it might be useful to add an isOwner(addr) method to owned
+    //TODO: it might be useful to add an isOwner(addr) method to ownable
 		if(addr==owner)
 			return true;
 		else
@@ -18,8 +18,7 @@ contract permissioned is owned{
 	}
 
 	function getSenderPermission(bytes32 action) constant returns(bool) {
-    //TODO: We probably don't want to use tx.origin
-		if (getPermission(msg.sender,action) || getPermission(tx.origin,action)) {
+		if (getPermission(msg.sender,action)) {
 			return true;
 		} else {
 			return false;

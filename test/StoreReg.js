@@ -5,6 +5,8 @@
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
+const runStoreTests = require('./Store.js').runStoreTests
+const params = require('./testparams.js')
 
 before(() => {
   return chaithereum.promise
@@ -17,7 +19,7 @@ describe('storeReg', () => {
   let aliasReg
   let orderReg
   let storeReg
-  let store
+  let storeArgs = {}
 
   const fileHash = chaithereum.web3.sha3('file')
 
@@ -63,14 +65,7 @@ describe('storeReg', () => {
     ])
   })
 
-  it('should create a store', (done) => {
-
-    storeReg.Registration({}).watch((e, result) => {
-      store = chaithereum.web3.eth.contract(contracts.Store.abi).at(result.args.storeAddr)
-      store.should.be.contract
-      done(e)
-    })
-
+  it('should create a store', () => {
     storeReg.create.q(
       chaithereum.account,
       true,
@@ -81,109 +76,40 @@ describe('storeReg', () => {
       3,
       fileHash,
       'storealias',
-      [1, 2, 3, 4, 5, 6].map(toBytes32),
-      [1, 2, 3, 4].map(toBytes32),
-      [1, 2].map(toBytes32)
-    )
+      [params.teraprice1, params.units1, params.fileHash1, params.teraprice2, params.units2, params.fileHash2].map(toBytes32),
+      [params.teraprice3, params.fileHash3, params.teraprice4, params.fileHash4].map(toBytes32),
+      [params.alias1, params.alias2]
+    ).should.be.fulfilled
   })
 
-  describe('store', () => {
-
-    it('should have correct owner', () => {
-      return store.owner.q().should.eventually.equal(chaithereum.account)
-    })
-
-    it('should have correct infosphere address', () => {
-      return store.getInfosphereAddr.q().should.eventually.equal(infosphere.address)
-    })
-
-    it('should have correct infosphere values', () => {
-      return chaithereum.web3.Q.all([
-        infosphere.getBool.q(store.address, 'isOpen').should.eventually.equal(true),
-        store.getBytes32.q('currency').should.eventually.be.ascii('USD'),
-        store.getUint.q('bufferCentiperun').should.eventually.be.bignumber.equal(10),
-        store.getUint.q('disputeSeconds').should.eventually.be.bignumber.equal(60),
-        store.getUint.q('minProductsTeratotal').should.eventually.be.bignumber.equal(1),
-        store.getUint.q('affiliateFeeCentiperun').should.eventually.bignumber.be.equal(3),
-        store.getBytes32.q('fileHash').should.eventually.be.equal(fileHash)
-      ])
-    })
-
-    it('should have correct alias', () => {
-      return chaithereum.web3.Q.all([
-        aliasReg.getAlias.q(store.address).should.eventually.be.ascii('storealias'),
-        aliasReg.getAddr.q('storealias').should.eventually.equal(store.address)
-      ])
-    })
-
-    it('should have correct products length', () => {
-      return store.getProductsLength.q().should.eventually.be.bignumber.equal(2)
-    })
-
-    it('should have correct products', () => {
-      return chaithereum.web3.Q.all([
-        store.getProductsLength.q().should.eventually.be.bignumber.equal(2),
-        store.getProductIsActive.q(0).should.eventually.be.true,
-        store.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(1),
-        store.getProductUnits.q(0).should.eventually.be.bignumber.equal(2),
-        store.getProductFileHash.q(0).should.eventually.be.bignumber.equal(3),
-        store.getProductIsActive.q(1).should.eventually.be.true,
-        store.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(4),
-        store.getProductUnits.q(1).should.eventually.be.bignumber.equal(5),
-        store.getProductFileHash.q(1).should.eventually.be.bignumber.equal(6),
-        store.getProductIsActive.q(2).should.eventually.be.rejected
-      ])
-    })
-
-    it('should have correct transports', () => {
-      return chaithereum.web3.Q.all([
-        store.getTransportsLength.q().should.eventually.be.bignumber.equal(2),
-        store.getTransportIsActive.q(0).should.eventually.be.true,
-        store.getTransportTeraprice.q(0).should.eventually.be.bignumber.equal(1),
-        store.getTransportFileHash.q(0).should.eventually.be.bignumber.equal(2),
-        store.getTransportIsActive.q(1).should.eventually.be.true,
-        store.getTransportTeraprice.q(1).should.eventually.be.bignumber.equal(3),
-        store.getTransportFileHash.q(1).should.eventually.be.bignumber.equal(4),
-        store.getProductIsActive.q(2).should.eventually.be.rejected
-      ])
-    })
-
-    it('should have correct approved aliases', () => {
-      return chaithereum.web3.Q.all([
-        store.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2),
-        store.getApprovedAlias.q(0).should.eventually.be.bignumber.equal(1),
-        store.getApprovedAlias.q(1).should.eventually.be.bignumber.equal(2)
-      ])
-    })
-
-    it('should be able to add a product', () => {
-      return store.addProduct.q.apply(store, [7, 8, 9].map(toBytes32)).should.be.fulfilled
-    })
-
-    it('should have added product correctly', () => {
-      return chaithereum.web3.Q.all([
-        store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
-        store.getProductIsActive.q(2).should.eventually.be.true,
-        store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(7),
-        store.getProductUnits.q(2).should.eventually.be.bignumber.equal(8),
-        store.getProductFileHash.q(2).should.eventually.be.bignumber.equal(9)
-      ])
-    })
-
-    it('should be able to add a transport', () => {
-      return store.addTransport.q.apply(store, [5, 6].map(toBytes32)).should.be.fulfilled
-    })
-
-    it('should have added transport correctly', () => {
-      return chaithereum.web3.Q.all([
-        store.getTransportsLength.q().should.eventually.be.bignumber.equal(3),
-        store.getTransportIsActive.q(2).should.eventually.be.true,
-        store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(5),
-        store.getTransportFileHash.q(2).should.eventually.be.bignumber.equal(6)
-      ])
-    })
-
+  it('should have updated the store counts correctly', () => {
+    return chaithereum.web3.Q.all([
+      storeReg.getStoreCount.q().should.eventually.be.bignumber.equal(1),
+      storeReg.getCreatedStoreCount.q(chaithereum.account).should.eventually.be.bignumber.equal(1),
+    ])
   })
+
+  it('should get the store address', () => {
+    return chaithereum.web3.Q.all([
+      storeReg.getStoreAddr.q().should.eventually.be.address,
+      storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).should.eventually.be.address,
+    ])
+  })
+
+  it('should make the store address a contract', (done) => {
+    storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).then((_storeAddr) => {
+      storeArgs.address = _storeAddr
+      storeArgs.contract = chaithereum.web3.eth.contract(contracts.Store.abi).at(_storeAddr)
+      storeArgs.contract.should.be.contract
+      done()
+    })
+  })
+
+  it('should make the store as registered', () => {
+    storeReg.isRegistered.q(storeArgs.address).should.eventually.be.true
+  })
+
+  runStoreTests(storeArgs)
 
 })
 

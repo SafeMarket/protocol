@@ -114,6 +114,6 @@ describe('SubmarketReg', () => {
 function toBytes32(thing) {
   const hex = chaithereum.web3.toHex(thing)
   const hexWithout0x = hex.replace('0x', '')
-  const missingZeros = '0'.repeat(66 - hex.length)
+  const missingZeros = '0'.repeat(66 - hex.Count)
   return `0x${missingZeros}${hexWithout0x}`
 }

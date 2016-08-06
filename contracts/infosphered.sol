@@ -1,7 +1,7 @@
-import "owned.sol";
+import "ownable.sol";
 import "Infosphere.sol";
 
-contract infosphered is owned{
+contract infosphered is ownable{
 
     Infosphere infosphere;
 

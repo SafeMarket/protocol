@@ -1,10 +1,10 @@
-import "owned.sol";
+import "ownable.sol";
 import "StoreReg.sol";
 import "SubmarketReg.sol";
 import "Ticker.sol";
 import "Order.sol";
 
-contract OrderReg is owned{
+contract OrderReg is ownable{
 
   event Registration(address orderAddr);
 
@@ -58,12 +58,6 @@ contract OrderReg is owned{
 			throw;
 		}
 
-		if (usesSubmarket) {
-			addrsBySubmarketAddr[submarketAddr].push(orderAddr);
-		}
-
-		addrsByStoreAddr[storeAddr].push(orderAddr);
-
 		order.create.value(orderTotal)(
 			buyer,
 			storeAddr,
@@ -77,6 +71,11 @@ contract OrderReg is owned{
 
 		Registration(orderAddr);
 
+		if (usesSubmarket) {
+			addrsBySubmarketAddr[submarketAddr].push(orderAddr);
+		}
+
+		addrsByStoreAddr[storeAddr].push(orderAddr);
 	}
 
 	function isRegistered(address addr) constant returns(bool) {
