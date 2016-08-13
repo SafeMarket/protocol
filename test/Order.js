@@ -143,7 +143,7 @@ function createOrder (orderArgs, storeArgs, tickerArgs) {
   it('fails to create order with a closed store', () => {
     console.log(order.create);
     return order.create.q(
-      chaithereum.address,
+      chaithereum.account,
       storeArgs.address,
       params.address0,
       params.address0,
@@ -161,7 +161,7 @@ function createOrder (orderArgs, storeArgs, tickerArgs) {
   it('successfully instantiates with valid params', () => {
     //TODO: set store to be open
     return order.create.q(
-      chaithereum.address,
+      chaithereum.account,
       storeArgs.address,
       params.address0,
       params.address0,
