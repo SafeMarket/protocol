@@ -212,19 +212,6 @@ contract Order{
 	function getProductFileHash(uint _index) constant returns (bytes32) { return products[_index].fileHash; }
 	function getProductQuantity(uint _index) constant returns (uint) { return products[_index].quantity; }
 
-	function addMessage(bytes32 fileHash) {
-    address user = msg.sender;
-
-		if(
-			user != buyer
-			&& user != storeAddr
-			&& user != submarketAddr
-		)
-			throw;
-
-		messages.push(Message(block.number, user, fileHash));
-	}
-
 	function isComplete() constant returns(bool) {
 		return (status == cancelled || status == resolved || status == finalized);
 	}
@@ -234,6 +221,19 @@ contract Order{
 		if(isComplete())
 			throw;
 
+	}
+
+	function addMessage(bytes32 fileHash) {
+    address user = msg.sender;
+
+		if(
+			user != buyer
+			&& user != storeAddr //TODO: I believe this should be the store owner address, not the store
+			&& user != submarketAddr //and same here
+		)
+			throw;
+
+		messages.push(Message(block.number, user, fileHash));
 	}
 
 	function addUpdate(uint _status) private{

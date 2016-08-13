@@ -66,16 +66,16 @@ describe('storeReg', () => {
   })
 
   it('should create a store', () => {
-    storeReg.create.q(
+    return storeReg.create.q(
       chaithereum.account,
       true,
-      'USD',
-      10,
-      60,
-      1,
-      3,
-      fileHash,
-      'storealias',
+      params.currency1,
+      params.bufferCentiperun1,
+      params.disputeSeconds1,
+      params.minProductsTeratotal1,
+      params.affiliateFeeCentiperun1,
+      params.fileHash0,
+      params.alias1,
       [params.teraprice1, params.units1, params.fileHash1, params.teraprice2, params.units2, params.fileHash2].map(toBytes32),
       [params.teraprice3, params.fileHash3, params.teraprice4, params.fileHash4].map(toBytes32),
       [params.alias1, params.alias2]
@@ -97,7 +97,7 @@ describe('storeReg', () => {
   })
 
   it('should make the store address a contract', (done) => {
-    storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).then((_storeAddr) => {
+    return storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).then((_storeAddr) => {
       storeArgs.address = _storeAddr
       storeArgs.contract = chaithereum.web3.eth.contract(contracts.Store.abi).at(_storeAddr)
       storeArgs.contract.should.be.contract
@@ -106,7 +106,7 @@ describe('storeReg', () => {
   })
 
   it('should make the store as registered', () => {
-    storeReg.isRegistered.q(storeArgs.address).should.eventually.be.true
+    return storeReg.isRegistered.q(storeArgs.address).should.eventually.be.true
   })
 
   runStoreTests(storeArgs)

@@ -114,19 +114,19 @@ function runStoreTests(args) {
   })
 
   it('should set the product active state', () => {
-    store.setProductIsActive.q(2, false).should.eventually.be.fulfilled
+    return store.setProductIsActive.q(2, false).should.eventually.be.fulfilled
   })
 
   it('should set the product teraprice', () => {
-    store.setProductTeraprice.q(2, params.teraprice7).should.eventually.be.fulfilled
+    return store.setProductTeraprice.q(2, params.teraprice7).should.eventually.be.fulfilled
   })
 
   it('should set the product units', () => {
-    store.setProductUnits.q(2, params.units5).should.eventually.be.fulfilled
+    return store.setProductUnits.q(2, params.units5).should.eventually.be.fulfilled
   })
 
   it('should set the product fileHash', () => {
-    store.setProductFileHash.q(2, params.fileHash7)
+    return store.setProductFileHash.q(2, params.fileHash7)
   })
 
   it('should have updated the product correctly', () => {
@@ -140,15 +140,15 @@ function runStoreTests(args) {
   })
 
   it('should set the transport active state', () => {
-    store.setTransportIsActive.q(2, false).should.eventually.be.fulfilled
+    return store.setTransportIsActive.q(2, false).should.eventually.be.fulfilled
   })
 
   it('should set the transport teraprice', () => {
-    store.setTransportTeraprice.q(2, params.teraprice8).should.eventually.be.fulfilled
+    return store.setTransportTeraprice.q(2, params.teraprice8).should.eventually.be.fulfilled
   })
 
   it('set the transport fileHash', () => {
-    store.setTransportFileHash.q(2, params.fileHash8).should.eventually.be.fulfilled
+    return store.setTransportFileHash.q(2, params.fileHash8).should.eventually.be.fulfilled
   })
 
   it('should have updated the transport correctly', () => {
@@ -161,11 +161,11 @@ function runStoreTests(args) {
   })
 
   it('should restore product units', () => {
-    store.restoreProductUnits.q(2, params.units6).should.eventually.be.fulfilled
+    return store.restoreProductUnits.q(2, params.units6).should.eventually.be.fulfilled
   })
 
   it('should deplete product units', () => {
-    store.depleteProductUnits.q(2, params.units1).should.eventually.be.fulfilled
+    return store.depleteProductUnits.q(2, params.units1).should.eventually.be.fulfilled
   })
 
   it('should have updated the product correctly', () => {
