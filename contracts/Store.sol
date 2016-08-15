@@ -4,10 +4,14 @@ import "orderable.sol";
 import "infosphered.sol";
 import "aliasable.sol";
 import "approvesAliases.sol";
+import "Order.sol";
 
 contract StoreOrderInterface {
   function markAsShipped();
   function cancel();
+  function getProductCount();
+  function getProductIndex(uint _index);
+	function getProductQuantity(uint _index);
 }
 
 contract Store is forumable, audible, infosphered, aliasable, orderable, approvesAliases {
@@ -32,20 +36,22 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
   function Store(bytes32[] productParams, bytes32[] transportParams, bytes32[] _approvedAliases) {
     //TODO: solidity has been around for awhile, maybe there is a better way to do this
     //than a list of parameters
-    for(uint i = 0; i< productParams.length; i=i+3) {
+    for(uint i = 0; i< productParams.length; i=i+4) {
+      bool isProductActive = uint(productParams[i]) != 0;
       products.push(Product(
-        true,
-        uint(productParams[i]),
+        isProductActive,
         uint(productParams[i+1]),
-        productParams[i+2]
+        uint(productParams[i+2]),
+        productParams[i+3]
       ));
     }
 
-    for(uint j = 0; j< transportParams.length; j=j+2) {
+    for(uint j = 0; j< transportParams.length; j=j+3) {
+      bool isTransportActive = uint(transportParams[j]) != 0;
 		  transports.push(Transport(
-			  true,
-			  uint(transportParams[j]),
-			  transportParams[j+1]
+        isTransportActive,
+			  uint(transportParams[j+1]),
+			  transportParams[j+2]
 		  ));
 	  }
 
@@ -147,13 +153,26 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
 		products[index].units = products[index].units - quantity;
 	}
 
-	function cancel(address order) {
+
+  //TODO: cancel needs some tests
+	function cancel(address orderAddr) {
 		requireOwnership();
-		StoreOrderInterface(order).cancel();
+		StoreOrderInterface(orderAddr).cancel();
 	}
 
-	function markAsShipped(address order) {
+    //TODO: markAsShipped needs some tests
+	function markAsShipped(address orderAddr) {
 		requireOwnership();
-		StoreOrderInterface(order).markAsShipped();
+
+    Order order = Order(order);
+
+    uint productCount = order.getProductCount();
+
+    for(uint i = 0; i < productCount; i++) {
+      uint index = order.getProductIndex(i);
+      uint quantity = order.getProductQuantity(i);
+      depleteProductUnits(index, quantity);
+    }
+		order.markAsShipped();
 	}
 }

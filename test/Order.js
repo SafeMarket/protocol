@@ -38,9 +38,10 @@ function createTicker (tickerArgs) {
 
   it('sets the ticker prices', () => {
     return chaithereum.web3.Q.all([
-      tickerArgs.contract.setPrice.q(params.currency1, params.price1),
-      tickerArgs.contract.setPrice.q(params.currency2, params.price2),
-      tickerArgs.contract.setPrice.q(params.currency3, params.price3),
+      tickerArgs.contract.setPrice.q(params.currency0, params.currencyPrice0),
+      tickerArgs.contract.setPrice.q(params.currency1, params.currencyPrice1),
+      tickerArgs.contract.setPrice.q(params.currency2, params.currencyPrice2),
+      tickerArgs.contract.setPrice.q(params.currency3, params.currencyPrice3),
     ])
   })
 }
@@ -53,18 +54,15 @@ function createStore (storeArgs) {
 
   before(() => {
     return chaithereum.web3.Q.all([
-      chaithereum.web3.eth.contract(contracts.Infosphere.abi).new.q({
-        data: contracts.Infosphere.bytecode
+      chaithereum.web3.eth.contract(contracts.Infosphere.abi).new.q({data: contracts.Infosphere.bytecode
       }).should.eventually.be.contract.then((_infosphere) => {
         infosphere = _infosphere
       }),
-      chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({
-        data: contracts.AliasReg.bytecode
+      chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({data: contracts.AliasReg.bytecode
       }).should.eventually.be.contract.then((_aliasReg) => {
         aliasReg = _aliasReg
       }),
-      chaithereum.web3.eth.contract(contracts.OrderReg.abi).new.q({
-        data: contracts.OrderReg.bytecode
+      chaithereum.web3.eth.contract(contracts.OrderReg.abi).new.q({data: contracts.OrderReg.bytecode
       }).should.eventually.be.contract.then((_orderReg) => {
         orderReg = _orderReg
       })
@@ -100,12 +98,12 @@ function createStore (storeArgs) {
       params.currency1,
       params.bufferCentiperun1,
       params.disputeSeconds1,
-      params.minProductsTeratotal1,
+      params.minProductsTeratotal2,
       params.affiliateFeeCentiperun1,
       params.fileHash0,
       params.alias1,
-      [params.teraprice1, params.units1, params.fileHash1, params.teraprice2, params.units2, params.fileHash2].map(toBytes32),
-      [params.teraprice3, params.fileHash3, params.teraprice4, params.fileHash4].map(toBytes32),
+      [false, params.teraprice1, params.units1, params.fileHash1, false, params.teraprice2, params.units2, params.fileHash2].map(toBytes32),
+      [false, params.teraprice3, params.fileHash3, false, params.teraprice4, params.fileHash4].map(toBytes32),
       [params.alias1, params.alias2]
     ).should.be.fulfilled
   })
@@ -140,40 +138,126 @@ function createOrder (orderArgs, storeArgs, tickerArgs) {
     }).should.eventually.be.fulfilled
   })
 
-  it('fails to create order with a closed store', () => {
-    console.log(order.create);
-    return order.create.q(
-      chaithereum.account,
-      storeArgs.address,
-      params.address0,
-      params.address0,
-      [params.index1, params.index2],
-      [params.quantity1, params.quantity2],
-      params.index1,
-      tickerArgs.address,
-      {
-        from: chaithereum.accounts[1],
-        data: contracts.Order.bytecode,
-      }
-    ).should.eventually.be.rejected
+  it('successfully sets the store as open', () => {
+    return storeArgs.contract.setBool.q('isOpen', true).should.eventually.be.fulfilled
+  })
+
+  it('successfully sets the store products to be active', () => {
+    return chaithereum.web3.Q.all([
+      storeArgs.contract.setProductIsActive.q(0, true),
+      storeArgs.contract.setProductIsActive.q(1, true),
+    ]).should.eventually.be.fulfilled
+  })
+
+  it('successfully sets the store transports to be active', () => {
+    return chaithereum.web3.Q.all([
+      storeArgs.contract.setTransportIsActive.q(0, true),
+      storeArgs.contract.setTransportIsActive.q(1, true),
+    ]).should.eventually.be.fulfilled
   })
 
   it('successfully instantiates with valid params', () => {
-    //TODO: set store to be open
     return order.create.q(
-      chaithereum.account,
+      chaithereum.accounts[1],
       storeArgs.address,
       params.address0,
       params.address0,
-      [params.index1, params.index2],
+      [params.index0, params.index1],
       [params.quantity1, params.quantity2],
       params.index1,
       tickerArgs.address,
-      {
-        from: chaithereum.accounts[1],
-        data: contracts.Order.bytecode,
-      }
+      {data: contracts.Order.bytecode}
     ).should.eventually.be.fulfilled
+  })
+
+  it('successfully sets the store as closed', () => {
+    return storeArgs.contract.setBool.q('isOpen', false).should.eventually.be.fulfilled
+  })
+
+  it('fails to create order with a closed store', () => {
+    return order.create.q(
+      chaithereum.accounts[1],
+      storeArgs.address,
+      params.address0,
+      params.address0,
+      [params.index0, params.index1],
+      [params.quantity1, params.quantity2],
+      params.index1,
+      tickerArgs.address,
+      {data: contracts.Order.bytecode}
+    ).should.eventually.be.rejected
+  })
+
+  it('successfully sets the store as open', () => {
+    return storeArgs.contract.setBool.q('isOpen', true).should.eventually.be.fulfilled
+  })
+
+  it('successfully sets the store product to be inactive', () => {
+    return storeArgs.contract.setProductIsActive.q(1, false).should.eventually.be.fulfilled
+  })
+
+  it('fails to create order with inactive product', () => {
+    return order.create.q(
+      chaithereum.accounts[1],
+      storeArgs.address,
+      params.address0,
+      params.address0,
+      [params.index0, params.index1],
+      [params.quantity1, params.quantity2],
+      params.index1,
+      tickerArgs.address,
+      {data: contracts.Order.bytecode}
+    ).should.eventually.be.rejected
+  })
+
+  it('successfully sets the store product to be active', () => {
+    return storeArgs.contract.setProductIsActive.q(1, false).should.eventually.be.fulfilled
+  })
+
+  it('successfully sets the store minProductsTeratotal to be high', () => {
+    return storeArgs.contract.setUint.q('minProductsTeratotal', params.teraprice10)
+    .should.eventually.be.fulfilled
+  })
+
+  it('fails to create order with low teraprice', () => {
+    return order.create.q(
+      chaithereum.accounts[1],
+      storeArgs.address,
+      params.address0,
+      params.address0,
+      [params.index0, params.index1],
+      [params.quantity1, params.quantity2],
+      params.index1,
+      tickerArgs.address,
+      {data: contracts.Order.bytecode}
+    ).should.eventually.be.rejected
+  })
+
+  it('successfully sets the store minProductsTeratotal to be low', () => {
+    return storeArgs.contract.setUint.q('minProductsTeratotal', params.teraprice1)
+    .should.eventually.be.fulfilled
+  })
+
+  it('successfully sets the store transport to be inactive', () => {
+    return storeArgs.contract.setTransportIsActive.q(1, false).should.eventually.be.fulfilled
+  })
+
+  it('fails to create order with inactive transport', () => {
+    return order.create.q(
+      chaithereum.accounts[1],
+      storeArgs.address,
+      params.address0,
+      params.address0,
+      [params.index0, params.index1],
+      [params.quantity1, params.quantity2],
+      params.index1,
+      tickerArgs.address,
+      {data: contracts.Order.bytecode}
+    ).should.eventually.be.rejected
+  })
+
+  it('successfully sets the store transport to be active', () => {
+    return storeArgs.contract.setTransportIsActive.q(1, true).should.eventually.be.fulfilled
   })
 }
 
@@ -187,13 +271,13 @@ function runOrderTest (args) {
   it('should get the product correctly', () => {
     return chaithereum.web3.Q.all([
       order.getProductCount.q().should.eventually.be.bignumber.equal(2),
-      order.getProductIndex.q(0).should.eventually.be.bignumber.equal(params.index1),
+      order.getProductIndex.q(0).should.eventually.be.bignumber.equal(params.index0),
       order.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
-      order.getProductFileHash.q(0).should.eventually.be.bignumber.equal(params.fileHash1),
+      order.getProductFileHash.q(0).should.eventually.be.ascii(params.fileHash1),
       order.getProductQuantity.q(0).should.eventually.be.bignumber.equal(params.quantity1),
-      order.getProductIndex.q(1).should.eventually.be.bignumber.equal(params.index2),
+      order.getProductIndex.q(1).should.eventually.be.bignumber.equal(params.index1),
       order.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
-      order.getProductFileHash.q(1).should.eventually.be.bignumber.equal(params.fileHash2),
+      order.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
       order.getProductQuantity.q(1).should.eventually.be.bignumber.equal(params.quantity2),
     ])
   })

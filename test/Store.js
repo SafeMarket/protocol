@@ -28,8 +28,8 @@ function createStore(args) {
 
   it('successfully instantiates with non-blank params', () => {
     return chaithereum.web3.eth.contract(contracts.Store.abi).new.q(
-      [params.teraprice1, params.units1, params.fileHash1, params.teraprice2, params.units2, params.fileHash2].map(toBytes32),
-      [params.teraprice3, params.fileHash3, params.teraprice4, params.fileHash4].map(toBytes32),
+      [true, params.teraprice1, params.units1, params.fileHash1, false, params.teraprice2, params.units2, params.fileHash2].map(toBytes32),
+      [true, params.teraprice3, params.fileHash3, false, params.teraprice4, params.fileHash4].map(toBytes32),
       [params.alias1, params.alias2],
       {data: contracts.Store.bytecode}
     ).should.eventually.be.contract.then((_store) => {
@@ -57,7 +57,7 @@ function runStoreTests(args) {
       store.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
       store.getProductUnits.q(0).should.eventually.be.bignumber.equal(params.units1),
       store.getProductFileHash.q(0).should.eventually.be.ascii(params.fileHash1),
-      store.getProductIsActive.q(1).should.eventually.be.true,
+      store.getProductIsActive.q(1).should.eventually.be.false,
       store.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
       store.getProductUnits.q(1).should.eventually.be.bignumber.equal(params.units2),
       store.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
@@ -71,7 +71,7 @@ function runStoreTests(args) {
       store.getTransportIsActive.q(0).should.eventually.be.true,
       store.getTransportTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice3),
       store.getTransportFileHash.q(0).should.eventually.be.ascii(params.fileHash3),
-      store.getTransportIsActive.q(1).should.eventually.be.true,
+      store.getTransportIsActive.q(1).should.eventually.be.false,
       store.getTransportTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
       store.getTransportFileHash.q(1).should.eventually.be.ascii(params.fileHash4),
       store.getProductIsActive.q(2).should.eventually.be.rejected

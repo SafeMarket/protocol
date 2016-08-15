@@ -1,5 +1,6 @@
 import "Ticker.sol";
 import "Store.sol";
+import "Submarket.sol";
 
 contract Order{
 
@@ -38,6 +39,14 @@ contract Order{
 	uint public productsTeratotal;
 	uint public storeTeratotal;
 	uint public total;
+
+  struct Totals{
+    uint store; //Store total in wei
+    uint escrowBase; //Escrow base in wei
+    uint escrowFee; //Escrow percent fee in wei
+    uint total; //Total before before
+    uint bufferTotal; //Buffer
+  }
 
 	uint public bounty;
 	uint public rewardMax;
@@ -134,9 +143,6 @@ contract Order{
 			if(!store.getProductIsActive(productParams[0]))
 				throw;
 
-      //this depletion may need to be moved to the store contract for verification purposes
-			store.depleteProductUnits(productParams[0], productParams[2]);
-
 			products.push(Product(
 				productParams[0],
 				productParams[1],
@@ -163,7 +169,8 @@ contract Order{
 		}
 
 		if(submarketAddr != address(0)) {
-      //TODO: change this to use an instance of the submarket not infosphered
+      //TODO: change this to use an instance of the submarket that is not infosphered
+      //TODO: test submarkets and orders with submarkets
 			var submarket = infosphered(_submarketAddr);
 			if(!submarket.getBool('isOpen'))
 				throw;
@@ -176,33 +183,26 @@ contract Order{
     //TDDO: the wording on the transportTeraprice variable may need to be fixed to match the other parameters
 		storeTeratotal = productsTeratotal + transportTeraprice;
 
-    //TODO: it would be slightly more readable to use a struct instead of an array
-    //research whether in memory structs are possible
-		uint[5] memory totals = [
-			ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI')) / 1000000000000, 	//Store total in wei
-			0,																				//Escrow base in wei
-			0,																				//Escrow percent fee in wei
-			0,																				//Total before buffer
-			0																				//Buffer
-		];
+    Totals memory totals;
+    totals.store = ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI')) / 1000000000000;
 
     //TODO:...what is this calculated magic
 		if (escrowFeeTerabase > 0) {
-			totals[1] = (ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI')) / 1000000000000);
+			totals.escrowBase = (ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI')) / 1000000000000);
 		}
 
 		if (escrowFeeCentiperun > 0) {
-			totals[2] = (totals[0] * escrowFeeCentiperun / 100);
+			totals.escrowFee = (totals.store * escrowFeeCentiperun / 100);
 		}
 
-		totals[3] = totals[0] + totals[1] + totals[2];
+		totals.total = totals.store + totals.escrowBase + totals.escrowFee;
 
 		if (bufferCentiperun > 0) {
-			totals[4] = ((totals[3] + bufferCentiperun) / 100);
+			totals.bufferTotal = ((totals.total + bufferCentiperun) / 100);
 		}
 
 		// if (msg.value < (totals[3] + totals[4]))
-		// 	throw;
+		// 	throw;*/
 
 	}
 
@@ -226,10 +226,13 @@ contract Order{
 	function addMessage(bytes32 fileHash) {
     address user = msg.sender;
 
+    Store store = Store(storeAddr);
+    Submarket submarket = Submarket(submarketAddr);
+
 		if(
 			user != buyer
-			&& user != storeAddr //TODO: I believe this should be the store owner address, not the store
-			&& user != submarketAddr //and same here
+			&& user != store.getOwner()
+			&& user != submarket.getOwner()
 		)
 			throw;
 

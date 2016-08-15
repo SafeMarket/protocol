@@ -14,4 +14,8 @@ contract ownable {
 		requireOwnership();
 		owner = _owner;
 	}
+
+  function getOwner() constant returns (address) {
+    return owner;
+  }
 }
