@@ -23,7 +23,7 @@ describe('order', () => {
   createStore(storeArgs)
   createTicker(tickerArgs)
   createOrder(orderArgs, storeArgs, tickerArgs)
-  runOrderTest(orderArgs)
+  runOrderTest(orderArgs, storeArgs)
 })
 
 function createTicker (tickerArgs) {
@@ -137,168 +137,199 @@ function createOrder (orderArgs, storeArgs, tickerArgs) {
       done()
     }).should.eventually.be.fulfilled
   })
+  describe('creation process', () => {
+    before('makes the store available', () => {
+      return chaithereum.web3.Q.all([
+        storeArgs.contract.setBool.q('isOpen', true),
+        storeArgs.contract.setProductIsActive.q(0, true),
+        storeArgs.contract.setProductIsActive.q(1, true),
+        storeArgs.contract.setTransportIsActive.q(0, true),
+        storeArgs.contract.setTransportIsActive.q(1, true),
+      ]).should.eventually.be.fulfilled
+    })
 
-  it('successfully sets the store as open', () => {
-    return storeArgs.contract.setBool.q('isOpen', true).should.eventually.be.fulfilled
-  })
+    context('with a closed store', () => {
+      before(() => {
+        return storeArgs.contract.setBool.q('isOpen', false).should.eventually.be.fulfilled
+      })
 
-  it('successfully sets the store products to be active', () => {
-    return chaithereum.web3.Q.all([
-      storeArgs.contract.setProductIsActive.q(0, true),
-      storeArgs.contract.setProductIsActive.q(1, true),
-    ]).should.eventually.be.fulfilled
-  })
+      specify('creation fails', () => {
+        return order.create.q(
+          chaithereum.accounts[1],
+          storeArgs.address,
+          params.address0,
+          params.address0,
+          [params.index0, params.index1],
+          [params.quantity1, params.quantity2],
+          params.index1,
+          tickerArgs.address,
+          {data: contracts.Order.bytecode}
+        ).should.eventually.be.rejected
+      })
 
-  it('successfully sets the store transports to be active', () => {
-    return chaithereum.web3.Q.all([
-      storeArgs.contract.setTransportIsActive.q(0, true),
-      storeArgs.contract.setTransportIsActive.q(1, true),
-    ]).should.eventually.be.fulfilled
-  })
+      after(() => {
+        return storeArgs.contract.setBool.q('isOpen', true).should.eventually.be.fulfilled
+      })
+    })
 
-  it('successfully instantiates with valid params', () => {
-    return order.create.q(
-      chaithereum.accounts[1],
-      storeArgs.address,
-      params.address0,
-      params.address0,
-      [params.index0, params.index1],
-      [params.quantity1, params.quantity2],
-      params.index1,
-      tickerArgs.address,
-      {data: contracts.Order.bytecode}
-    ).should.eventually.be.fulfilled
-  })
+    context('with inactive product', () => {
+      before(() => {
+        return storeArgs.contract.setProductIsActive.q(1, false).should.eventually.be.fulfilled
+      })
 
-  it('successfully sets the store as closed', () => {
-    return storeArgs.contract.setBool.q('isOpen', false).should.eventually.be.fulfilled
-  })
+      specify('creation fails', () => {
+        return order.create.q(
+          chaithereum.accounts[1],
+          storeArgs.address,
+          params.address0,
+          params.address0,
+          [params.index0, params.index1],
+          [params.quantity1, params.quantity2],
+          params.index1,
+          tickerArgs.address,
+          {data: contracts.Order.bytecode}
+        ).should.eventually.be.rejected
+      })
 
-  it('fails to create order with a closed store', () => {
-    return order.create.q(
-      chaithereum.accounts[1],
-      storeArgs.address,
-      params.address0,
-      params.address0,
-      [params.index0, params.index1],
-      [params.quantity1, params.quantity2],
-      params.index1,
-      tickerArgs.address,
-      {data: contracts.Order.bytecode}
-    ).should.eventually.be.rejected
-  })
+      after(() => {
+        return storeArgs.contract.setProductIsActive.q(1, true).should.eventually.be.fulfilled
+      })
+    })
 
-  it('successfully sets the store as open', () => {
-    return storeArgs.contract.setBool.q('isOpen', true).should.eventually.be.fulfilled
-  })
+    context('with a high minProductsTeratotal', () => {
+      before(() => {
+        return storeArgs.contract.setUint.q('minProductsTeratotal', params.minProductsTeratotal2)
+        .should.eventually.be.fulfilled
+      })
 
-  it('successfully sets the store product to be inactive', () => {
-    return storeArgs.contract.setProductIsActive.q(1, false).should.eventually.be.fulfilled
-  })
+      specify('creation fails', () => {
+        return order.create.q(
+          chaithereum.accounts[1],
+          storeArgs.address,
+          params.address0,
+          params.address0,
+          [params.index0, params.index1],
+          [params.quantity1, params.quantity2],
+          params.index1,
+          tickerArgs.address,
+          {data: contracts.Order.bytecode}
+        ).should.eventually.be.rejected
+      })
 
-  it('fails to create order with inactive product', () => {
-    return order.create.q(
-      chaithereum.accounts[1],
-      storeArgs.address,
-      params.address0,
-      params.address0,
-      [params.index0, params.index1],
-      [params.quantity1, params.quantity2],
-      params.index1,
-      tickerArgs.address,
-      {data: contracts.Order.bytecode}
-    ).should.eventually.be.rejected
-  })
+      after(() => {
+        return storeArgs.contract.setUint.q('minProductsTeratotal', params.minProductsTeratotal1)
+        .should.eventually.be.fulfilled
+      })
+    })
 
-  it('successfully sets the store product to be active', () => {
-    return storeArgs.contract.setProductIsActive.q(1, false).should.eventually.be.fulfilled
-  })
+    context('with an inactive transport', () => {
+      before(() => {
+        return storeArgs.contract.setTransportIsActive.q(1, false).should.eventually.be.fulfilled
+      })
 
-  it('successfully sets the store minProductsTeratotal to be high', () => {
-    return storeArgs.contract.setUint.q('minProductsTeratotal', params.teraprice10)
-    .should.eventually.be.fulfilled
-  })
+      specify('creation fails', () => {
+        return order.create.q(
+          chaithereum.accounts[1],
+          storeArgs.address,
+          params.address0,
+          params.address0,
+          [params.index0, params.index1],
+          [params.quantity1, params.quantity2],
+          params.index1,
+          tickerArgs.address,
+          {data: contracts.Order.bytecode}
+        ).should.eventually.be.rejected
+      })
 
-  it('fails to create order with low teraprice', () => {
-    return order.create.q(
-      chaithereum.accounts[1],
-      storeArgs.address,
-      params.address0,
-      params.address0,
-      [params.index0, params.index1],
-      [params.quantity1, params.quantity2],
-      params.index1,
-      tickerArgs.address,
-      {data: contracts.Order.bytecode}
-    ).should.eventually.be.rejected
-  })
+      after(() => {
+        return storeArgs.contract.setTransportIsActive.q(1, true).should.eventually.be.fulfilled
+      })
+    })
 
-  it('successfully sets the store minProductsTeratotal to be low', () => {
-    return storeArgs.contract.setUint.q('minProductsTeratotal', params.teraprice1)
-    .should.eventually.be.fulfilled
-  })
-
-  it('successfully sets the store transport to be inactive', () => {
-    return storeArgs.contract.setTransportIsActive.q(1, false).should.eventually.be.fulfilled
-  })
-
-  it('fails to create order with inactive transport', () => {
-    return order.create.q(
-      chaithereum.accounts[1],
-      storeArgs.address,
-      params.address0,
-      params.address0,
-      [params.index0, params.index1],
-      [params.quantity1, params.quantity2],
-      params.index1,
-      tickerArgs.address,
-      {data: contracts.Order.bytecode}
-    ).should.eventually.be.rejected
-  })
-
-  it('successfully sets the store transport to be active', () => {
-    return storeArgs.contract.setTransportIsActive.q(1, true).should.eventually.be.fulfilled
+    context('with a valid store', () => {
+      specify('creation succeeds', () => {
+        return order.create.q(
+          chaithereum.accounts[1],
+          storeArgs.address,
+          params.address0,
+          params.address0,
+          [params.index0, params.index1],
+          [params.quantity1, params.quantity2],
+          params.index1,
+          tickerArgs.address,
+          {data: contracts.Order.bytecode}
+        ).should.eventually.be.fulfilled
+      })
+    })
   })
 }
 
-function runOrderTest (args) {
+function runOrderTest (orderArgs, storeArgs) {
   let order;
 
   it('gets the order from the arguments', () => {
-    order = args.contract
+    order = orderArgs.contract
+    store = storeArgs.contract
   })
 
-  it('should get the product correctly', () => {
-    return chaithereum.web3.Q.all([
-      order.getProductCount.q().should.eventually.be.bignumber.equal(2),
-      order.getProductIndex.q(0).should.eventually.be.bignumber.equal(params.index0),
-      order.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
-      order.getProductFileHash.q(0).should.eventually.be.ascii(params.fileHash1),
-      order.getProductQuantity.q(0).should.eventually.be.bignumber.equal(params.quantity1),
-      order.getProductIndex.q(1).should.eventually.be.bignumber.equal(params.index1),
-      order.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
-      order.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
-      order.getProductQuantity.q(1).should.eventually.be.bignumber.equal(params.quantity2),
-    ])
+  describe('state', () => {
+    it('should have the correct products', () => {
+      return chaithereum.web3.Q.all([
+        order.getProductCount.q().should.eventually.be.bignumber.equal(2),
+        order.getProductIndex.q(0).should.eventually.be.bignumber.equal(params.index0),
+        order.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
+        order.getProductFileHash.q(0).should.eventually.be.ascii(params.fileHash1),
+        order.getProductQuantity.q(0).should.eventually.be.bignumber.equal(params.quantity1),
+        order.getProductIndex.q(1).should.eventually.be.bignumber.equal(params.index1),
+        order.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
+        order.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
+        order.getProductQuantity.q(1).should.eventually.be.bignumber.equal(params.quantity2),
+      ])
+    })
+
+    it('should have the initial status', () => {
+      return order.status.q().should.eventually.be.bignumber.equal(0);
+    })
   })
 
-  it('should list itself as not complete', () => {
-    return order.isComplete.q().should.eventually.be.false
+  describe('messages', () => {
+    it('should add a message', () => {
+      return chaithereum.web3.Q.all([
+        store.addMessage.q(order.address, params.fileHash3, {from: chaithereum.accounts[0]}).should.eventually.be.fulfilled,
+        order.addMessage.q(params.fileHash4, {from: chaithereum.accounts[1]}).should.eventually.be.fulfilled,
+      ])
+    })
+
+    it('should reject unauthorized messages', () => {
+      return order.addMessage.q(params.fileHash5, {from: chaithereum.accounts[4]}).should.eventually.be.rejected
+    })
   })
 
-  it('should add a message', () => {
-    return chaithereum.web3.Q.all([
-      order.addMessage.q(params.fileHash3, {from: chaithereum.accounts[0]}).should.eventually.be.fulfilled,
-      order.addMessage.q(params.fileHash4, {from: chaithereum.accounts[1]}).should.eventually.be.fulfilled,
-    ])
+  describe('processing', () => {
+    let value;
+    let balance;
+    before((done) => {
+      value = Math.pow(10, 8);
+      chaithereum.web3.eth.sendTransaction
+      .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000})
+      .should.eventually.be.fulfilled.then(() => {
+        chaithereum.web3.eth.getBalance.q(chaithereum.accounts[1]).then((_balance) => {
+          balance = balance
+          done()
+        })
+      })
+    })
+
+    it('should cancel the order', () => {
+      //return order.cancel.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+    })
+
+    it('should have returned the funds', () => {
+      return chaithereum.web3.eth.getBalance.q(chaithereum.accounts[1]).should.eventually.be.bignumber
+      .then((_balance) =>{
+        //TODO: shift by a few places to ignore gas costs
+        //chaithereum.assert.isEqual(_balance, balance)
+      })
+    })
   })
-
-  it('should reject unauthorized messages', () => {
-    return order.addMessage.q(params.fileHash5, {from: chaithereum.accounts[4]}).should.eventually.be.rejected
-  })
-
-  it('should cancel the order', () => {
-
-  })
-
 }

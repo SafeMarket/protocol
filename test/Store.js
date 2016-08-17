@@ -39,7 +39,7 @@ function createStore(args) {
   })
 }
 
-function runStoreTests(args) {
+function runStoreTests (args) {
   let store
 
   it('gets the store from the arguments', () => {

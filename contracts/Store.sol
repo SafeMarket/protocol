@@ -6,14 +6,6 @@ import "aliasable.sol";
 import "approvesAliases.sol";
 import "Order.sol";
 
-contract StoreOrderInterface {
-  function markAsShipped();
-  function cancel();
-  function getProductCount();
-  function getProductIndex(uint _index);
-	function getProductQuantity(uint _index);
-}
-
 contract Store is forumable, audible, infosphered, aliasable, orderable, approvesAliases {
 
   struct Product{
@@ -153,11 +145,16 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
 		products[index].units = products[index].units - quantity;
 	}
 
+  function addMessage(address orderAddr, bytes32 fileHash) {
+    requireOwnership();
+    Order order = Order(orderAddr);
+    order.addMessage(fileHash);
+  }
 
   //TODO: cancel needs some tests
 	function cancel(address orderAddr) {
 		requireOwnership();
-		StoreOrderInterface(orderAddr).cancel();
+		Order(orderAddr).cancel();
 	}
 
     //TODO: markAsShipped needs some tests

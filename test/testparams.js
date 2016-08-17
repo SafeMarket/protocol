@@ -42,7 +42,7 @@ let params = {
   bufferCentiperun1:      10,
   disputeSeconds1:        60,
   minProductsTeratotal1:   1,
-  minProductsTeratotal2:   6000,
+  minProductsTeratotal2:   100000000000,
   affiliateFeeCentiperun1: 3,
 }
 
