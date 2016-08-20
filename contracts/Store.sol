@@ -161,7 +161,7 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
 	function markAsShipped(address orderAddr) {
 		requireOwnership();
 
-    Order order = Order(order);
+    Order order = Order(orderAddr);
 
     uint productCount = order.getProductCount();
 

@@ -24,6 +24,9 @@ contract Order{
 	Product[] products;
 
 
+  uint constant TERABASE = 1000000000000;
+  uint constant CENTIBASE = 100;
+
 	uint public transportTeraprice;
 	bytes32 public transportFileHash;
 
@@ -44,7 +47,8 @@ contract Order{
     uint store; //Store total in wei
     uint escrowBase; //Escrow base in wei
     uint escrowFee; //Escrow percent fee in wei
-    uint subTotal; //Total before buffer
+    uint affiliate;
+    uint buffer; //Total before buffer
     uint total; //Total
   }
   Totals totals;
@@ -53,12 +57,11 @@ contract Order{
     uint store;
     uint escrow;
     uint affiliate;
+    uint total;
   }
   Payouts payouts;
 
 	uint public bounty;
-	uint public rewardMax;
-	bool public areAmountsSet;
 
 	bool public isStoreAmountReleased;
 	bool public isEscrowAmountReleased;
@@ -103,6 +106,7 @@ contract Order{
 		,address _storeAddr
 		,address _submarketAddr
 		,address _affiliate
+    ,uint _bounty
      //TODO: possible vulnerability, the seller could reorder atteempt to products to force someone to buy a different product, may be an opportunity to use product hashes instead
 		,uint[] _productIndexes
 		,uint[] _productQuantities
@@ -122,6 +126,7 @@ contract Order{
 		storeAddr = _storeAddr;
 		submarketAddr = _submarketAddr;
 		affiliate = _affiliate;
+    bounty = _bounty;
 
     //TODO: ticker needs to be somehow approved by both buyer and seller, maybe it should be an option alowing the resolution market
 		ticker = Ticker(tickerAddr);
@@ -184,41 +189,56 @@ contract Order{
     //TDDO: the wording on the transportTeraprice variable may need to be fixed to match the other parameters
 		storeTeratotal = productsTeratotal + transportTeraprice;
 
-    Totals memory totals;
-    totals.store = ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI')) / 1000000000000;
+    computeTotals();
+	}
 
-    //TODO:...what is this calculated magic
-		if (escrowFeeTerabase > 0) {
-			totals.escrowBase = (ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI')) / 1000000000000);
-		}
+  function computeTotals() {
+    uint storeTerawei = ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI'));
 
-    uint escrowBase;
-		if (escrowFeeCentiperun > 0) {
-			escrowFee = (totals.store * escrowFeeCentiperun) / 100;
-		}
-
-    uint escrowFee;
-		if (escrowFeeCentiperun > 0) {
-			escrowFee = (totals.store * escrowFeeCentiperun) / 100;
-		}
-
-    uint affiliateFee;
-    if (affiliateFeeCentiperun > 0) {
-      affiliateFee = (totals.store * affiliateFeeCentiperun) / 100;
+    uint escrowBaseTerawei;
+    if (escrowFeeTerabase > 0) {
+      escrowBaseTerawei = ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI'));
     }
 
-		totals.subTotal = totals.store + escrowBase + escrowFee + affiliateFee;
+    uint escrowFeeTerawei;
+    if (escrowFeeTerabase > 0) {
+      escrowFeeTerawei = storeTerawei * escrowFeeCentiperun;
+    }
 
-		if (bufferCentiperun > 0) {
-			totals.total = (totals.subTotal * bufferCentiperun) / 100;
-		}
-	}
+    uint affiliateTerawei;
+    if (affiliateFeeCentiperun > 0) {
+      affiliateTerawei = storeTerawei * affiliateFeeCentiperun;
+    }
+
+    uint subTotalTerawei = storeTerawei + escrowBaseTerawei + escrowFeeTerawei + affiliateTerawei;
+
+    uint bufferTerawei;
+    if (bufferCentiperun > 0) {
+      bufferTerawei = subTotalTerawei * bufferCentiperun;
+    }
+
+    totals.store = storeTerawei / TERABASE;
+    totals.escrowBase = escrowBaseTerawei / TERABASE;
+    totals.escrowFee = escrowFeeTerawei / TERABASE;
+    totals.affiliate = affiliateTerawei / TERABASE;
+    totals.buffer = bufferTerawei / TERABASE;
+
+
+    totals.total = (subTotalTerawei + bufferTerawei) / TERABASE + bounty;
+  }
 
 	function getProductCount() constant returns (uint) { return products.length; }
 	function getProductIndex(uint _index) constant returns (uint) { return products[_index].index; }
 	function getProductTeraprice(uint _index) constant returns (uint) { return products[_index].teraprice; }
 	function getProductFileHash(uint _index) constant returns (bytes32) { return products[_index].fileHash; }
 	function getProductQuantity(uint _index) constant returns (uint) { return products[_index].quantity; }
+
+  function getStoreTotal() constant returns (uint) { return totals.store;}
+  function getEscrowBaseTotal() constant returns (uint) { return totals.escrowBase;}
+  function getEscrowFeeTotal() constant returns (uint) { return totals.escrowFee;}
+  function getAffiliateTotal() constant returns (uint) { return totals.affiliate;}
+  function getBufferTotal() constant returns (uint) { return totals.buffer;}
+  function getTotalTotal() constant returns (uint) { return totals.total;}
 
 	function addMessage(bytes32 fileHash) {
     address user = msg.sender;
@@ -252,7 +272,7 @@ contract Order{
 
 	function markAsShipped() {
 
-		if(status !=  initialized)
+		if(status != initialized)
 			throw;
 
     //TODO: check all cases in which a storeAddr could send this request
@@ -270,16 +290,15 @@ contract Order{
 
 	function finalize() {
 
-		if(status !=  shipped)
+		if(status != shipped)
 			throw;
 
 		if(msg.sender != buyer)
 			throw;
 
-		setPayouts();
+		computePayouts();
 
-		uint totalPayout = payouts.store + payouts.escrow + payouts.affiliate;
-    if(totalPayout < this.balance) {
+    if(this.balance < payouts.total) {
       throw;
     }
 
@@ -318,79 +337,72 @@ contract Order{
 		finalize();
 	}
 
-	 function setPayouts() private {
-	 	if(areAmountsSet)
-	 		throw;
+	 function computePayouts() {//private {
+    uint storeTerawei = ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI'));
 
-	 	received = this.balance;
+    uint escrowBaseTerawei;
+    if (escrowFeeTerabase > 0) {
+      escrowBaseTerawei = ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI'));
+    }
 
-    payouts.store = ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI')) / 1000000000000;
+    uint escrowFeeTerawei;
+    if (escrowFeeTerabase > 0) {
+      escrowFeeTerawei = storeTerawei * escrowFeeCentiperun;
+    }
 
-    uint escrowBase;
-		if (escrowFeeTerabase > 0) {
-			escrowBase = (ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI')) / 1000000000000);
-		}
-
-    uint escrowFee;
-		if (escrowFeeCentiperun > 0) {
-			escrowFee = (totals.store * escrowFeeCentiperun / 100);
-		}
-    payouts.escrow = escrowBase + escrowFee;
-
-    uint affiliateFee;
+    uint affiliateTerawei;
     if (affiliateFeeCentiperun > 0) {
-      affiliateFee = (totals.store * affiliateFeeCentiperun) / 100;
-    }
-    payouts.affiliate = affiliateFee;
-
-	 	areAmountsSet = true;
-	 }
-
-	 function release(bool isReleased, address addr, uint amount) private{
-
-	 	var reward = msg.gas + bounty;
-
-	 	if(isReleased)
-	 		throw;
-
-	 	if(reward > rewardMax)
-	 		throw;
-
-	 	if(reward > amount)
-	 		throw;
-
-	 	if(!msg.sender.send(reward))
-	 		throw;
-
-	 	if(!addr.send(amount - reward))
-	 		throw;
-
-	 }
-
-	function releaseBuyerAmount() {
-    if(!isStoreAmountReleased || !isEscrowAmountReleased || !isAffiliateAmountReleased){
-       throw;
+      affiliateTerawei = storeTerawei * affiliateFeeCentiperun;
     }
 
+    uint totalTerawei = storeTerawei + escrowBaseTerawei + escrowFeeTerawei + affiliateTerawei;
+
+    payouts.store = storeTerawei / TERABASE;
+    payouts.escrow = (escrowBaseTerawei + escrowFeeTerawei) / TERABASE;
+    payouts.affiliate = affiliateTerawei / TERABASE;
+    payouts.total = totalTerawei / TERABASE + bounty;
+	 }
+
+   function getStorePayout() constant returns (uint) { return payouts.store;}
+   function getEscrowPayout() constant returns (uint) { return payouts.escrow;}
+   function getAffiliatePayout() constant returns (uint) { return payouts.affiliate;}
+   function getTotalPayout() constant returns (uint) { return payouts.total;}
+
+	 function release(bool isReleased, address addr, uint amount) private {
+	 	if(bounty > amount)
+	 		bounty = amount / CENTIBASE;
+
+	 	if(!addr.send(amount - bounty))
+	 		throw;
+
+	 	if(!msg.sender.send(bounty))
+	 		throw;
+	 }
+
+	function releaseBuyerPayout() {
+    if(!isStoreAmountReleased || !isEscrowAmountReleased || !isAffiliateAmountReleased) throw;
 	 	suicide(buyer);
 	}
 
-	function releaseStoreAmount() {
-	 	release(isStoreAmountReleased,storeAddr,payouts.store);
-	 	isStoreAmountReleased = true;
-	}
+  function releaseStorePayout() {
+    if(isStoreAmountReleased) throw;
+    isStoreAmountReleased = true;
+    release(isStoreAmountReleased,storeAddr,payouts.store);
+  }
 
-	function releaseEscrowAmount() {
-	 	release(isEscrowAmountReleased,submarketAddr,payouts.escrow);
-	 	isEscrowAmountReleased = true;
-	}
+  function releaseEscrowAPayout() {
+    if(isEscrowAmountReleased) throw;
+    isEscrowAmountReleased = true;
+    release(isEscrowAmountReleased,submarketAddr,payouts.escrow);
+  }
 
-	function releaseAffiliateAmount() {
-	 	release(isAffiliateAmountReleased,affiliate,payouts.affiliate);
-	 	isAffiliateAmountReleased = true;
-	}
+  function releaseAffiliatePayout() {
+    if(isAffiliateAmountReleased) throw;
+    isAffiliateAmountReleased = true;
+    release(isAffiliateAmountReleased,affiliate,payouts.affiliate);
+  }
 
-	function getReceived() constant returns (uint) {
+  function getReceived() constant returns (uint) {
 		return this.balance;
 	}
 
