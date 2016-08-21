@@ -5,6 +5,8 @@
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
+const runSubmarketTests = require('./Submarket.js').runSubmarketTests
+const params = require('./testparams.js')
 
 before(() => {
   return chaithereum.promise
@@ -12,14 +14,12 @@ before(() => {
 
 
 describe('SubmarketReg', () => {
-
   let infosphere
   let aliasReg
   let orderReg
   let submarketReg
   let submarket
-
-  const fileHash = chaithereum.web3.sha3('file')
+  let submarketArgs = {}
 
   before(() => {
     return chaithereum.web3.Q.all([
@@ -61,59 +61,80 @@ describe('SubmarketReg', () => {
     ])
   })
 
-  it('should create a submarket', (done) => {
-
-    submarketReg.Registration({}).watch((e, result) => {
-      submarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(result.args.submarketAddr)
-      submarket.should.be.contract
-      done(e)
-    })
-
-    submarketReg.create.q(
-      chaithereum.account,
+  it('should create a submarket', () => {
+    return submarketReg.create.q(
+      chaithereum.accounts[2],
       true,
-      'USD',
-      10,
-      5,
-      fileHash,
-      'submarketalias'
-    )
+      params.currency1,
+      params.escrowFeeTerabase1,
+      params.escrowFeeCentiperun1,
+      params.fileHash1,
+      params.alias2,
+      {from: chaithereum.accounts[2]}
+    ).should.eventually.be.fulfilled
   })
 
-  describe('Submarket', () => {
-
-    it('should have correct owner', () => {
-      return submarket.owner.q().should.eventually.equal(chaithereum.account)
-    })
-
-    it('should have correct infosphere address', () => {
-      return submarket.getInfosphereAddr.q().should.eventually.equal(infosphere.address)
-    })
-
-    it('should have correct infosphere values', () => {
-      return chaithereum.web3.Q.all([
-        infosphere.getBool.q(submarket.address, 'isOpen').should.eventually.equal(true),
-        submarket.getBytes32.q('currency').should.eventually.be.ascii('USD'),
-        submarket.getUint.q('escrowFeeTerabase').should.eventually.be.bignumber.equal(10),
-        submarket.getUint.q('escrowFeeCentiperun').should.eventually.be.bignumber.equal(5),
-        submarket.getBytes32.q('fileHash').should.eventually.be.equal(fileHash)
-      ])
-    })
-
-    it('should have correct alias', () => {
-      return chaithereum.web3.Q.all([
-        aliasReg.getAlias.q(submarket.address).should.eventually.be.ascii('submarketalias'),
-        aliasReg.getAddr.q('submarketalias').should.eventually.equal(submarket.address)
-      ])
-    })
-
+  it('should have updated the submarket counts correctly', () => {
+    return chaithereum.web3.Q.all([
+      submarketReg.getSubmarketCount.q().should.eventually.be.bignumber.equal(1),
+      submarketReg.getCreatedSubmarketCount.q(chaithereum.accounts[2])
+      .should.eventually.be.bignumber.equal(1),
+    ])
   })
 
+  it('should get the submarket address', () => {
+    return chaithereum.web3.Q.all([
+      submarketReg.getSubmarketAddr.q().should.eventually.be.address,
+      submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[2], 0)
+      .should.eventually.be.address,
+    ])
+  })
+
+  it('should make the submarket address a contract', (done) => {
+    return submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[2], 0)
+    .then((_submarketAddr) => {
+      submarketArgs.address = _submarketAddr
+      submarketArgs.contract = chaithereum.web3.eth
+      .contract(contracts.Submarket.abi).at(_submarketAddr)
+      submarket = submarketArgs.contract
+      submarketArgs.contract.should.be.contract
+      done()
+    })
+  })
+
+  it('should make the submarket owner the msg sender', () => {
+    return submarketArgs.contract.getOwner.q().should.eventually.be.address
+    .equal(chaithereum.accounts[2])
+  })
+
+  it('should make the submarket as registered', () => {
+    return submarketReg.isRegistered.q(submarketArgs.address).should.eventually.be.true
+  })
+
+  it('should have correct alias', () => {
+    return chaithereum.web3.Q.all([
+      aliasReg.getAlias.q(submarket.address).should.eventually.be.ascii(params.alias2),
+      aliasReg.getAddr.q(params.alias2).should.eventually.equal(submarket.address),
+    ])
+  })
+
+  it('should have correct owner', () => {
+    return submarket.owner.q().should.eventually.equal(chaithereum.accounts[2])
+  })
+
+  it('should have correct infosphere address', () => {
+    return submarket.getInfosphereAddr.q().should.eventually.equal(infosphere.address)
+  })
+
+  it('should have correct infosphere values', () => {
+    return chaithereum.web3.Q.all([
+      infosphere.getBool.q(submarket.address, 'isOpen').should.eventually.equal(true),
+      submarket.getBytes32.q('currency').should.eventually.be.ascii(params.currency1),
+      submarket.getUint.q('escrowFeeTerabase').should.eventually.be.bignumber.equal(params.escrowFeeTerabase1),
+      submarket.getUint.q('escrowFeeCentiperun').should.eventually.be.bignumber.equal(params.escrowFeeCentiperun1),
+      submarket.getBytes32.q('fileHash').should.eventually.be.ascii(params.fileHash1),
+    ])
+  })
+
+  runSubmarketTests(submarketArgs)
 })
-
-function toBytes32(thing) {
-  const hex = chaithereum.web3.toHex(thing)
-  const hexWithout0x = hex.replace('0x', '')
-  const missingZeros = '0'.repeat(66 - hex.Count)
-  return `0x${missingZeros}${hexWithout0x}`
-}

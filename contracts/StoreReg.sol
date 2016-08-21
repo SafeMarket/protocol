@@ -2,7 +2,6 @@ import "ownable.sol";
 import "Store.sol";
 
 contract StoreReg is ownable {
-
   mapping(address => address[]) created;
 	address[] registeredAddrsArray;
 	mapping(address=>bool) registeredAddrsMap;
@@ -66,7 +65,7 @@ contract StoreReg is ownable {
 		if(alias!='')
 			store.setAlias(alias);
 
-		store.setOwner(msg.sender);
+		store.setOwner(owner);
 
 		registeredAddrsArray.push(storeAddr);
 		registeredAddrsMap[storeAddr] = true;
@@ -95,5 +94,4 @@ contract StoreReg is ownable {
 	function isRegistered(address addr) constant returns(bool) {
 		return registeredAddrsMap[addr];
 	}
-
 }

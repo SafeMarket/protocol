@@ -11,14 +11,7 @@ before(() => {
   return chaithereum.promise
 })
 
-describe('store', () => {
-  let storeArgs = {}
-
-  createStore(storeArgs)
-  runStoreTests(storeArgs);
-})
-
-function createStore(args) {
+function createStore (args) {
   it('successfully instantiates with blank params', () => {
     return chaithereum.web3.eth.contract(contracts.Store.abi).new.q([], [], [], { data: contracts.Store.bytecode }).should.eventually.be.contract.then((_store) => {
       args.address = _store.address
@@ -179,18 +172,16 @@ function runStoreTests (args) {
       store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash7)
     ])
   })
-
-  //TODO: these methods
-  // it('should cancel an order', () => {
-  //
-  // })
-  //
-  // it('should mark an order as shipped', () => {
-  //
-  // })
 }
 
-function toBytes32(thing) {
+describe('store', () => {
+  let storeArgs = {}
+
+  createStore(storeArgs)
+  runStoreTests(storeArgs);
+})
+
+function toBytes32 (thing) {
   const hex = chaithereum.web3.toHex(thing)
   const hexWithout0x = hex.replace('0x', '')
   const missingZeros = '0'.repeat(66 - hex.length)

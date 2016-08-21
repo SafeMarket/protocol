@@ -39,12 +39,16 @@ let params = {
   quantity1:  5,
   quantity2:  7,
   address0:   '0x0000000000000000000000000000000000000000',
-  bufferCentiperun1:      10,
-  disputeSeconds1:        60,
+  escrowFeeTerabase1:      50000,
+  escrowFeeCentiperun1:    5,
+  bufferCentiperun1:       10,
+  disputeSeconds1:         5,
   minProductsTeratotal1:   1,
   minProductsTeratotal2:   100000000000000,
   affiliateFeeCentiperun1: 3,
-  bounty1: 100000,
+  bounty1:                 100000,
+  centiperun0:             0,
+  centiperun1:             1,
 }
 
 module.exports = params

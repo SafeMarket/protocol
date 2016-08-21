@@ -94,7 +94,8 @@ contract Order{
 	uint constant cancelled = 1;
 	uint constant shipped = 2;
 	uint constant disputed = 3;
-	uint constant finalized = 4;
+	uint constant resolved = 4;
+	uint constant finalized = 5;
 
 	uint public reviewBlockNumber;
 	uint8 public reviewStoreScore;
@@ -124,6 +125,7 @@ contract Order{
 
 		buyer = _buyer;
 		storeAddr = _storeAddr;
+    //TODO: check if submarket is in list of approved submarkets
 		submarketAddr = _submarketAddr;
 		affiliate = _affiliate;
     bounty = _bounty;
@@ -202,19 +204,19 @@ contract Order{
 
     uint escrowFeeTerawei;
     if (escrowFeeTerabase > 0) {
-      escrowFeeTerawei = storeTerawei * escrowFeeCentiperun;
+      escrowFeeTerawei = storeTerawei * escrowFeeCentiperun / CENTIBASE;
     }
 
     uint affiliateTerawei;
     if (affiliateFeeCentiperun > 0) {
-      affiliateTerawei = storeTerawei * affiliateFeeCentiperun;
+      affiliateTerawei = storeTerawei * affiliateFeeCentiperun / CENTIBASE;
     }
 
     uint subTotalTerawei = storeTerawei + escrowBaseTerawei + escrowFeeTerawei + affiliateTerawei;
 
     uint bufferTerawei;
     if (bufferCentiperun > 0) {
-      bufferTerawei = subTotalTerawei * bufferCentiperun;
+      bufferTerawei = subTotalTerawei * bufferCentiperun / CENTIBASE;
     }
 
     totals.store = storeTerawei / TERABASE;
@@ -271,7 +273,6 @@ contract Order{
 	}
 
 	function markAsShipped() {
-
 		if(status != initialized)
 			throw;
 
@@ -289,24 +290,25 @@ contract Order{
 	}
 
 	function finalize() {
+    //TODO: write tests for paths through finalizing after ship and dispute timeout
+  	if((status==shipped && now - shippedAt > disputeSeconds) || (status==disputed && now - disputedAt > disputeSeconds)) {
+  		computePayoutsWithTeratotal(this.balance);
+  		addUpdate(finalized);
+      return;
+    }
 
-		if(status != shipped)
-			throw;
+  	if(status != shipped && status != resolved) throw;
 
-		if(msg.sender != buyer)
-			throw;
+		if(msg.sender != buyer) throw;
 
 		computePayouts();
 
-    if(this.balance < payouts.total) {
-      throw;
-    }
+    if(this.balance < payouts.total) throw;
 
 		addUpdate(finalized);
 	}
 
 	function dispute() {
-
 		if(msg.sender != buyer)
 			throw;
 
@@ -324,6 +326,7 @@ contract Order{
 
 	}
 
+  //TODO: add buyerAmountCentiperun to the payout calculation
 	function resolve(uint _buyerAmountCentiperun) {
 
 		if(status!=disputed)
@@ -334,33 +337,39 @@ contract Order{
 
 		buyerAmountCentiperun = _buyerAmountCentiperun;
 
-		finalize();
+    computePayouts();
+
+    addUpdate(resolved);
 	}
 
-	 function computePayouts() {//private {
-    uint storeTerawei = ticker.convert(storeTeratotal, storeCurrency, bytes4('WEI'));
+  function computePayoutsWithTeratotal(uint storePayoutTeratotal) private {
+   uint storeTerawei = ticker.convert(storePayoutTeratotal, storeCurrency, bytes4('WEI'));
 
-    uint escrowBaseTerawei;
-    if (escrowFeeTerabase > 0) {
-      escrowBaseTerawei = ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI'));
-    }
+   uint escrowBaseTerawei;
+   if (escrowFeeTerabase > 0) {
+     escrowBaseTerawei = ticker.convert(escrowFeeTerabase, submarketCurrency, bytes4('WEI'));
+   }
 
-    uint escrowFeeTerawei;
-    if (escrowFeeTerabase > 0) {
-      escrowFeeTerawei = storeTerawei * escrowFeeCentiperun;
-    }
+   uint escrowFeeTerawei;
+   if (escrowFeeTerabase > 0) {
+     escrowFeeTerawei = storeTerawei * escrowFeeCentiperun / CENTIBASE;
+   }
 
-    uint affiliateTerawei;
-    if (affiliateFeeCentiperun > 0) {
-      affiliateTerawei = storeTerawei * affiliateFeeCentiperun;
-    }
+   uint affiliateTerawei;
+   if (affiliateFeeCentiperun > 0) {
+     affiliateTerawei = storeTerawei * affiliateFeeCentiperun / CENTIBASE;
+   }
 
-    uint totalTerawei = storeTerawei + escrowBaseTerawei + escrowFeeTerawei + affiliateTerawei;
+   uint totalTerawei = storeTerawei + escrowBaseTerawei + escrowFeeTerawei + affiliateTerawei;
 
-    payouts.store = storeTerawei / TERABASE;
-    payouts.escrow = (escrowBaseTerawei + escrowFeeTerawei) / TERABASE;
-    payouts.affiliate = affiliateTerawei / TERABASE;
-    payouts.total = totalTerawei / TERABASE + bounty;
+   payouts.store = storeTerawei / TERABASE;
+   payouts.escrow = (escrowBaseTerawei + escrowFeeTerawei) / TERABASE;
+   payouts.affiliate = affiliateTerawei / TERABASE;
+   payouts.total = totalTerawei / TERABASE + bounty;
+  }
+
+	 function computePayouts() {
+     computePayoutsWithTeratotal(storeTeratotal);
 	 }
 
    function getStorePayout() constant returns (uint) { return payouts.store;}
@@ -368,14 +377,18 @@ contract Order{
    function getAffiliatePayout() constant returns (uint) { return payouts.affiliate;}
    function getTotalPayout() constant returns (uint) { return payouts.total;}
 
-	 function release(bool isReleased, address addr, uint amount) private {
-	 	if(bounty > amount)
-	 		bounty = amount / CENTIBASE;
+	 function release(address addr, uint amount) private {
+     if(status != finalized) throw;
 
-	 	if(!addr.send(amount - bounty))
+    uint reward = bounty;
+    if(reward >= amount / CENTIBASE)
+	 		reward = amount / CENTIBASE;
+
+    if(addr == address(0)) addr = buyer;
+	 	if(!addr.send(amount - reward))
 	 		throw;
 
-	 	if(!msg.sender.send(bounty))
+	 	if(!msg.sender.send(reward))
 	 		throw;
 	 }
 
@@ -387,19 +400,19 @@ contract Order{
   function releaseStorePayout() {
     if(isStoreAmountReleased) throw;
     isStoreAmountReleased = true;
-    release(isStoreAmountReleased,storeAddr,payouts.store);
+    release(storeAddr,payouts.store);
   }
 
   function releaseEscrowAPayout() {
     if(isEscrowAmountReleased) throw;
     isEscrowAmountReleased = true;
-    release(isEscrowAmountReleased,submarketAddr,payouts.escrow);
+    release(submarketAddr,payouts.escrow);
   }
 
   function releaseAffiliatePayout() {
     if(isAffiliateAmountReleased) throw;
     isAffiliateAmountReleased = true;
-    release(isAffiliateAmountReleased,affiliate,payouts.affiliate);
+    release(affiliate,payouts.affiliate);
   }
 
   function getReceived() constant returns (uint) {

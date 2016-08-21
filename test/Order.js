@@ -18,7 +18,7 @@ before(() => {
 function createTicker (tickerArgs) {
   it('successfully creates a new Ticker', () => {
     return chaithereum.web3.eth.contract(contracts.Ticker.abi).new
-    .q({ data: contracts.Ticker.bytecode })
+    .q({data: contracts.Ticker.bytecode, from: chaithereum.accounts[3]})
     .should.eventually.be.contract.then((_ticker) => {
       tickerArgs.address = _ticker.address
       tickerArgs.contract = _ticker
@@ -27,11 +27,81 @@ function createTicker (tickerArgs) {
 
   it('sets the ticker prices', () => {
     return chaithereum.web3.Q.all([
-      tickerArgs.contract.setPrice.q(params.currency0, params.currencyInWei0),
-      tickerArgs.contract.setPrice.q(params.currency1, params.currencyInWei1),
-      tickerArgs.contract.setPrice.q(params.currency2, params.currencyInWei2),
-      tickerArgs.contract.setPrice.q(params.currency3, params.currencyInWei3),
+      tickerArgs.contract.setPrice.q(params.currency0, params.currencyInWei0,
+        {from: chaithereum.accounts[3]}),
+      tickerArgs.contract.setPrice.q(params.currency1, params.currencyInWei1,
+        {from: chaithereum.accounts[3]}),
+      tickerArgs.contract.setPrice.q(params.currency2, params.currencyInWei2,
+        {from: chaithereum.accounts[3]}),
+      tickerArgs.contract.setPrice.q(params.currency3, params.currencyInWei3,
+        {from: chaithereum.accounts[3]}),
     ]).should.eventually.be.fulfilled
+  })
+}
+
+function createSubmarket (submarketArgs) {
+  let infosphere
+  let aliasReg
+  let orderReg
+  let submarketReg
+  let submarket
+
+  before(() => {
+    return chaithereum.web3.Q.all([
+      chaithereum.web3.eth.contract(contracts.Infosphere.abi).new.q({
+        data: contracts.Infosphere.bytecode
+      }).should.eventually.be.contract.then((_infosphere) => {
+        infosphere = _infosphere
+      }),
+      chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({
+        data: contracts.AliasReg.bytecode
+      }).should.eventually.be.contract.then((_aliasReg) => {
+        aliasReg = _aliasReg
+      }),
+      chaithereum.web3.eth.contract(contracts.OrderReg.abi).new.q({
+        data: contracts.OrderReg.bytecode
+      }).should.eventually.be.contract.then((_orderReg) => {
+        orderReg = _orderReg
+      })
+    ])
+  })
+
+  it('successfully instantiates', () => {
+    return chaithereum.web3.eth.contract(contracts.SubmarketReg.abi).new.q({ data: contracts.SubmarketReg.bytecode }).should.eventually.be.contract.then((_submarketReg) => {
+      submarketReg = _submarketReg
+    }).should.eventually.be.fulfilled
+  })
+
+  it('should set infosphere, alias reg, and order reg addr', () => {
+    return chaithereum.web3.Q.all([
+      submarketReg.setInfosphereAddr.q(infosphere.address).should.be.fulfilled,
+      submarketReg.setAliasRegAddr.q(aliasReg.address).should.be.fulfilled
+    ])
+  })
+
+  it('should create a submarket', () => {
+    return submarketReg.create.q(
+      chaithereum.accounts[2],
+      true,
+      params.currency1,
+      params.escrowFeeTerabase1,
+      params.escrowFeeCentiperun1,
+      params.fileHash1,
+      params.alias2,
+      {from: chaithereum.accounts[2]}
+    ).should.eventually.be.fulfilled
+  })
+
+  it('should make the submarket address a contract', (done) => {
+    return submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[2], 0)
+    .then((_submarketAddr) => {
+      submarketArgs.address = _submarketAddr
+      submarketArgs.contract = chaithereum.web3.eth
+      .contract(contracts.Submarket.abi).at(_submarketAddr)
+      submarket = submarketArgs.contract
+      submarketArgs.contract.should.be.contract
+      done()
+    })
   })
 }
 
@@ -77,14 +147,6 @@ function createStore (storeArgs) {
     ])
   })
 
-  it('should correctly retreive infosphere, alias reg, and order reg addr', () => {
-    return chaithereum.web3.Q.all([
-      storeReg.infosphereAddr.q().should.eventually.equal(infosphere.address),
-      storeReg.aliasRegAddr.q().should.eventually.equal(aliasReg.address),
-      storeReg.orderRegAddr.q().should.eventually.equal(orderReg.address),
-    ])
-  })
-
   it('successfully creates a new Store', () => {
     return storeReg.create.q(
       chaithereum.account,
@@ -104,13 +166,6 @@ function createStore (storeArgs) {
     ).should.be.fulfilled
   })
 
-  it('should get the store address', () => {
-    return chaithereum.web3.Q.all([
-      storeReg.getStoreAddr.q().should.eventually.be.address,
-      storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).should.eventually.be.address,
-    ])
-  })
-
   it('should make the store address a contract', (done) => {
     return storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).then((_storeAddr) => {
       storeArgs.address = _storeAddr
@@ -121,7 +176,7 @@ function createStore (storeArgs) {
   })
 }
 
-function createOrder (orderArgs, storeArgs, tickerArgs) {
+function createOrder (orderArgs, storeArgs, submarketArgs, tickerArgs) {
   describe('reseting the order to initial state', () => {
     let order
 
@@ -151,7 +206,7 @@ function createOrder (orderArgs, storeArgs, tickerArgs) {
       return order.create.q(
         chaithereum.accounts[1],
         storeArgs.address,
-        params.address0,
+        submarketArgs.address,
         params.address0,
         params.bounty1,
         [params.index0, params.index1],
@@ -164,7 +219,7 @@ function createOrder (orderArgs, storeArgs, tickerArgs) {
   })
 }
 
-function runCreateOrderTests (orderArgs, storeArgs, tickerArgs) {
+function runCreateOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
   let order
 
   it('successfully instantiates', (done) => {
@@ -310,7 +365,7 @@ function runCreateOrderTests (orderArgs, storeArgs, tickerArgs) {
   })
 }
 
-function runOrderTests (orderArgs, storeArgs, tickerArgs) {
+function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
   let order;
 
   it('gets the order from the arguments', () => {
@@ -354,7 +409,7 @@ function runOrderTests (orderArgs, storeArgs, tickerArgs) {
 
   describe('processing', () => {
 
-    createOrder(orderArgs, storeArgs, tickerArgs)
+    createOrder(orderArgs, storeArgs, submarketArgs, tickerArgs)
     context('when the order gets canceled', () =>{
       let order
       let value = Math.pow(10, 10);
@@ -388,7 +443,9 @@ function runOrderTests (orderArgs, storeArgs, tickerArgs) {
       })
     })
 
-    createOrder(orderArgs, storeArgs, tickerArgs)
+    let noSubmarketArgs = {}
+    noSubmarketArgs.address = params.address0
+    createOrder(orderArgs, storeArgs, noSubmarketArgs, tickerArgs)
     context('when the order gets shipped then finalized', () =>{
       let order;
       let outstandingBalance;
@@ -403,7 +460,6 @@ function runOrderTests (orderArgs, storeArgs, tickerArgs) {
           order.markAsShipped.q({from: chaithereum.accounts[4]}),
         ]).should.eventually.be.rejected
       })
-
 
       specify('the store cannot ship if payment is low', () => {
         return store.markAsShipped.q(order.address, {from: chaithereum.accounts[0]})
@@ -433,7 +489,6 @@ function runOrderTests (orderArgs, storeArgs, tickerArgs) {
         ]).should.eventually.be.fulfilled
       })
 
-
       specify('the contract should have the full payment', () => {
         return chaithereum.web3.eth.getBalance.q(order.address)
         .should.eventually.be.bignumber.equal(outstandingBalance)
@@ -457,12 +512,14 @@ function runOrderTests (orderArgs, storeArgs, tickerArgs) {
       })
 
       it('jacks the ticker prices', () => {
-        tickerArgs.contract.setPrice.q(params.currency1, params.currencyInWei2)
+        tickerArgs.contract.setPrice.q(params.currency1, params.currencyInWei2,
+          {from: chaithereum.accounts[3]})
         .should.eventually.be.fulfilled
       })
 
       specify('anyone can compute the payouts', () => {
-        return order.computePayouts.q({from: chaithereum.accounts[4]}).should.eventually.be.fulfilled
+        return order.computePayouts.q({from: chaithereum.accounts[4]})
+        .should.eventually.be.fulfilled
       })
 
       specify('the buyer did not send enough money', (done) => {
@@ -478,12 +535,15 @@ function runOrderTests (orderArgs, storeArgs, tickerArgs) {
       })
 
       specify('anyone can deposit money', () => {
-        return chaithereum.web3.eth.sendTransaction
-        .q({from: chaithereum.accounts[5], to: order.address, value: outstandingBalance, gas: 500000})
-        .should.eventually.be.fulfilled
+        return chaithereum.web3.eth.sendTransaction.q({
+          from:  chaithereum.accounts[5],
+          to:    order.address,
+          value: outstandingBalance,
+          gas:   500000,
+        }).should.eventually.be.fulfilled
       })
 
-      specify('non buyer cannot finalize the order', () => {
+      specify('non buyers cannot finalize the order', () => {
         return chaithereum.web3.Q.all([
           order.finalize.q({from: chaithereum.accounts[0]}),
           order.finalize.q({from: chaithereum.accounts[2]}),
@@ -517,16 +577,213 @@ function runOrderTests (orderArgs, storeArgs, tickerArgs) {
       })
 
     })
+
+    createOrder(orderArgs, storeArgs, submarketArgs, tickerArgs)
+    context('when the order gets shipped then gets disputed and resolved', () =>{
+      let order;
+      let outstandingBalance;
+      before(() => {
+        order = orderArgs.contract
+      })
+
+      specify('non store cannot ship the order', () => {
+        return chaithereum.web3.Q.all([
+          order.markAsShipped.q({from: chaithereum.accounts[0]}),
+          order.markAsShipped.q({from: chaithereum.accounts[1]}),
+          order.markAsShipped.q({from: chaithereum.accounts[4]}),
+        ]).should.eventually.be.rejected
+      })
+
+      specify('the store cannot ship if payment is low', () => {
+        return store.markAsShipped.q(order.address, {from: chaithereum.accounts[0]})
+        .should.eventually.be.rejected
+      })
+
+      specify('the buyer can get how much they owe', (done) => {
+        return order.getTotalTotal.q().should.eventually.be.bignumber.then((value) => {
+          outstandingBalance = value;
+          done();
+        })
+      })
+
+      specify('the buyer can make payments', () => {
+        let value = outstandingBalance.div(5);
+        return chaithereum.web3.Q.all([
+          chaithereum.web3.eth.sendTransaction
+          .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+          chaithereum.web3.eth.sendTransaction
+          .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+          chaithereum.web3.eth.sendTransaction
+          .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+          chaithereum.web3.eth.sendTransaction
+          .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+          chaithereum.web3.eth.sendTransaction
+          .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+        ]).should.eventually.be.fulfilled
+      })
+
+      specify('the contract should have the full payment', () => {
+        return chaithereum.web3.eth.getBalance.q(order.address)
+        .should.eventually.be.bignumber.equal(outstandingBalance)
+      })
+
+      specify('the buyer cannnot finalize early', () => {
+        return order.finalize.q({from: chaithereum.accounts[1]})
+        .should.eventually.be.rejected
+      })
+
+      specify('the store can ship the order', () => {
+        return store.markAsShipped.q(order.address, {from: chaithereum.accounts[0]})
+        .should.eventually.be.fulfilled
+      })
+
+      specify('no one can cancel the order', () => {
+        return chaithereum.web3.Q.all([
+          order.cancel.q({from: chaithereum.accounts[0]}),
+          order.cancel.q({from: chaithereum.accounts[1]}),
+        ]).should.eventually.be.rejected
+      })
+
+      specify('non buyers cannot dispute the order', () => {
+        return chaithereum.web3.Q.all([
+          order.dispute.q({from: chaithereum.accounts[0]}),
+          order.dispute.q({from: chaithereum.accounts[2]}),
+          order.dispute.q({from: chaithereum.accounts[4]}),
+        ]).should.eventually.be.rejected
+      })
+
+      specify('the buyer can dispute', () => {
+        return order.dispute.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+      })
+
+      specify('those that aren\'t the submarket can\'t resolve the order', () => {
+        return chaithereum.web3.Q.all([
+          order.resolve.q(0, {from: chaithereum.accounts[0]}),
+          // order.resolve.q(1, {from: chaithereum.accounts[1]}),
+          // order.resolve.q(1, {from: chaithereum.accounts[2]}),
+          // order.resolve.q(0.5, {from: chaithereum.accounts[4]}),
+        ]).should.eventually.be.rejected
+      })
+
+      specify('the buyer cannot finalize yet', () => {
+        return order.finalize.q({from: chaithereum.accounts[1]}).should.eventually.be.rejected
+      })
+
+      specify('those submarket should resolve the order', () => {
+        return submarketArgs.contract.resolve
+        .q(order.address, 5, {from: chaithereum.accounts[2]})
+        .should.eventually.be.fulfilled
+      })
+
+      specify('the buyer can finalize', () => {
+        return order.finalize.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+      })
+
+      specify('the contract won\'t release buyer funds yet', () => {
+        return order.releaseBuyerPayout.q().should.eventually.be.rejected
+      })
+
+      specify('the contract should release everyone else\'s', () => {
+        return chaithereum.web3.Q.all([
+          order.releaseStorePayout.q(),
+          order.releaseEscrowAPayout.q(),
+          order.releaseAffiliatePayout.q(),
+        ]).should.eventually.be.fulfilled
+      })
+
+      specify('the contract releases buyer funds', () => {
+        return order.releaseBuyerPayout.q().should.eventually.be.fulfilled
+      })
+
+      specify('the contract should have nothing', () => {
+        return chaithereum.web3.eth.getBalance.q(order.address)
+        .should.eventually.be.bignumber.equal(0)
+      })
+
+    })
+
+    createOrder(orderArgs, storeArgs, submarketArgs, tickerArgs)
+    context('when the order gets shipped then the buyer times out', () =>{
+      let order;
+      let outstandingBalance;
+      before(() => {
+        order = orderArgs.contract
+      })
+
+      specify('the buyer can get how much they owe', (done) => {
+        return order.getTotalTotal.q().should.eventually.be.bignumber.then((value) => {
+          outstandingBalance = value;
+          done();
+        })
+      })
+
+      specify('the buyer can make payments', () => {
+        return chaithereum.web3.eth.sendTransaction.q({
+          from:  chaithereum.accounts[1],
+          to:    order.address,
+          value: outstandingBalance,
+          gas:   500000,
+        }).should.eventually.be.fulfilled
+      })
+
+      specify('the contract should have the full payment', () => {
+        return chaithereum.web3.eth.getBalance.q(order.address)
+        .should.eventually.be.bignumber.equal(outstandingBalance)
+      })
+
+      specify('the buyer cannnot finalize early', () => {
+        return order.finalize.q({from: chaithereum.accounts[1]})
+        .should.eventually.be.rejected
+      })
+
+      specify('the store can ship the order', () => {
+        return store.markAsShipped.q(order.address, {from: chaithereum.accounts[0]})
+        .should.eventually.be.fulfilled
+      })
+
+      it('waits for the dispute timeout', function (done) {
+        this.timeout((params.disputeSeconds1 + 1) * 1001)
+        setTimeout(done, (params.disputeSeconds1 + 1) * 1000);
+      });
+
+      specify('anyone can finalize', () => {
+        return order.finalize.q({from: chaithereum.accounts[4]}).should.eventually.be.fulfilled
+      })
+
+      specify('the contract won\'t release buyer funds yet', () => {
+        return order.releaseBuyerPayout.q().should.eventually.be.rejected
+      })
+
+      specify('the contract should release everyone else\'s', () => {
+        return chaithereum.web3.Q.all([
+          order.releaseStorePayout.q(),
+          // order.releaseEscrowAPayout.q(),
+          // order.releaseAffiliatePayout.q(),
+        ]).should.eventually.be.fulfilled
+      })
+
+      specify('the contract releases buyer funds', () => {
+        return order.releaseBuyerPayout.q().should.eventually.be.fulfilled
+      })
+
+      specify('the contract should have nothing', () => {
+        return chaithereum.web3.eth.getBalance.q(order.address)
+        .should.eventually.be.bignumber.equal(0)
+      })
+
+    })
   })
 }
 
 describe('order', () => {
   let tickerArgs = {}
   let storeArgs = {}
+  let submarketArgs = {}
   let orderArgs = {}
 
   createStore(storeArgs)
+  createSubmarket(submarketArgs)
   createTicker(tickerArgs)
-  runCreateOrderTests(orderArgs, storeArgs, tickerArgs)
-  runOrderTests(orderArgs, storeArgs, tickerArgs)
+  runCreateOrderTests(orderArgs, storeArgs, submarketArgs, tickerArgs)
+  runOrderTests(orderArgs, storeArgs, submarketArgs, tickerArgs)
 })
