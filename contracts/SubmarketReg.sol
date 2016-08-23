@@ -19,14 +19,6 @@ contract SubmarketReg is ownable {
 		aliasRegAddr = _aliasRegAddr;
 	}
 
-	event Registration(address submarketAddr);
-
-	bytes[] calls;
-
-	function pushCall(bytes call) {
-		calls.push(call);
-	}
-
 	function create(address owner, bool isOpen, bytes32 currency, uint escrowFeeTerabase, uint escrowFeeCentiperun, bytes32 fileHash, bytes32 alias) {
 
 		var submarket = new Submarket();
@@ -49,9 +41,7 @@ contract SubmarketReg is ownable {
 		registeredAddrsArray.push(submarketAddr);
 		registeredAddrsMap[submarketAddr] = true;
 
-    Registration(submarketAddr);
-
-    created[msg.sender].push(submarketAddr);
+    created[owner].push(submarketAddr);
   }
 
   function getSubmarketCount() constant returns(uint) {
@@ -69,7 +59,6 @@ contract SubmarketReg is ownable {
   function getCreatedSubmarketAddr(address creator, uint index) constant returns(address) {
     return created[creator][index];
   }
-
 
   function isRegistered(address addr) constant returns(bool) {
     return registeredAddrsMap[addr];

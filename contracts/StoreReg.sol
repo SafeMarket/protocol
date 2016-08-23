@@ -25,8 +25,6 @@ contract StoreReg is ownable {
 		orderRegAddr = _orderRegAddr;
 	}
 
-	event Registration(address storeAddr);
-
 	function create(
 		address owner,
 		bool isOpen,
@@ -70,9 +68,7 @@ contract StoreReg is ownable {
 		registeredAddrsArray.push(storeAddr);
 		registeredAddrsMap[storeAddr] = true;
 
-		Registration(storeAddr);
-
-    created[msg.sender].push(storeAddr);
+    created[owner].push(storeAddr);
 	}
 
 	function getStoreCount() constant returns(uint) {

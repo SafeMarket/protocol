@@ -24,20 +24,15 @@ describe('SubmarketReg', () => {
   before(() => {
     return chaithereum.web3.Q.all([
       chaithereum.web3.eth.contract(contracts.Infosphere.abi).new.q({
-        data: contracts.Infosphere.bytecode
+        data: contracts.Infosphere.bytecode,
       }).should.eventually.be.contract.then((_infosphere) => {
         infosphere = _infosphere
       }),
       chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({
-        data: contracts.AliasReg.bytecode
+        data: contracts.AliasReg.bytecode,
       }).should.eventually.be.contract.then((_aliasReg) => {
         aliasReg = _aliasReg
       }),
-      chaithereum.web3.eth.contract(contracts.OrderReg.abi).new.q({
-        data: contracts.OrderReg.bytecode
-      }).should.eventually.be.contract.then((_orderReg) => {
-        orderReg = _orderReg
-      })
     ])
   })
 
@@ -70,7 +65,7 @@ describe('SubmarketReg', () => {
       params.escrowFeeCentiperun1,
       params.fileHash1,
       params.alias2,
-      {from: chaithereum.accounts[2]}
+      {from: chaithereum.accounts[5]}
     ).should.eventually.be.fulfilled
   })
 

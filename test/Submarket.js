@@ -47,7 +47,7 @@ describe('submarket', () => {
   runSubmarketTests(submarketArgs);
 })
 
-function toBytes32(thing) {
+function toBytes32 (thing) {
   const hex = chaithereum.web3.toHex(thing)
   const hexWithout0x = hex.replace('0x', '')
   const missingZeros = '0'.repeat(66 - hex.length)
