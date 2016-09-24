@@ -49,6 +49,18 @@ let params = {
   bounty1:                 1000,
   centiperun0:             0,
   centiperun1:             1,
+  status: {
+    initialized: 0,
+    cancelled:   1,
+    shipped:     2,
+    disputed:    3,
+    resolved:    4,
+    finalized:   5,
+  },
+  score0: 0,
+  score1: 1,
+  score2: 2,
+  score6: 6,
 }
 
 module.exports = params

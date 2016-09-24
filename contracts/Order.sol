@@ -97,11 +97,6 @@ contract Order{
 	uint constant resolved = 4;
 	uint constant finalized = 5;
 
-	uint public reviewBlockNumber;
-	uint8 public reviewStoreScore;
-	uint8 public reviewSubmarketScore;
-	bytes32 public reviewFileHash;
-
 	function create(
 		address _buyer
 		,address _storeAddr
@@ -447,40 +442,4 @@ contract Order{
 	function getUpdateStatus(uint index) constant returns(uint) {
 		return updates[index].status;
 	}
-
-	function setReview(uint8 storeScore, uint8 submarketScore, bytes32 fileHash) {
-    //TODO: probably shouldn't use tx.origin here
-		if(msg.sender != buyer && tx.origin != buyer)
-			throw;
-
-    //TODO: magic numbers are bad, 5 should be a constant
-		if(storeScore > 5 || submarketScore > 5)
-			throw;
-
-    //TODO: change this logic so it just ignores the parameter instead of throwing
-		if(submarketAddr == address(0) && submarketScore != 0)
-			throw;
-
-		reviewBlockNumber = block.number;
-		reviewStoreScore = storeScore;
-		reviewSubmarketScore = submarketScore;
-		reviewFileHash = fileHash;
-	}
-
-  function getReviewBlockNumber() constant returns(uint) {
-    return reviewBlockNumber;
-  }
-
-  function getReviewStoreScore() constant returns(uint8) {
-    return reviewStoreScore;
-  }
-
-  function getReviewSubmarketScore() constant returns(uint8) {
-    return reviewSubmarketScore;
-  }
-
-  function getReviewFileHash() constant returns(bytes32) {
-    return reviewFileHash;
-  }
-
 }

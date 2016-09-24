@@ -22,8 +22,18 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
   }
 
   Product[] public products;
-  Transport[] transports;
+  Transport[] public transports;
 
+  struct Review {
+    uint blockNumber;
+    address sender;
+    uint8 score;
+    bytes32 fileHash;
+  }
+
+  mapping(address => bool) public verfifiedBuyers;
+  mapping(address => uint) public reviewIndices;
+  Review[] public reviews;
 
   function Store(bytes32[] productParams, bytes32[] transportParams, bytes32[] _approvedAliases) {
     //TODO: solidity has been around for awhile, maybe there is a better way to do this
@@ -170,6 +180,50 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
       uint quantity = order.getProductQuantity(i);
       depleteProductUnits(index, quantity);
     }
-		order.markAsShipped();
-	}
+    order.markAsShipped();
+
+    verfifiedBuyers[Order(orderAddr)] = true;
+  }
+
+  function addReview(uint8 score, bytes32 fileHash) {
+    if(verfifiedBuyers[msg.sender])
+    throw;
+
+    //TODO: magic numbers are bad, 5 should be a constant
+    if(score < 0 || score > 5)
+    throw;
+
+    Review memory review;
+    if(reviewIndices[msg.sender] == 0) {
+      reviewIndices[msg.sender] = reviews.length;
+      reviews.length = reviews.length+1;
+    }
+
+    review.blockNumber = block.number;
+    review.score = score;
+    review.fileHash = fileHash;
+    review.sender = msg.sender;
+
+    reviews[reviewIndices[msg.sender]] = review;
+  }
+
+  function getReviewsCount() constant returns(uint) {
+    return reviews.length;
+  }
+
+  function getReviewBlockNumber(uint index) constant returns(uint) {
+    return reviews[index].blockNumber;
+  }
+
+  function getReviewSender(uint index) constant returns(address) {
+    return reviews[index].sender;
+  }
+
+  function getReviewScore(uint index) constant returns(uint8) {
+    return reviews[index].score;
+  }
+
+  function getReviewFileHash(uint index) constant returns(bytes32) {
+    return reviews[index].fileHash;
+  }
 }
