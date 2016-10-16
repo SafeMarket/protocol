@@ -69,6 +69,10 @@ describe('SubmarketReg', () => {
     ).should.eventually.be.fulfilled
   })
 
+  it('should have triggered Registration event', () => {
+    return submarketReg.Registration({}, { fromBlock: 'latest', toBlock: 'latest' }).q().should.eventually.have.length(1)
+  })
+
   it('should have updated the submarket counts correctly', () => {
     return chaithereum.web3.Q.all([
       submarketReg.getSubmarketCount.q().should.eventually.be.bignumber.equal(1),

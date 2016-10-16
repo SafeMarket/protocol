@@ -9,6 +9,8 @@ contract SubmarketReg is ownable {
 	address public infosphereAddr;
 	address public aliasRegAddr;
 
+  event Registration(address submarketAddr);
+
 	function setInfosphereAddr(address _infosphereAddr) {
 		requireOwnership();
 		infosphereAddr = _infosphereAddr;
@@ -42,6 +44,8 @@ contract SubmarketReg is ownable {
 		registeredAddrsMap[submarketAddr] = true;
 
     created[owner].push(submarketAddr);
+
+    Registration(submarketAddr);
   }
 
   function getSubmarketCount() constant returns(uint) {

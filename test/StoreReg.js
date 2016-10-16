@@ -80,6 +80,10 @@ describe('StoreReg', () => {
     ).should.be.fulfilled
   })
 
+  it('should have triggered Registration event', () => {
+    return storeReg.Registration({}, { fromBlock: 'latest', toBlock: 'latest' }).q().should.eventually.have.length(1)
+  })
+
   it('should have updated the store counts correctly', () => {
     return chaithereum.web3.Q.all([
       storeReg.getStoreCount.q().should.eventually.be.bignumber.equal(1),

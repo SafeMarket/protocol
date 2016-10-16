@@ -10,6 +10,8 @@ contract StoreReg is ownable {
 	address public aliasRegAddr;
 	address public orderRegAddr;
 
+	event Registration(address storeAddr);
+
 	function setInfosphereAddr(address _infosphereAddr) {
 		requireOwnership();
 		infosphereAddr = _infosphereAddr;
@@ -69,6 +71,8 @@ contract StoreReg is ownable {
 		registeredAddrsMap[storeAddr] = true;
 
     created[owner].push(storeAddr);
+
+    Registration(storeAddr);
 	}
 
 	function getStoreCount() constant returns(uint) {
