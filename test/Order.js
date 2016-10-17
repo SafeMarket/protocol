@@ -379,7 +379,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
   describe('state', () => {
     it('should have the correct products', () => {
       return chaithereum.web3.Q.all([
-        order.getProductCount.q().should.eventually.be.bignumber.equal(2),
+        order.getProductsLength.q().should.eventually.be.bignumber.equal(2),
         order.getProductIndex.q(0).should.eventually.be.bignumber.equal(params.index0),
         order.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
         order.getProductFileHash.q(0).should.eventually.be.ascii(params.fileHash1),
@@ -388,7 +388,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         order.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
         order.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
         order.getProductQuantity.q(1).should.eventually.be.bignumber.equal(params.quantity2),
-      ])
+      ]).should.eventually.be.fulfilled
     })
 
     it('should have the initial status', () => {
@@ -507,7 +507,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
           it('should have updated the status correctly', () => {
             chaithereum.web3.Q.all([
-              order.getUpdatesCount.q().should.eventually.be.bignumber.equal(1),
+              order.getUpdatesLength.q().should.eventually.be.bignumber.equal(1),
               order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber1),
               order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
               order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.shipped),
@@ -527,7 +527,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
               order.finalize.q({from: chaithereum.accounts[2]}).should.eventually.be.rejected,
               order.finalize.q({from: chaithereum.accounts[3]}).should.eventually.be.rejected,
               order.finalize.q({from: chaithereum.accounts[4]}).should.eventually.be.rejected,
-            ])
+            ]).should.eventually.be.fulfilled
           })
         })
       }
@@ -578,7 +578,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(2),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
@@ -606,7 +606,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(2),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
@@ -669,7 +669,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(2),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
@@ -698,7 +698,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(2),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.disputed),
@@ -726,7 +726,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(3),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(3),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber3),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.resolved),
@@ -739,7 +739,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(4),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(4),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber4),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
@@ -766,7 +766,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(2),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.disputed),
@@ -792,7 +792,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
-            order.getUpdatesCount.q().should.eventually.be.bignumber.equal(3),
+            order.getUpdatesLength.q().should.eventually.be.bignumber.equal(3),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber3),
             order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
@@ -832,7 +832,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
     it('should have added the messages correctly', () => {
       chaithereum.web3.Q.all([
-        order.getMessagesCount.q().should.eventually.be.bignumber.equal(2),
+        order.getMessagesLength.q().should.eventually.be.bignumber.equal(2),
         order.getMessageBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber1),
         order.getMessageBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
         order.getMessageSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
@@ -896,7 +896,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
     it('should have added the reviews correctly', () => {
       chaithereum.web3.Q.all([
-        store.getReviewsCount.q().should.eventually.be.bignumber.equal(2),
+        store.getReviewsLength.q().should.eventually.be.bignumber.equal(2),
         store.getReviewBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber1),
         store.getReviewBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
         store.getReviewScore.q(0).should.eventually.be.bignumber.equal(params.score1),
@@ -962,7 +962,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
     it('should have added the reviews correctly', () => {
       chaithereum.web3.Q.all([
-        submarket.getReviewsCount.q().should.eventually.be.bignumber.equal(2),
+        submarket.getReviewsLength.q().should.eventually.be.bignumber.equal(2),
         submarket.getReviewBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber1),
         submarket.getReviewBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
         submarket.getReviewScore.q(0).should.eventually.be.bignumber.equal(params.score1),

@@ -223,7 +223,7 @@ contract Order{
     totals.total = (subTotalTerawei + bufferTerawei) / TERABASE + bounty;
   }
 
-	function getProductCount() constant returns (uint) { return products.length; }
+	function getProductsLength() constant returns (uint) { return products.length; }
 	function getProductIndex(uint _index) constant returns (uint) { return products[_index].index; }
 	function getProductTeraprice(uint _index) constant returns (uint) { return products[_index].teraprice; }
 	function getProductFileHash(uint _index) constant returns (bytes32) { return products[_index].fileHash; }
@@ -411,7 +411,7 @@ contract Order{
 		return this.balance;
 	}
 
-	function getMessagesCount() constant returns(uint) {
+	function getMessagesLength() constant returns(uint) {
 		return messages.length;
 	}
 
@@ -427,7 +427,7 @@ contract Order{
 		return messages[index].fileHash;
 	}
 
-	function getUpdatesCount() constant returns(uint) {
+	function getUpdatesLength() constant returns(uint) {
 		return updates.length;
 	}
 

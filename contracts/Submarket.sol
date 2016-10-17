@@ -46,7 +46,7 @@ contract Submarket is forumable, audible, infosphered, aliasable {
     reviews[reviewIndices[msg.sender]] = review;
   }
 
-  function getReviewsCount() constant returns(uint) {
+  function getReviewsLength() constant returns(uint) {
     return reviews.length;
   }
 

@@ -38,7 +38,7 @@ describe('StoreReg', () => {
       }).should.eventually.be.contract.then((_orderReg) => {
         orderReg = _orderReg
       })
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('successfully instantiates', () => {
@@ -52,7 +52,7 @@ describe('StoreReg', () => {
       storeReg.setInfosphereAddr.q(infosphere.address).should.be.fulfilled,
       storeReg.setAliasRegAddr.q(aliasReg.address).should.be.fulfilled,
       storeReg.setOrderRegAddr.q(orderReg.address).should.be.fulfilled
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should correctly retreive infosphere, alias reg, and order reg addr', () => {
@@ -60,7 +60,7 @@ describe('StoreReg', () => {
       storeReg.infosphereAddr.q().should.eventually.equal(infosphere.address),
       storeReg.aliasRegAddr.q().should.eventually.equal(aliasReg.address),
       storeReg.orderRegAddr.q().should.eventually.equal(orderReg.address)
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should create a store', () => {
@@ -86,16 +86,16 @@ describe('StoreReg', () => {
 
   it('should have updated the store counts correctly', () => {
     return chaithereum.web3.Q.all([
-      storeReg.getStoreCount.q().should.eventually.be.bignumber.equal(1),
-      storeReg.getCreatedStoreCount.q(chaithereum.account).should.eventually.be.bignumber.equal(1),
-    ])
+      storeReg.getStoresLength.q().should.eventually.be.bignumber.equal(1),
+      storeReg.getCreatedStoresLength.q(chaithereum.account).should.eventually.be.bignumber.equal(1),
+    ]).should.eventually.be.fulfilled
   })
 
   it('should get the store address', () => {
     return chaithereum.web3.Q.all([
       storeReg.getStoreAddr.q().should.eventually.be.address,
       storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).should.eventually.be.address,
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should make the store address a contract', (done) => {

@@ -84,7 +84,7 @@ contract OrderReg is ownable{
 		return registeredAddrsMap[addr];
 	}
 
-	function getAddrsCount() constant returns(uint) {
+	function getAddrsLength() constant returns(uint) {
 		return registeredAddrsArray.length;
 	}
 
@@ -92,7 +92,7 @@ contract OrderReg is ownable{
 		return registeredAddrsArray[index];
 	}
 
-	function getAddrsByStoreAddrCount(address storeAddr) constant returns(uint) {
+	function getAddrsByStoreAddrLength(address storeAddr) constant returns(uint) {
 		return addrsByStoreAddr[storeAddr].length;
 	}
 
@@ -100,7 +100,7 @@ contract OrderReg is ownable{
 		return addrsByStoreAddr[storeAddr][index];
 	}
 
-	function getAddrsBySubmarketAddrCount(address storeAddr) constant returns(uint) {
+	function getAddrsBySubmarketAddrLength(address storeAddr) constant returns(uint) {
 		return addrsBySubmarketAddr[storeAddr].length;
 	}
 

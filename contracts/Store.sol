@@ -95,7 +95,7 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
 		transports[index].fileHash = fileHash;
 	}
 
-	function getProductCount() constant returns(uint){
+	function getProductsLength() constant returns(uint){
 		return products.length;
 	}
 
@@ -115,7 +115,7 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
 		return products[index].fileHash;
 	}
 
-	function getTransportCount() constant returns(uint){
+	function getTransportsLength() constant returns(uint){
 		return transports.length;
 	}
 
@@ -173,9 +173,9 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
 
     Order order = Order(orderAddr);
 
-    uint productCount = order.getProductCount();
+    uint productsLength = order.getProductsLength();
 
-    for(uint i = 0; i < productCount; i++) {
+    for(uint i = 0; i < productsLength; i++) {
       uint index = order.getProductIndex(i);
       uint quantity = order.getProductQuantity(i);
       depleteProductUnits(index, quantity);
@@ -207,7 +207,7 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
     reviews[reviewIndices[msg.sender]] = review;
   }
 
-  function getReviewsCount() constant returns(uint) {
+  function getReviewsLength() constant returns(uint) {
     return reviews.length;
   }
 

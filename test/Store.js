@@ -40,12 +40,12 @@ function runStoreTests (args) {
   })
 
   it('should have correct products length', () => {
-    return store.getProductCount.q().should.eventually.be.bignumber.equal(2)
+    return store.getProductsLength.q().should.eventually.be.bignumber.equal(2)
   })
 
   it('should have correct products', () => {
     return chaithereum.web3.Q.all([
-      store.getProductCount.q().should.eventually.be.bignumber.equal(2),
+      store.getProductsLength.q().should.eventually.be.bignumber.equal(2),
       store.getProductIsActive.q(0).should.eventually.be.true,
       store.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
       store.getProductUnits.q(0).should.eventually.be.bignumber.equal(params.units1),
@@ -55,12 +55,12 @@ function runStoreTests (args) {
       store.getProductUnits.q(1).should.eventually.be.bignumber.equal(params.units2),
       store.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
       store.getProductIsActive.q(2).should.eventually.be.rejected
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should have correct transports', () => {
     return chaithereum.web3.Q.all([
-      store.getTransportCount.q().should.eventually.be.bignumber.equal(2),
+      store.getTransportsLength.q().should.eventually.be.bignumber.equal(2),
       store.getTransportIsActive.q(0).should.eventually.be.true,
       store.getTransportTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice3),
       store.getTransportFileHash.q(0).should.eventually.be.ascii(params.fileHash3),
@@ -68,15 +68,15 @@ function runStoreTests (args) {
       store.getTransportTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
       store.getTransportFileHash.q(1).should.eventually.be.ascii(params.fileHash4),
       store.getProductIsActive.q(2).should.eventually.be.rejected
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should have correct approved aliases', () => {
     return chaithereum.web3.Q.all([
-      store.getApprovedAliasCount.q().should.eventually.be.bignumber.equal(2),
+      store.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2),
       store.getApprovedAlias.q(0).should.eventually.be.ascii(params.alias1),
       store.getApprovedAlias.q(1).should.eventually.be.ascii(params.alias2)
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should be able to add a product', () => {
@@ -85,12 +85,12 @@ function runStoreTests (args) {
 
   it('should have added the product correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getProductCount.q().should.eventually.be.bignumber.equal(3),
+      store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
       store.getProductIsActive.q(2).should.eventually.be.true,
       store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice5),
       store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units3),
       store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash5)
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should be able to add a transport', () => {
@@ -99,11 +99,11 @@ function runStoreTests (args) {
 
   it('should have added the transport correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getTransportCount.q().should.eventually.be.bignumber.equal(3),
+      store.getTransportsLength.q().should.eventually.be.bignumber.equal(3),
       store.getTransportIsActive.q(2).should.eventually.be.true,
       store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice6),
       store.getTransportFileHash.q(2).should.eventually.be.ascii(params.fileHash6)
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should set the product active state', () => {
@@ -119,17 +119,17 @@ function runStoreTests (args) {
   })
 
   it('should set the product fileHash', () => {
-    return store.setProductFileHash.q(2, params.fileHash7)
+    return store.setProductFileHash.q(2, params.fileHash7).should.eventually.be.fulfilled
   })
 
   it('should have updated the product correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getProductCount.q().should.eventually.be.bignumber.equal(3),
+      store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
       store.getProductIsActive.q(2).should.eventually.be.false,
       store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
       store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units5),
       store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash7)
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should set the transport active state', () => {
@@ -146,11 +146,11 @@ function runStoreTests (args) {
 
   it('should have updated the transport correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getTransportCount.q().should.eventually.be.bignumber.equal(3),
+      store.getTransportsLength.q().should.eventually.be.bignumber.equal(3),
       store.getTransportIsActive.q(2).should.eventually.be.false,
       store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice8),
       store.getTransportFileHash.q(2).should.eventually.be.ascii(params.fileHash8)
-    ])
+    ]).should.eventually.be.fulfilled
   })
 
   it('should restore product units', () => {
@@ -165,12 +165,12 @@ function runStoreTests (args) {
     let currentProductUnits = params.units5+params.units6-params.units1;
 
     return chaithereum.web3.Q.all([
-      store.getProductCount.q().should.eventually.be.bignumber.equal(3),
+      store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
       store.getProductIsActive.q(2).should.eventually.be.false,
       store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
       store.getProductUnits.q(2).should.eventually.be.bignumber.equal(currentProductUnits),
       store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash7)
-    ])
+    ]).should.eventually.be.fulfilled
   })
 }
 

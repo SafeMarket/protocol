@@ -26,7 +26,7 @@ contract approvesAliases is ownable{
     return isApprovedMap[alias];
   }
 
-  function getApprovedAliasCount() constant returns (uint) {
+  function getApprovedAliasesLength() constant returns (uint) {
     return approvedAliases.length;
   }
 

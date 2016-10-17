@@ -75,7 +75,7 @@ contract StoreReg is ownable {
     Registration(storeAddr);
 	}
 
-	function getStoreCount() constant returns(uint) {
+	function getStoresLength() constant returns(uint) {
 		return registeredAddrsArray.length;
 	}
 
@@ -83,7 +83,7 @@ contract StoreReg is ownable {
 		return registeredAddrsArray[index];
 	}
 
-  function getCreatedStoreCount(address creator) constant returns(uint) {
+  function getCreatedStoresLength(address creator) constant returns(uint) {
     return created[creator].length;
   }
 
