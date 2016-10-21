@@ -7,7 +7,8 @@ contract ownable {
 	}
 
 	function requireOwnership() {
-		if(msg.sender!=owner) throw;
+    //bad! remove tx.origin
+		if(msg.sender!=owner && tx.origin!=owner) throw;
 	}
 
 	function setOwner(address _owner) {
