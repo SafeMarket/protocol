@@ -21,9 +21,9 @@ contract SubmarketReg is ownable {
 		aliasRegAddr = _aliasRegAddr;
 	}
 
-	function create(address owner, bool isOpen, bytes32 currency, uint escrowFeeTerabase, uint escrowFeeCentiperun, bytes32 fileHash, bytes32 alias) {
+	function create(address owner, bool isOpen, bytes32 currency, uint escrowFeeTerabase, uint escrowFeeCentiperun, bytes32 fileHash, bytes32 alias, bytes32[] approvedAliases) {
 
-		var submarket = new Submarket();
+		var submarket = new Submarket(approvedAliases);
 		var submarketAddr = address(submarket);
 
 		submarket.setInfosphere(infosphereAddr);

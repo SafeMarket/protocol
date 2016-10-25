@@ -5,7 +5,11 @@ import "aliasable.sol";
 import "approvesAliases.sol";
 import "Order.sol";
 
-contract Submarket is forumable, audible, infosphered, aliasable {
+contract Submarket is forumable, audible, infosphered, aliasable, approvesAliases {
+
+  function Submarket(bytes32[] _approvedAliases){
+    approvedAliases = _approvedAliases;
+  }
 
   struct Review {
     uint blockNumber;

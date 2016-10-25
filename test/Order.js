@@ -88,6 +88,7 @@ function createSubmarket (submarketArgs) {
       params.escrowFeeCentiperun1,
       params.fileHash1,
       params.alias2,
+      [],
       {from: chaithereum.accounts[2]}
     ).should.eventually.be.fulfilled
   })

@@ -65,6 +65,7 @@ describe('SubmarketReg', () => {
       params.escrowFeeCentiperun1,
       params.fileHash1,
       params.alias2,
+      [params.alias1, params.alias2],
       {from: chaithereum.accounts[5]}
     ).should.eventually.be.fulfilled
   })
