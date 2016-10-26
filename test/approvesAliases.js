@@ -67,6 +67,14 @@ describe('approvesAliases', () => {
     return approvesAliases.getIsAliasApproved.q(params.alias1).should.eventually.be.false
   })
 
+  it('should approve alias1 (again)', () => {
+    return approvesAliases.approveAlias.q(params.alias1).should.be.fulfilled
+  })
+
+  it('should have 2 approved alias', () => {
+    return approvesAliases.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2)
+  })
+
   it('should disapprove alias1 (again)', () => {
     return approvesAliases.disapproveAlias.q(params.alias1).should.be.fulfilled
   })

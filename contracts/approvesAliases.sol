@@ -15,6 +15,7 @@ contract approvesAliases is ownable{
     }
 
     if(!isAddedMap[alias]) {
+      isAddedMap[alias] = true;
       approvedAliases.push(alias);
     }
 
