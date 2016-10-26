@@ -5,6 +5,7 @@ contract approvesAliases is ownable{
 
   bytes32[] approvedAliases;
   mapping (bytes32 => bool) isApprovedMap;
+  mapping (bytes32 => bool) isAddedMap;
 
   function approveAlias(bytes32 alias) {
     requireOwnership();
@@ -13,7 +14,10 @@ contract approvesAliases is ownable{
       return;
     }
 
-    approvedAliases.push(alias);
+    if(!isAddedMap[alias]) {
+      approvedAliases.push(alias);
+    }
+
     isApprovedMap[alias] = true;
   }
 
