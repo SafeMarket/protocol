@@ -7,8 +7,8 @@ import "Order.sol";
 
 contract Submarket is forumable, audible, infosphered, aliasable, approvesAliases {
 
-  function Submarket(bytes32[] _approvedAliases){
-    approvedAliases = _approvedAliases;
+  function Submarket(bytes32[] approvedAliases){
+    approveAliases(approvedAliases);
   }
 
   struct Review {

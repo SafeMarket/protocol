@@ -3,39 +3,45 @@ import "ownable.sol";
 //or make it use AliasReg in some way
 contract approvesAliases is ownable{
 
-  bytes32[] approvedAliases;
-  mapping (bytes32 => bool) isApprovedMap;
-  mapping (bytes32 => bool) isAddedMap;
+  bytes32[] _approvedAliases;
+  mapping (bytes32 => bool) _isApprovedMap;
+  mapping (bytes32 => bool) _isAddedMap;
 
   function approveAlias(bytes32 alias) {
     requireOwnership();
 
-    if(isApprovedMap[alias]) {
+    if(_isApprovedMap[alias]) {
       return;
     }
 
-    if(!isAddedMap[alias]) {
-      isAddedMap[alias] = true;
-      approvedAliases.push(alias);
+    if(!_isAddedMap[alias]) {
+      _isAddedMap[alias] = true;
+      _approvedAliases.push(alias);
     }
 
-    isApprovedMap[alias] = true;
+    _isApprovedMap[alias] = true;
+  }
+
+  function approveAliases(bytes32[] aliases) {
+    for (uint i = 0; i < aliases.length; i++) {
+      approveAlias(aliases[i]);
+    }
   }
 
   function disapproveAlias(bytes32 alias) {
     requireOwnership();
-    isApprovedMap[alias] = false;
+    _isApprovedMap[alias] = false;
   }
 
   function getIsAliasApproved(bytes32 alias) constant returns (bool) {
-    return isApprovedMap[alias];
+    return _isApprovedMap[alias];
   }
 
   function getApprovedAliasesLength() constant returns (uint) {
-    return approvedAliases.length;
+    return _approvedAliases.length;
   }
 
   function getApprovedAlias(uint index) constant returns (bytes32) {
-    return approvedAliases[index];
+    return _approvedAliases[index];
   }
 }

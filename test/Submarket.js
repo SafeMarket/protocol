@@ -37,13 +37,18 @@ function runSubmarketTests (args) {
     submarket = args.contract
   })
 
-  it('should have correct approved aliases', () => {
-    return chaithereum.web3.Q.all([
-      submarket.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2),
-      submarket.getApprovedAlias.q(0).should.eventually.be.ascii(params.alias1),
-      submarket.getApprovedAlias.q(1).should.eventually.be.ascii(params.alias2)
-    ]).should.eventually.be.fulfilled
+  it('should have 2 approved aliases', () => {
+    return submarket.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2)
   })
+
+  it('should have alias1 in approvedAliases', () => {
+    return submarket.getApprovedAlias.q(0).should.eventually.be.ascii(params.alias1)
+  })
+
+  it('should have alias2 in approvedAliases', () => {
+    return submarket.getApprovedAlias.q(1).should.eventually.be.ascii(params.alias2)
+  })
+  
 }
 
 describe('submarket', () => {

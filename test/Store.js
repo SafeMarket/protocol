@@ -71,12 +71,16 @@ function runStoreTests (args) {
     ]).should.eventually.be.fulfilled
   })
 
-  it('should have correct approved aliases', () => {
-    return chaithereum.web3.Q.all([
-      store.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2),
-      store.getApprovedAlias.q(0).should.eventually.be.ascii(params.alias1),
-      store.getApprovedAlias.q(1).should.eventually.be.ascii(params.alias2)
-    ]).should.eventually.be.fulfilled
+  it('should have 2 approved aliases', () => {
+    return store.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2)
+  })
+
+  it('should have alias1 in approvedAliases', () => {
+    return store.getApprovedAlias.q(0).should.eventually.be.ascii(params.alias1)
+  })
+
+  it('should have alias2 in approvedAliases', () => {
+    return store.getApprovedAlias.q(1).should.eventually.be.ascii(params.alias2)
   })
 
   it('should be able to add a product', () => {

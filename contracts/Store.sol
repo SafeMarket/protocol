@@ -35,7 +35,7 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
   mapping(address => uint) public reviewIndices;
   Review[] public reviews;
 
-  function Store(bytes32[] productParams, bytes32[] transportParams, bytes32[] _approvedAliases) {
+  function Store(bytes32[] productParams, bytes32[] transportParams, bytes32[] approvedAliases) {
     //TODO: solidity has been around for awhile, maybe there is a better way to do this
     //than a list of parameters
     for(uint i = 0; i< productParams.length; i=i+4) {
@@ -57,7 +57,7 @@ contract Store is forumable, audible, infosphered, aliasable, orderable, approve
 		  ));
 	  }
 
-		approvedAliases = _approvedAliases;
+		approveAliases(approvedAliases);
 	}
 
 	function setProductIsActive(uint index, bool isActive){
