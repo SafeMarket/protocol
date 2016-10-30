@@ -81,7 +81,8 @@ describe('StoreReg', () => {
   })
 
   it('should have triggered Registration event', () => {
-    return storeReg.Registration({}, { fromBlock: 'latest', toBlock: 'latest' }).q().should.eventually.have.length(1)
+    return storeReg.Registration({}, { fromBlock: 'latest', toBlock: 'latest' })
+    .q().should.eventually.have.length(1)
   })
 
   it('should have updated the store counts correctly', () => {

@@ -1,7 +1,6 @@
 /* eslint no-unused-expressions: "off" */
 /* globals describe, it, before, beforeEach */
 
-"use strict";
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
@@ -19,7 +18,7 @@ describe('Ticker', () => {
 
 })
 
-function createTicker(args) {
+function createTicker (args) {
   it('successfully instantiates', () => {
     return chaithereum.web3.eth.contract(contracts.Ticker.abi).new.q({ data: contracts.Ticker.bytecode })
     .should.eventually.be.contract.then((_ticker) => {
@@ -29,7 +28,7 @@ function createTicker(args) {
   })
 }
 
-function runTickerTests(args) {
+function runTickerTests (args) {
   let ticker
 
   it('gets the order from the arguments', () => {

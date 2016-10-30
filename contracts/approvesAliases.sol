@@ -19,10 +19,11 @@ contract approvesAliases is ownable{
 
   function disapproveAlias(bytes32 alias) {
     requireOwnership();
-    isApprovedMap[alias] = false;
+    delete isApprovedMap[alias];
+    //TODO: remove disapproved aliases from the array completely by shifting left
   }
 
-  function getIsAliasApproved(bytes32 alias) constant returns (bool) {
+  function isAliasApproved(bytes32 alias) constant returns (bool) {
     return isApprovedMap[alias];
   }
 

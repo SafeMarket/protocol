@@ -61,6 +61,8 @@ let params = {
   score1: 1,
   score2: 2,
   score6: 6,
+  id1: "johnnyappleseed",
+  data1: "adsfasdfadfsalsjdfaij asdf adsjfas;dfjajfa;jajefafafja;fjadsfja;jfae a eaj;eaejfaeafa"
 }
 
 module.exports = params

@@ -1,12 +1,11 @@
 import "forumable.sol";
-import "audible.sol";
 import "orderable.sol";
 import "infosphered.sol";
 import "aliasable.sol";
 import "approvesAliases.sol";
 import "Order.sol";
 
-contract Store is forumable, audible, infosphered, aliasable, orderable, approvesAliases {
+contract Store is forumable, infosphered, aliasable, orderable, approvesAliases {
 
   struct Product{
     bool isActive;

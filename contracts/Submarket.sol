@@ -1,11 +1,10 @@
 import "forumable.sol";
-import "audible.sol";
 import "infosphered.sol";
 import "aliasable.sol";
 import "approvesAliases.sol";
 import "Order.sol";
 
-contract Submarket is forumable, audible, infosphered, aliasable {
+contract Submarket is forumable, infosphered, aliasable {
 
   struct Review {
     uint blockNumber;

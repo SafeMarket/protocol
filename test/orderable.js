@@ -5,6 +5,7 @@
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
+const params = require('./testparams.js')
 
 before(() => {
   return chaithereum.promise
@@ -12,36 +13,33 @@ before(() => {
 
 describe('orderable', () => {
 
+  let orderReg
   let orderable
 
+  before(() => {
+    return chaithereum.web3.eth.contract(contracts.OrderReg.abi).new.q({
+      data: contracts.OrderReg.bytecode,
+    }).should.eventually.be.contract.then((_orderReg) => {
+      orderReg = _orderReg
+    }).should.eventually.be.fulfilled
+  })
+
   it('successfully instantiates', () => {
-    return chaithereum.web3.eth.contract(contracts.orderable.abi).new.q({ data: contracts.orderable.bytecode }).should.eventually.be.contract.then((_orderable) => {
+    return chaithereum.web3.eth.contract(contracts.orderable.abi).new.q({
+      data: contracts.orderable.bytecode,
+    }).should.eventually.be.contract.then((_orderable) => {
       orderable = _orderable
     })
   })
 
-  it('cannot set order addr from accounts[1]', () => {
-    return orderable.setOrderReg.q(chaithereum.accounts[0], { from: chaithereum.accounts[1] }).should.be.rejected
+  it('should not let random people set the OrderReg', () => {
+    return chaithereum.web3.Q.all([
+      orderable.setOrderReg.q(orderReg.address, {from: chaithereum.accounts[1]}).should.eventually.be.rejected,
+      orderable.setOrderReg.q(orderReg.address, {from: chaithereum.accounts[2]}).should.eventually.be.rejected,
+    ])
   })
 
-  it('set order addr as accounts[0]', () => {
-    return orderable.setOrderReg.q(chaithereum.accounts[3]).should.be.fulfilled
+  it('should let the creator set the OrderReg', () => {
+    return orderable.setOrderReg.q(orderReg.address).should.eventually.be.fulfilled
   })
-
-  // it('cannot add order addr from non order reg', () => {
-  //   return orderable.addOrderAddr.q(1, { from: chaithereum.accounts[1] }).should.be.rejected
-  // })
-  //
-  // it('can add order addr from order reg', () => {
-  //   return orderable.addOrderAddr.q(1, {from: chaithereum.accounts[3]}).should.be.fulfilled
-  // })
-  //
-  // it('should retreive correct number of orders', () => {
-  //   return orderable.getOrderCount.q().should.eventually.be.bignumber.equal(1)
-  // })
-  //
-  // it('should retreive correct order addr', () => {
-  //   return orderable.getOrderAddr.q(0).should.eventually.be.bignumber.equal(1)
-  // })
-
 })

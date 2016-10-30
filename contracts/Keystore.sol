@@ -11,8 +11,12 @@ contract Keystore{
 		keys[msg.sender] = Key(now, byt);
 	}
 
-	function getKeyParams(address addr) constant returns (uint, uint8[32]) {
-		return (keys[addr].timestamp, keys[addr].byt);
+	function getTimestamp(address addr) constant returns(uint) {
+		return keys[addr].timestamp;
+	}
+
+	function getByt(address addr) constant returns(uint8[32]) {
+		return keys[addr].byt;
 	}
 
 }
