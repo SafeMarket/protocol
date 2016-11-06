@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "ownable.sol";
 //TODO: merge this contract with aliasable
 //or make it use AliasReg in some way

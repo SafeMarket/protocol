@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "ownable.sol";
 import "StoreReg.sol";
 import "SubmarketReg.sol";
@@ -38,7 +40,7 @@ contract OrderReg is ownable{
 		uint[] productQuantities,
 		uint transportIndex,
 		uint orderTotal
-	) {
+	) payable {
 
 		if(!storeReg.isRegistered(storeAddr))
 			throw;

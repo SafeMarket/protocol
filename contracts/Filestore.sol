@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 contract Filestore  {
 
   mapping (bytes32 => uint) blockNumbers;

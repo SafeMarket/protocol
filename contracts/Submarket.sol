@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "forumable.sol";
 import "infosphered.sol";
 import "aliasable.sol";
@@ -5,6 +7,8 @@ import "approvesAliases.sol";
 import "Order.sol";
 
 contract Submarket is forumable, infosphered, aliasable {
+
+  function () payable {}
 
   struct Review {
     uint blockNumber;

@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "forumable.sol";
 import "orderable.sol";
 import "infosphered.sol";
@@ -6,6 +8,8 @@ import "approvesAliases.sol";
 import "Order.sol";
 
 contract Store is forumable, infosphered, aliasable, orderable, approvesAliases {
+
+  function () payable {}
 
   struct Product{
     bool isActive;

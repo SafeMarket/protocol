@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "Ticker.sol";
 import "Store.sol";
 import "Submarket.sol";
@@ -97,6 +99,8 @@ contract Order{
 	uint constant resolved = 4;
 	uint constant finalized = 5;
 
+  function () payable {}
+
 	function create(
 		address _buyer
 		,address _storeAddr
@@ -109,7 +113,7 @@ contract Order{
     //TODO: again, maybe the following can be gamed
 		,uint _transportIndex
 		,address tickerAddr
-	) {
+	) payable {
 
 		if(isCreated)
 			throw;

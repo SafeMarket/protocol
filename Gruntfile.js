@@ -18,6 +18,7 @@ module.exports = function gruntfile(grunt) {
       default: {
         options: {
           files: ['contracts/*'],
+          solc: require('solc'),
           output: 'generated/contracts.json',
           doOptimize: true
         }

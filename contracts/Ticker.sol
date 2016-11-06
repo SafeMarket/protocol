@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "ownable.sol";
 
 //TODO: convert Ticker to use
