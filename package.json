@@ -9,7 +9,10 @@
   "devDependencies": {
     "chaithereum": "^1.4.0",
     "ethereumjs-testrpc": "^3.0.1",
+    "glob-fs": "^0.1.6",
     "grunt": "^1.0.1",
+    "grunt-compile-handlebars": "^2.0.2",
+    "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-mocha-test": "^0.12.7",
     "grunt-solc": "^2.0.0",
