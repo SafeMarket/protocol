@@ -23,8 +23,7 @@ contract OrderReg is ownable{
 
   //TODO: make a list of all the paths from which this function is allowed to be called
   //potentially split up these variable into separate methods
-	function set(address storeRegAddr, address submarketRegAddr, address tickerAddr) {
-		requireOwnership();
+	function set(address storeRegAddr, address submarketRegAddr, address tickerAddr) requireOwnership {
 		storeReg = StoreReg(storeRegAddr);
 		submarketReg = SubmarketReg(submarketRegAddr);
 		ticker = Ticker(tickerAddr);

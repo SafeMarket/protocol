@@ -8,12 +8,14 @@ contract ownable {
 		owner = msg.sender;
 	}
 
-	function requireOwnership() {
-		if(msg.sender!=owner) throw;
+	modifier requireOwnership {
+		if(msg.sender!=owner) {
+      throw;
+    }
+    _;
 	}
 
-	function setOwner(address _owner) {
-		requireOwnership();
+	function setOwner(address _owner) requireOwnership {
 		owner = _owner;
 	}
 

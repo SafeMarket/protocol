@@ -21,8 +21,7 @@ contract Submarket is forumable, infosphered, aliasable {
   mapping(address => uint) public reviewIndices;
   Review[] public reviews;
 
-  function resolve(address orderAddr, uint buyerAmountCentiperun) {
-    requireOwnership();
+  function resolve(address orderAddr, uint buyerAmountCentiperun) requireOwnership {
     Order(orderAddr).resolve(buyerAmountCentiperun);
 
     verfifiedBuyers[Order(orderAddr)] = true;

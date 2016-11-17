@@ -8,8 +8,7 @@ contract infosphered is ownable{
     Infosphere infosphere;
 
     //TODO: make sure this onlu happens once per contract
-    function setInfosphere(address infosphereAddr) {
-        requireOwnership();
+    function setInfosphere(address infosphereAddr) requireOwnership {
         infosphere = Infosphere(infosphereAddr);
     }
 
@@ -19,8 +18,7 @@ contract infosphered is ownable{
 
     // ================ bool ================
 
-    function setBool(bytes32 key, bool value) {
-        requireOwnership();
+    function setBool(bytes32 key, bool value) requireOwnership {
         infosphere.setBool(key,value);
     }
 
@@ -34,8 +32,7 @@ contract infosphered is ownable{
 
     // ================ address ================
 
-    function setAddress(bytes32 key, address value) {
-        requireOwnership();
+    function setAddress(bytes32 key, address value) requireOwnership {
         infosphere.setAddress(key,value);
     }
 
@@ -49,8 +46,7 @@ contract infosphered is ownable{
 
     // ================ bytes32 ================
 
-    function setBytes32(bytes32 key, bytes32 value) {
-        requireOwnership();
+    function setBytes32(bytes32 key, bytes32 value) requireOwnership {
         infosphere.setBytes32(key,value);
     }
 
@@ -64,8 +60,7 @@ contract infosphered is ownable{
 
     // ================ int ================
 
-    function setInt(bytes32 key, int value) {
-        requireOwnership();
+    function setInt(bytes32 key, int value) requireOwnership {
         infosphere.setInt(key,value);
     }
 
@@ -79,8 +74,7 @@ contract infosphered is ownable{
 
     // ================ uint ================
 
-    function setUint(bytes32 key, uint value) {
-        requireOwnership();
+    function setUint(bytes32 key, uint value) requireOwnership {
         infosphere.setUint(key,value);
     }
 

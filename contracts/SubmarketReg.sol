@@ -13,13 +13,11 @@ contract SubmarketReg is ownable {
 
   event Registration(address submarketAddr);
 
-	function setInfosphereAddr(address _infosphereAddr) {
-		requireOwnership();
+	function setInfosphereAddr(address _infosphereAddr) requireOwnership {
 		infosphereAddr = _infosphereAddr;
 	}
 
-	function setAliasRegAddr(address _aliasRegAddr) {
-		requireOwnership();
+	function setAliasRegAddr(address _aliasRegAddr) requireOwnership {
 		aliasRegAddr = _aliasRegAddr;
 	}
 

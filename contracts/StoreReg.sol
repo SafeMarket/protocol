@@ -14,18 +14,15 @@ contract StoreReg is ownable {
 
 	event Registration(address storeAddr);
 
-	function setInfosphereAddr(address _infosphereAddr) {
-		requireOwnership();
+	function setInfosphereAddr(address _infosphereAddr) requireOwnership {
 		infosphereAddr = _infosphereAddr;
 	}
 
-	function setAliasRegAddr(address _aliasRegAddr) {
-		requireOwnership();
+	function setAliasRegAddr(address _aliasRegAddr) requireOwnership {
 		aliasRegAddr = _aliasRegAddr;
 	}
 
-	function setOrderRegAddr(address _orderRegAddr) {
-		requireOwnership();
+	function setOrderRegAddr(address _orderRegAddr) requireOwnership {
 		orderRegAddr = _orderRegAddr;
 	}
 

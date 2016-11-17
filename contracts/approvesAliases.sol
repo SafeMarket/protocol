@@ -8,8 +8,7 @@ contract approvesAliases is ownable{
   bytes32[] approvedAliases;
   mapping (bytes32 => bool) isApprovedMap;
 
-  function approveAlias(bytes32 alias) {
-    requireOwnership();
+  function approveAlias(bytes32 alias) requireOwnership {
 
     if(isApprovedMap[alias]) {
       return;
@@ -19,8 +18,7 @@ contract approvesAliases is ownable{
     isApprovedMap[alias] = true;
   }
 
-  function disapproveAlias(bytes32 alias) {
-    requireOwnership();
+  function disapproveAlias(bytes32 alias) requireOwnership {
     delete isApprovedMap[alias];
     //TODO: remove disapproved aliases from the array completely by shifting left
   }

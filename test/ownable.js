@@ -22,14 +22,6 @@ describe('ownable', () => {
     })
   })
 
-  it('should throw randos for requireOwnership', () => {
-    return ownable.requireOwnership.q({from: chaithereum.accounts[1]}).should.eventually.be.rejected
-  })
-
-  it('should allow owners for requireOwnership', () => {
-    return ownable.requireOwnership.q().should.eventually.be.fulfilled
-  })
-
   it('should return the correct owner', () => {
     return ownable.getOwner.q().should.eventually.be.address.equal(chaithereum.accounts[0])
   })
@@ -47,8 +39,4 @@ describe('ownable', () => {
     return ownable.getOwner.q().should.eventually.be.address.equal(chaithereum.accounts[1])
   })
 
-  it('should allow the new owner requireOwnership', () => {
-    return ownable.requireOwnership
-    .q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
-  })
 })

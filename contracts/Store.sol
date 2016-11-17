@@ -63,38 +63,31 @@ contract Store is forumable, infosphered, aliasable, orderable, approvesAliases 
 		approvedAliases = _approvedAliases;
 	}
 
-	function setProductIsActive(uint index, bool isActive){
-		requireOwnership();
+	function setProductIsActive(uint index, bool isActive) requireOwnership {
 		products[index].isActive = isActive;
 	}
 
-	function setProductTeraprice(uint index, uint teraprice){
-		requireOwnership();
+	function setProductTeraprice(uint index, uint teraprice) requireOwnership {
 		products[index].teraprice = teraprice;
 	}
 
-	function setProductUnits(uint index, uint units){
-		requireOwnership();
+	function setProductUnits(uint index, uint units) requireOwnership {
 		products[index].units = units;
 	}
 
-	function setProductFileHash(uint index, bytes32 fileHash){
-		requireOwnership();
+	function setProductFileHash(uint index, bytes32 fileHash) requireOwnership {
 		products[index].fileHash = fileHash;
 	}
 
-	function setTransportIsActive(uint index, bool isActive){
-		requireOwnership();
+	function setTransportIsActive(uint index, bool isActive) requireOwnership {
 		transports[index].isActive = isActive;
 	}
 
-	function setTransportTeraprice(uint index, uint teraprice){
-		requireOwnership();
+	function setTransportTeraprice(uint index, uint teraprice) requireOwnership {
 		transports[index].teraprice = teraprice;
 	}
 
-	function setTransportFileHash(uint index, bytes32 fileHash){
-		requireOwnership();
+	function setTransportFileHash(uint index, bytes32 fileHash) requireOwnership {
 		transports[index].fileHash = fileHash;
 	}
 
@@ -134,45 +127,35 @@ contract Store is forumable, infosphered, aliasable, orderable, approvesAliases 
 		return transports[index].fileHash;
 	}
 
-	function addProduct(uint teraprice, uint units, bytes32 fileHash){
-		requireOwnership();
+	function addProduct(uint teraprice, uint units, bytes32 fileHash) requireOwnership {
 		products.push(Product(true, teraprice, units, fileHash));
 	}
 
-	function addTransport(uint teraprice, bytes32 fileHash){
-		requireOwnership();
+	function addTransport(uint teraprice, bytes32 fileHash) requireOwnership {
 		transports.push(Transport(true, teraprice, fileHash));
 	}
 
-	function restoreProductUnits(uint index, uint quantity){
-		requireOwnership();
-
+	function restoreProductUnits(uint index, uint quantity) requireOwnership {
 		products[index].units = products[index].units + quantity;
 	}
 
-	function depleteProductUnits(uint index, uint quantity){
-		requireOwnership();
-
+	function depleteProductUnits(uint index, uint quantity) requireOwnership {
 		if(products[index].units < quantity) throw;
-
 		products[index].units = products[index].units - quantity;
 	}
 
-  function addMessage(address orderAddr, bytes32 fileHash) {
-    requireOwnership();
+  function addMessage(address orderAddr, bytes32 fileHash) requireOwnership {
     Order order = Order(orderAddr);
     order.addMessage(fileHash);
   }
 
   //TODO: cancel needs some tests
-	function cancel(address orderAddr) {
-		requireOwnership();
+	function cancel(address orderAddr) requireOwnership {
 		Order(orderAddr).cancel();
 	}
 
     //TODO: markAsShipped needs some tests
-	function markAsShipped(address orderAddr) {
-		requireOwnership();
+	function markAsShipped(address orderAddr) requireOwnership {
 
     Order order = Order(orderAddr);
 
