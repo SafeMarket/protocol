@@ -21,7 +21,7 @@ module.exports = function gruntfile(grunt) {
     watch: {
       contracts: {
         files: ['contracts/*'],
-        tasks: ['solc', 'mochaTest']
+        tasks: ['build', 'mochaTest']
       },
       tests: {
         files: ['test/*'],
@@ -56,10 +56,14 @@ module.exports = function gruntfile(grunt) {
     },
   })
 
-  grunt.registerTask('init', [
+  grunt.registerTask('build', [
     'clean',
     'compile-handlebars',
     'solc',
+  ])
+
+  grunt.registerTask('init', [
+    'build',
     'mochaTest',
     'watch'
   ])
