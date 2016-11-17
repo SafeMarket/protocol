@@ -8,6 +8,7 @@
   "license": "MIT",
   "devDependencies": {
     "chaithereum": "^1.4.0",
+    "ethereumjs-testrpc": "^3.0.1",
     "grunt": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-mocha-test": "^0.12.7",
