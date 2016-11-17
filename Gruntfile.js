@@ -52,6 +52,9 @@ module.exports = function gruntfile(grunt) {
     mochaTest: {
       test: {
         src: ['test/**/*.js']
+      },
+      options: {
+        bail: true
       }
     },
   })
