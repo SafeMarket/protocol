@@ -5,8 +5,11 @@
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
-const runSubmarketTests = require('./Submarket.js').runSubmarketTests
 const params = require('./testparams.js')
+const AliasRegTestPromise = require('./AliasReg')
+const Q = require('q')
+const deferred = Q.defer()
+module.exports = deferred.promise
 
 before(() => {
   return chaithereum.promise
@@ -14,59 +17,55 @@ before(() => {
 
 
 describe('SubmarketReg', () => {
-  let infosphere
+  
   let aliasReg
   let orderReg
   let submarketReg
   let submarket
-  let submarketArgs = {}
 
-  before(() => {
-    return chaithereum.web3.Q.all([
-      chaithereum.web3.eth.contract(contracts.Infosphere.abi).new.q({
-        data: contracts.Infosphere.bytecode,
-      }).should.eventually.be.contract.then((_infosphere) => {
-        infosphere = _infosphere
-      }),
-      chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({
-        data: contracts.AliasReg.bytecode,
-      }).should.eventually.be.contract.then((_aliasReg) => {
-        aliasReg = _aliasReg
-      }),
-    ])
+  AliasRegTestPromise.then((results) => {
+    aliasReg = results.aliasReg
+  })
+
+  after(() => {
+    deferred.resolve({ submarketReg, submarket })
   })
 
   it('successfully instantiates', () => {
-    return chaithereum.web3.eth.contract(contracts.SubmarketReg.abi).new.q({ data: contracts.SubmarketReg.bytecode }).should.eventually.be.contract.then((_submarketReg) => {
+    return chaithereum.web3.eth.contract(contracts.SubmarketReg.abi).new.q(
+      aliasReg.address,
+      { data: contracts.SubmarketReg.bytecode }
+    ).should.eventually.be.contract.then((_submarketReg) => {
       submarketReg = _submarketReg
     }).should.eventually.be.fulfilled
   })
 
-  it('should set infosphere, alias reg, and order reg addr', () => {
-    return chaithereum.web3.Q.all([
-      submarketReg.setInfosphereAddr.q(infosphere.address).should.be.fulfilled,
-      submarketReg.setAliasRegAddr.q(aliasReg.address).should.be.fulfilled
-    ])
-  })
 
-  it('should correctly retreive infosphere, alias reg, and order reg addr', () => {
-    return chaithereum.web3.Q.all([
-      submarketReg.infosphereAddr.q().should.eventually.equal(infosphere.address),
-      submarketReg.aliasRegAddr.q().should.eventually.equal(aliasReg.address)
-    ])
+  it('should correctly retreive alias reg', () => {
+    return submarketReg.aliasRegAddr.q().should.eventually.equal(aliasReg.address)
   })
 
   it('should create a submarket', () => {
+
+    const pseudoSubmarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(0)
+    const calldatas = [ 
+      pseudoSubmarket.setIsOpen.getData(true),
+      pseudoSubmarket.setCurrency.getData(params.currency1),
+      pseudoSubmarket.setEscrowFeeTerabase.getData(params.escrowFeeTerabase1),
+      pseudoSubmarket.setEscrowFeeCentiperun.getData(params.escrowFeeCentiperun1),
+      pseudoSubmarket.setFileHash.getData(params.fileHash1),
+      pseudoSubmarket.setAlias.getData(params.alias2),
+    ].map((calldata) => {
+      return calldata.replace('0x', '')
+    })
+    const lengths = calldatas.map((calldata) => { return Math.ceil(calldata.length / 2) })
+
     return submarketReg.create.q(
-      chaithereum.accounts[2],
-      true,
-      params.currency1,
-      params.escrowFeeTerabase1,
-      params.escrowFeeCentiperun1,
-      params.fileHash1,
-      params.alias2,
-      {from: chaithereum.accounts[5]}
+      lengths,
+      `0x${calldatas.join('')}`,
+      { from: chaithereum.accounts[5] }
     ).should.eventually.be.fulfilled
+
   })
 
   it('should have triggered Registration event', () => {
@@ -76,38 +75,28 @@ describe('SubmarketReg', () => {
   it('should have updated the submarket counts correctly', () => {
     return chaithereum.web3.Q.all([
       submarketReg.getSubmarketCount.q().should.eventually.be.bignumber.equal(1),
-      submarketReg.getCreatedSubmarketCount.q(chaithereum.accounts[2])
+      submarketReg.getCreatedSubmarketCount.q(chaithereum.accounts[5])
       .should.eventually.be.bignumber.equal(1),
     ])
   })
 
   it('should get the submarket address', () => {
     return chaithereum.web3.Q.all([
-      submarketReg.getSubmarketAddr.q().should.eventually.be.address,
-      submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[2], 0)
+      submarketReg.getSubmarketAddr.q(0).should.eventually.be.address,
+      submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[5], 0)
       .should.eventually.be.address,
     ])
   })
 
-  it('should make the submarket address a contract', (done) => {
-    return submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[2], 0)
+  it('should make the submarket address a contract', () => {
+    return submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[5], 0)
     .then((_submarketAddr) => {
-      submarketArgs.address = _submarketAddr
-      submarketArgs.contract = chaithereum.web3.eth
-      .contract(contracts.Submarket.abi).at(_submarketAddr)
-      submarket = submarketArgs.contract
-      submarketArgs.contract.should.be.contract
-      done()
+      submarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(_submarketAddr)
     })
   })
 
-  it('should make the submarket owner the msg sender', () => {
-    return submarketArgs.contract.getOwner.q().should.eventually.be.address
-    .equal(chaithereum.accounts[2])
-  })
-
   it('should make the submarket as registered', () => {
-    return submarketReg.isRegistered.q(submarketArgs.address).should.eventually.be.true
+    return submarketReg.isRegistered.q(submarket.address).should.eventually.be.true
   })
 
   it('should have correct alias', () => {
@@ -118,22 +107,17 @@ describe('SubmarketReg', () => {
   })
 
   it('should have correct owner', () => {
-    return submarket.owner.q().should.eventually.equal(chaithereum.accounts[2])
+    return submarket.owner.q().should.eventually.equal(chaithereum.accounts[5])
   })
 
-  it('should have correct infosphere address', () => {
-    return submarket.getInfosphereAddr.q().should.eventually.equal(infosphere.address)
-  })
-
-  it('should have correct infosphere values', () => {
+  it('should have correct values values', () => {
     return chaithereum.web3.Q.all([
-      infosphere.getBool.q(submarket.address, 'isOpen').should.eventually.equal(true),
-      submarket.getBytes32.q('currency').should.eventually.be.ascii(params.currency1),
-      submarket.getUint.q('escrowFeeTerabase').should.eventually.be.bignumber.equal(params.escrowFeeTerabase1),
-      submarket.getUint.q('escrowFeeCentiperun').should.eventually.be.bignumber.equal(params.escrowFeeCentiperun1),
-      submarket.getBytes32.q('fileHash').should.eventually.be.ascii(params.fileHash1),
-    ])
+      submarket.isOpen.q().should.eventually.equal(true),
+      submarket.currency.q().should.eventually.be.ascii(params.currency1),
+      submarket.escrowFeeTerabase.q().should.eventually.be.bignumber.equal(params.escrowFeeTerabase1),
+      submarket.escrowFeeCentiperun.q().should.eventually.be.bignumber.equal(params.escrowFeeCentiperun1),
+      submarket.fileHash.q().should.eventually.be.ascii(params.fileHash1),
+    ]).should.be.fulfilled
   })
 
-  runSubmarketTests(submarketArgs)
 })

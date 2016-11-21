@@ -2,50 +2,35 @@ pragma solidity {{solidityVersion}};
 
 import "ownable.sol";
 import "Submarket.sol";
+import "executor.sol";
 
-contract SubmarketReg is ownable {
+contract SubmarketReg is ownable, executor {
   mapping(address => address[]) created;
 	address[] registeredAddrsArray;
 	mapping(address=>bool) registeredAddrsMap;
 
-	address public infosphereAddr;
 	address public aliasRegAddr;
 
   event Registration(address submarketAddr);
 
-	function setInfosphereAddr(address _infosphereAddr) requireOwnership {
-		infosphereAddr = _infosphereAddr;
-	}
-
-	function setAliasRegAddr(address _aliasRegAddr) requireOwnership {
+	function SubmarketReg(address _aliasRegAddr) {
 		aliasRegAddr = _aliasRegAddr;
 	}
 
-	function create(address owner, bool isOpen, bytes32 currency, uint escrowFeeTerabase, uint escrowFeeCentiperun, bytes32 fileHash, bytes32 alias) {
+	function create(uint[] calldataLengths, bytes calldatas) {
 
-		var submarket = new Submarket();
-		var submarketAddr = address(submarket);
+    Submarket submarket = new Submarket();
+    submarket.setAliasReg(aliasRegAddr);
+    address submarketAddr = address(submarket);
+    _execute(submarketAddr, calldataLengths, calldatas);
+    submarket.setOwner(msg.sender);
+    registeredAddrsArray.push(submarketAddr);
+    registeredAddrsMap[submarketAddr] = true;
 
-		submarket.setInfosphere(infosphereAddr);
-		submarket.setAliasReg(aliasRegAddr);
-
-		submarket.setBool('isOpen',isOpen);
-		submarket.setBytes32('currency',currency);
-		submarket.setUint('escrowFeeTerabase',escrowFeeTerabase);
-		submarket.setUint('escrowFeeCentiperun',escrowFeeCentiperun);
-		submarket.setBytes32('fileHash',fileHash);
-
-		if(alias!='')
-			submarket.setAlias(alias);
-
-		submarket.setOwner(owner);
-
-		registeredAddrsArray.push(submarketAddr);
-		registeredAddrsMap[submarketAddr] = true;
-
-    created[owner].push(submarketAddr);
+    created[msg.sender].push(submarketAddr);
 
     Registration(submarketAddr);
+
   }
 
   function getSubmarketCount() constant returns(uint) {

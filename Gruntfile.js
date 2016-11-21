@@ -7,7 +7,9 @@ module.exports = function gruntfile(grunt) {
   grunt.loadNpmTasks('grunt-compile-handlebars')
   grunt.loadNpmTasks('grunt-contrib-clean')
 
-  const templateData = {}
+  const templateData = {
+    contracts: require('./modules/contractData')
+  }
   templateData.solidityVersion = grunt.file.readJSON('package.json').devDependencies.solc
 
   const templateFiles = glob.readdirSync('contracts/*.sol.handlebars').map((template) => {
@@ -20,7 +22,7 @@ module.exports = function gruntfile(grunt) {
   grunt.initConfig({
     watch: {
       contracts: {
-        files: ['contracts/*'],
+        files: ['contracts/*', 'partials/*', 'modules/handlebarHelpers/*', 'modules/contractData'],
         tasks: ['build', 'mochaTest']
       },
       tests: {
@@ -32,8 +34,8 @@ module.exports = function gruntfile(grunt) {
       contracts: {
         files: templateFiles,
         templateData: templateData,
- //       helpers: ['modules/handlebarHelpers/*'],
- //       partials: ['partials/*.sol.handlebars']
+        helpers: ['modules/handlebarHelpers/*'],
+        partials: ['partials/*']
       }
     },
     clean: {
@@ -54,7 +56,9 @@ module.exports = function gruntfile(grunt) {
         src: ['test/**/*.js']
       },
       options: {
-        bail: true
+        bail: true,
+        noFail: true,
+        timeout: 10000
       }
     },
   })

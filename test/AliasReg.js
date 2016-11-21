@@ -5,6 +5,9 @@
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
+const Q = require('q')
+const deferred = Q.defer()
+module.exports = deferred.promise
 
 before(() => {
   return chaithereum.promise
@@ -13,6 +16,10 @@ before(() => {
 describe('AliasReg', () => {
 
   let aliasReg
+
+  after(() => {
+    deferred.resolve({ aliasReg })
+  })
 
   it('successfully instantiates', () => {
     return chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({ data: contracts.AliasReg.bytecode }).should.eventually.be.contract.then((_aliasReg) => {

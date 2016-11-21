@@ -18,7 +18,7 @@ contract infosphered is ownable{
 
     // ================ bool ================
 
-    function setBool(bytes32 key, bool value) requireOwnership {
+    function setBool(bytes32 key, bool value) {
         infosphere.setBool(key,value);
     }
 

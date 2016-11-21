@@ -4,6 +4,10 @@
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
+const Q = require('q')
+const params = require('./testparams.js')
+const deferred = Q.defer()
+module.exports = deferred.promise
 
 before(() => {
   return chaithereum.promise
@@ -11,28 +15,18 @@ before(() => {
 
 describe('Ticker', () => {
 
-  let tickerArgs = {}
-
-  createTicker(tickerArgs)
-  runTickerTests(tickerArgs)
-
-})
-
-function createTicker (args) {
-  it('successfully instantiates', () => {
-    return chaithereum.web3.eth.contract(contracts.Ticker.abi).new.q({ data: contracts.Ticker.bytecode })
-    .should.eventually.be.contract.then((_ticker) => {
-      args.address = _ticker.address
-      args.contract = _ticker
-    })
-  })
-}
-
-function runTickerTests (args) {
   let ticker
 
-  it('gets the order from the arguments', () => {
-    ticker = args.contract
+  after(() => {
+    deferred.resolve({ ticker })
+  })
+
+  it('successfully instantiates', () => {
+    return chaithereum.web3.eth.contract(contracts.Ticker.abi).new.q(
+      { data: contracts.Ticker.bytecode }
+    ).should.eventually.be.contract.then((_ticker) => {
+      ticker = _ticker
+    })
   })
 
   it('can set prices', () => {
@@ -65,6 +59,23 @@ function runTickerTests (args) {
       ticker.convert.q(1, 'X', 'P').should.eventually.be.rejected
     ])
   })
-}
 
-module.exports = {runTickerTests: runTickerTests, createTicker: createTicker}
+  it('sets test params', () => {
+    return chaithereum.web3.Q.all([
+      ticker.setPrice.q(params.currency0, params.currencyInWei0),
+      ticker.setPrice.q(params.currency1, params.currencyInWei1),
+      ticker.setPrice.q(params.currency2, params.currencyInWei2),
+      ticker.setPrice.q(params.currency3, params.currencyInWei3),
+    ]).should.eventually.be.fulfilled
+  })
+
+  it('gets test params', () => {
+    return chaithereum.web3.Q.all([
+      ticker.getPrice.q(params.currency0).should.eventually.be.bignumber.equal(params.currencyInWei0),
+      ticker.getPrice.q(params.currency1).should.eventually.be.bignumber.equal(params.currencyInWei1),
+      ticker.getPrice.q(params.currency2).should.eventually.be.bignumber.equal(params.currencyInWei2),
+      ticker.getPrice.q(params.currency3).should.eventually.be.bignumber.equal(params.currencyInWei3)
+    ]).should.eventually.be.fulfilled
+  })
+
+})

@@ -1,0 +1,52 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/aakilfernandes/.nvm/versions/node/v6.3.0/bin/node',
+1 verbose cli   '/Users/aakilfernandes/.nvm/versions/node/v6.3.0/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '--save-dev',
+1 verbose cli   'solc#develop' ]
+2 info using npm@4.0.1
+3 info using node@v6.3.0
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly fetchPackageMetaData solc#develop
+8 silly fetchOtherPackageData solc#develop
+9 silly cache add args [ 'solc#develop', null ]
+10 verbose cache add spec solc#develop
+11 silly cache add parsed spec Result {
+11 silly cache add   raw: 'solc#develop',
+11 silly cache add   scope: null,
+11 silly cache add   escapedName: null,
+11 silly cache add   name: null,
+11 silly cache add   rawSpec: 'solc#develop',
+11 silly cache add   spec: '/Users/aakilfernandes/projects/safemarket/protocol/solc#develop',
+11 silly cache add   type: 'local' }
+12 error addLocal Could not install /Users/aakilfernandes/projects/safemarket/protocol/solc#develop
+13 silly fetchPackageMetaData Error: ENOENT: no such file or directory, open '/Users/aakilfernandes/projects/safemarket/protocol/solc#develop'
+13 silly fetchPackageMetaData     at Error (native)
+13 silly fetchPackageMetaData  error for solc#develop { Error: ENOENT: no such file or directory, open '/Users/aakilfernandes/projects/safemarket/protocol/solc#develop'
+13 silly fetchPackageMetaData     at Error (native)
+13 silly fetchPackageMetaData   errno: -2,
+13 silly fetchPackageMetaData   code: 'ENOENT',
+13 silly fetchPackageMetaData   syscall: 'open',
+13 silly fetchPackageMetaData   path: '/Users/aakilfernandes/projects/safemarket/protocol/solc#develop' }
+14 silly rollbackFailedOptional Starting
+15 silly rollbackFailedOptional Finishing
+16 silly runTopLevelLifecycles Finishing
+17 silly install printInstalled
+18 verbose stack Error: ENOENT: no such file or directory, open '/Users/aakilfernandes/projects/safemarket/protocol/solc#develop'
+18 verbose stack     at Error (native)
+19 verbose cwd /Users/aakilfernandes/projects/safemarket/protocol
+20 error Darwin 15.3.0
+21 error argv "/Users/aakilfernandes/.nvm/versions/node/v6.3.0/bin/node" "/Users/aakilfernandes/.nvm/versions/node/v6.3.0/bin/npm" "install" "--save-dev" "solc#develop"
+22 error node v6.3.0
+23 error npm  v4.0.1
+24 error path /Users/aakilfernandes/projects/safemarket/protocol/solc#develop
+25 error code ENOENT
+26 error errno -2
+27 error syscall open
+28 error enoent ENOENT: no such file or directory, open '/Users/aakilfernandes/projects/safemarket/protocol/solc#develop'
+29 error enoent ENOENT: no such file or directory, open '/Users/aakilfernandes/projects/safemarket/protocol/solc#develop'
+29 error enoent This is most likely not a problem with npm itself
+29 error enoent and is related to npm not being able to find a file.
+30 verbose exit [ -2, true ]

@@ -1,0 +1,29 @@
+/* START {{struct.name}} structs */
+
+struct {{struct.name}}{
+  {{#each struct.variables}}
+  {{type}} {{name}};
+  {{/each}}
+}
+
+{{struct.name}}[] public {{struct.name}}s;
+
+function get{{struct.name}}sLength() constant returns (uint) {
+  return {{struct.name}}s.length;
+}
+
+function add{{struct.name}}({{>inputs.sol variables=struct.variables}}) requireOwnership {
+  {{struct.name}}s.push({{struct.name}}({{>names.sol variables=struct.variables}}));
+}
+
+{{#each struct.variables}}
+function get{{../struct.name}}{{capitalize name}} (uint index) constant returns ({{type}} {{name}}) {
+  return {{../struct.name}}s[index].{{name}};
+}
+
+function set{{../struct.name}}{{capitalize name}} (uint index, {{type}} value) requireOwnership {
+  {{../struct.name}}s[index].{{name}} = value;
+}
+
+{{/each}}
+/* END {{struct.name}} structs */

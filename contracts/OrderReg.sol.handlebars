@@ -10,9 +10,9 @@ contract OrderReg is ownable{
 
   event Registration(address orderAddr);
 
-  StoreReg storeReg;
-  SubmarketReg submarketReg;
-  Ticker ticker;
+  StoreReg public storeReg;
+  SubmarketReg public submarketReg;
+  Ticker public ticker;
 
   uint public safemarketFeeMilliperun = 30;
 
@@ -21,13 +21,11 @@ contract OrderReg is ownable{
   mapping(address=>address[]) addrsByStoreAddr;
   mapping(address=>address[]) addrsBySubmarketAddr;
 
-  //TODO: make a list of all the paths from which this function is allowed to be called
-  //potentially split up these variable into separate methods
-	function set(address storeRegAddr, address submarketRegAddr, address tickerAddr) requireOwnership {
-		storeReg = StoreReg(storeRegAddr);
-		submarketReg = SubmarketReg(submarketRegAddr);
-		ticker = Ticker(tickerAddr);
-	}
+  function OrderReg(address storeRegAddr, address submarketRegAddr, address tickerAddr) {
+  	storeReg = StoreReg(storeRegAddr);
+  	submarketReg = SubmarketReg(submarketRegAddr);
+  	ticker = Ticker(tickerAddr);
+  }
 
 	function create(
 		address buyer,

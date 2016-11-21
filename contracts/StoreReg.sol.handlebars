@@ -2,74 +2,32 @@ pragma solidity {{solidityVersion}};
 
 import "ownable.sol";
 import "Store.sol";
+import "executor.sol";
 
-contract StoreReg is ownable {
+contract StoreReg is executor {
   mapping(address => address[]) created;
 	address[] registeredAddrsArray;
 	mapping(address=>bool) registeredAddrsMap;
 
-	address public infosphereAddr;
-	address public aliasRegAddr;
-	address public orderRegAddr;
-
 	event Registration(address storeAddr);
 
-	function setInfosphereAddr(address _infosphereAddr) requireOwnership {
-		infosphereAddr = _infosphereAddr;
-	}
+  address public aliasRegAddr;
 
-	function setAliasRegAddr(address _aliasRegAddr) requireOwnership {
-		aliasRegAddr = _aliasRegAddr;
-	}
+  function StoreReg(address _aliasRegAddr) {
+    aliasRegAddr = _aliasRegAddr;
+  }
 
-	function setOrderRegAddr(address _orderRegAddr) requireOwnership {
-		orderRegAddr = _orderRegAddr;
-	}
+	function create(uint[] calldataLengths, bytes calldatas) {
 
-	function create(
-		address owner,
-		bool isOpen,
-		bytes32 currency,
-		uint bufferCentiperun,
-		uint disputeSeconds,
-		uint minProductsTeratotal,
-		uint affiliateFeeCentiperun,
-		bytes32 fileHash,
-		bytes32 alias,
-		bytes32[] productParams,
-		bytes32[] transportParams,
-		bytes32[] approvedSubmarkets
-	 ) {
-
-		var store = new Store(
-			productParams,
-			transportParams,
-			approvedSubmarkets
-		);
-
-		var storeAddr = address(store);
-
-		store.setOrderReg(orderRegAddr);
-		store.setInfosphere(infosphereAddr);
-		store.setAliasReg(aliasRegAddr);
-
-		store.setBool('isOpen',isOpen);
-		store.setBytes32('currency',currency);
-		store.setUint('bufferCentiperun',bufferCentiperun);
-		store.setUint('disputeSeconds',disputeSeconds);
-		store.setUint('minProductsTeratotal',minProductsTeratotal);
-		store.setUint('affiliateFeeCentiperun',affiliateFeeCentiperun);
-		store.setBytes32('fileHash', fileHash);
-
-		if(alias!='')
-			store.setAlias(alias);
-
-		store.setOwner(owner);
-
+		Store store = new Store();
+    store.setAliasReg(aliasRegAddr);
+		address storeAddr = address(store);
+    _execute(storeAddr, calldataLengths, calldatas);
+		store.setOwner(msg.sender);
 		registeredAddrsArray.push(storeAddr);
 		registeredAddrsMap[storeAddr] = true;
 
-    created[owner].push(storeAddr);
+    created[msg.sender].push(storeAddr);
 
     Registration(storeAddr);
 	}

@@ -132,12 +132,12 @@ contract Order{
     //TODO: ticker needs to be somehow approved by both buyer and seller, maybe it should be an option alowing the resolution market
 		ticker = Ticker(tickerAddr);
 
-		var store = Store(_storeAddr);
+		Store store = Store(_storeAddr);
 
-		if(!store.getBool('isOpen'))
+		if(!store.isOpen())
 			throw;
 
-		storeCurrency = bytes4(store.getBytes32('currency'));
+		storeCurrency = bytes4(store.currency());
 
 		for(uint i = 0; i< _productIndexes.length; i++) {
 
@@ -160,7 +160,7 @@ contract Order{
 			productsTeratotal = productsTeratotal + (productParams[1] * productParams[2]);
 		}
 
-		if(productsTeratotal < store.getUint('minProductsTeratotal'))
+		if(productsTeratotal < store.minProductsTeratotal())
 			throw;
 
 		if(!store.getTransportIsActive(_transportIndex))
@@ -169,22 +169,22 @@ contract Order{
 		transportTeraprice = store.getTransportTeraprice(_transportIndex);
 		transportFileHash = store.getTransportFileHash(_transportIndex);
 
-		bufferCentiperun = store.getUint('bufferCentiperun');
+		bufferCentiperun = store.bufferCentiperun();
 
 		if(_affiliate != address(0)) {
-			affiliateFeeCentiperun = store.getUint('affiliateFeeCentiperun');
+			affiliateFeeCentiperun = store.affiliateFeeCentiperun();
 		}
 
 		if(submarketAddr != address(0)) {
       //TODO: change this to use an instance of the submarket that is not infosphered
       //TODO: test submarkets and orders with submarkets
-			var submarket = infosphered(_submarketAddr);
-			if(!submarket.getBool('isOpen'))
+			var submarket = Submarket(_submarketAddr);
+			if(!submarket.isOpen())
 				throw;
-			submarketCurrency = bytes4(submarket.getBytes32('currency'));
-			escrowFeeTerabase = submarket.getUint('escrowFeeTerabase');
-			escrowFeeCentiperun = submarket.getUint('escrowFeeCentiperun');
-			disputeSeconds = store.getUint('disputeSeconds');
+			submarketCurrency = submarket.currency();
+			escrowFeeTerabase = submarket.escrowFeeTerabase();
+			escrowFeeCentiperun = submarket.escrowFeeCentiperun();
+			disputeSeconds = store.disputeSeconds();
 		}
 
     //TDDO: the wording on the transportTeraprice variable may need to be fixed to match the other parameters

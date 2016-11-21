@@ -1,70 +1,80 @@
 pragma solidity ^0.4.4;
 
 import "forumable.sol";
-import "infosphered.sol";
 import "aliasable.sol";
 import "approvesAliases.sol";
 import "Order.sol";
 
-contract Submarket is forumable, infosphered, aliasable {
+contract Submarket is forumable, aliasable {
 
   function () payable {}
 
-  struct Review {
-    uint blockNumber;
-    uint8 score;
-    address sender;
-    bytes32 fileHash;
-  }
+  bool public isOpen;
+  function setIsOpen(bool _isOpen) requireOwnership { isOpen = _isOpen; }
+  bytes4 public currency;
+  function setCurrency(bytes4 _currency) requireOwnership { currency = _currency; }
+  uint public escrowFeeTerabase;
+  function setEscrowFeeTerabase(uint _escrowFeeTerabase) requireOwnership { escrowFeeTerabase = _escrowFeeTerabase; }
+  uint public escrowFeeCentiperun;
+  function setEscrowFeeCentiperun(uint _escrowFeeCentiperun) requireOwnership { escrowFeeCentiperun = _escrowFeeCentiperun; }
+  bytes32 public fileHash;
+  function setFileHash(bytes32 _fileHash) requireOwnership { fileHash = _fileHash; }
 
-  mapping(address => bool) public verfifiedBuyers;
-  mapping(address => uint) public reviewIndices;
-  Review[] public reviews;
+  // struct Review {
+  //   uint blockNumber;
+  //   uint8 score;
+  //   address sender;
+  //   bytes32 fileHash;
+  // }
 
-  function resolve(address orderAddr, uint buyerAmountCentiperun) requireOwnership {
-    Order(orderAddr).resolve(buyerAmountCentiperun);
+  // mapping(address => bool) public verfifiedBuyers;
+  // mapping(address => uint) public reviewIndices;
+  // Review[] public reviews;
 
-    verfifiedBuyers[Order(orderAddr)] = true;
-  }
+  // function resolve(address orderAddr, uint buyerAmountCentiperun) requireOwnership {
+  //   Order(orderAddr).resolve(buyerAmountCentiperun);
 
-  function addReview(uint8 score, bytes32 fileHash) {
-    if(verfifiedBuyers[msg.sender])
-    throw;
+  //   verfifiedBuyers[Order(orderAddr)] = true;
+  // }
 
-    //TODO: magic numbers are bad, 5 should be a constant
-    if(score > 5)
-    throw;
+  // function addReview(uint8 score, bytes32 fileHash) {
+  //   if(verfifiedBuyers[msg.sender])
+  //   throw;
 
-    Review memory review;
-    if(reviewIndices[msg.sender] == 0) {
-      reviewIndices[msg.sender] = reviews.length;
-      reviews.length = reviews.length+1;
-    }
+  //   //TODO: magic numbers are bad, 5 should be a constant
+  //   if(score > 5)
+  //   throw;
 
-    review.blockNumber = block.number;
-    review.score = score;
-    review.fileHash = fileHash;
+  //   Review memory review;
+  //   if(reviewIndices[msg.sender] == 0) {
+  //     reviewIndices[msg.sender] = reviews.length;
+  //     reviews.length = reviews.length+1;
+  //   }
 
-    reviews[reviewIndices[msg.sender]] = review;
-  }
+  //   review.blockNumber = block.number;
+  //   review.score = score;
+  //   review.fileHash = fileHash;
 
-  function getReviewsLength() constant returns(uint) {
-    return reviews.length;
-  }
+  //   reviews[reviewIndices[msg.sender]] = review;
+  // }
 
-  function getReviewBlockNumber(uint index) constant returns(uint) {
-    return reviews[index].blockNumber;
-  }
+  // function getReviewsLength() constant returns(uint) {
+  //   return reviews.length;
+  // }
 
-  function getReviewSender(uint index) constant returns(address) {
-    return reviews[index].sender;
-  }
+  // function getReviewBlockNumber(uint index) constant returns(uint) {
+  //   return reviews[index].blockNumber;
+  // }
 
-  function getReviewScore(uint index) constant returns(uint8) {
-    return reviews[index].score;
-  }
+  // function getReviewSender(uint index) constant returns(address) {
+  //   return reviews[index].sender;
+  // }
 
-  function getReviewFileHash(uint index) constant returns(bytes32) {
-    return reviews[index].fileHash;
-  }
+  // function getReviewScore(uint index) constant returns(uint8) {
+  //   return reviews[index].score;
+  // }
+
+  // function getReviewFileHash(uint index) constant returns(bytes32) {
+  //   return reviews[index].fileHash;
+  // }
 }
