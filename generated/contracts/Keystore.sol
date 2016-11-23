@@ -2,7 +2,7 @@ pragma solidity ^0.4.4;
 
 contract Keystore{
 
-	mapping(address => Key) keys;
+	mapping(address => Key) public keys;
 
 	struct Key{
 		uint timestamp;

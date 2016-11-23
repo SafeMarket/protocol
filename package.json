@@ -20,6 +20,7 @@
     "solc": "^0.4.4"
   },
   "dependencies": {
+    "grunt-solc-output-deploy": "git+https://github.com/SafeMarket/grunt-solc-output-deploy.git#d47a0242b0dec3ff2c1e0c757b7c0f6f0c555018",
     "solidity-stl": "git+https://github.com/androlo/standard-contracts.git"
   }
 }
