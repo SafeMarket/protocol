@@ -10,11 +10,11 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
 
   function () payable {}
 
-  {{#each contracts.store.variables}}
+  {{#each schemas.Store.variables}}
   {{>variable.sol variable=this}}
   {{/each}}
 
-  {{#each contracts.store.structArrays}}
+  {{#each schemas.Store.structArrays}}
   {{>structArray.sol struct=this}}
 
   {{/each}}

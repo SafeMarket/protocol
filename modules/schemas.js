@@ -21,7 +21,7 @@ function Contract(name, variables) {
     this.name = name
   }
 
-  store = new Contract('Store', [
+  Store = new Contract('Store', [
     new Variable('bool', 'isOpen'),
     new Variable('bytes4', 'currency'),
     new Variable('uint', 'bufferCentiperun'),
@@ -31,19 +31,19 @@ function Contract(name, variables) {
     new Variable('bytes32', 'fileHash')
   ])
 
-  store.addStructArray(new Struct('Product', [
+  Store.addStructArray(new Struct('Product', [
     new Variable('bool', 'isActive'),
     new Variable('uint', 'teraprice'),
     new Variable('uint', 'units'),
     new Variable('bytes32', 'fileHash')
   ]))
-  store.addStructArray(new Struct('Transport', [
+  Store.addStructArray(new Struct('Transport', [
     new Variable('bool', 'isActive'),
     new Variable('uint', 'teraprice'),
     new Variable('bytes32', 'fileHash')
   ]))
 
-  submarket = new Contract('submarket', [
+  Submarket = new Contract('submarket', [
     new Variable('bool', 'isOpen'),
     new Variable('bytes4', 'currency'),
     new Variable('uint', 'escrowFeeTerabase'),
@@ -52,6 +52,6 @@ function Contract(name, variables) {
   ])
 
   module.exports = {
-    store,
-    submarket
+    Store,
+    Submarket
   }

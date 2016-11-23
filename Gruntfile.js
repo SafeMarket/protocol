@@ -8,7 +8,7 @@ module.exports = function gruntfile(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean')
 
   const templateData = {
-    contracts: require('./modules/contractData')
+    schemas: require('./modules/schemas')
   }
   templateData.solidityVersion = grunt.file.readJSON('package.json').devDependencies.solc
 

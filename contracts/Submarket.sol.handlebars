@@ -9,7 +9,7 @@ contract Submarket is forumable, aliasable {
 
   function () payable {}
 
-  {{#each contracts.submarket.variables}}
+  {{#each schemas.Submarket.variables}}
   {{>variable.sol variable=this}}
   {{/each}}
 
