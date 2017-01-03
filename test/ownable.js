@@ -23,7 +23,8 @@ describe('ownable', () => {
   })
 
   it('should return the correct owner', () => {
-    return ownable.getOwner.q().should.eventually.be.address.equal(chaithereum.accounts[0])
+    return ownable.getOwner.q().should.eventually.be.address
+    .equal(chaithereum.accounts[0])
   })
 
   it('should prevent randos from changing the owner', () => {
@@ -36,7 +37,8 @@ describe('ownable', () => {
   })
 
   it('should return the correct owner', () => {
-    return ownable.getOwner.q().should.eventually.be.address.equal(chaithereum.accounts[1])
+    return ownable.getOwner.q().should.eventually.be.address
+    .equal(chaithereum.accounts[1])
   })
 
 })

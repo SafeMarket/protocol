@@ -43,9 +43,8 @@ describe('StoreReg', () => {
   })
 
   it('should create a store', () => {
-
     const pseudoStore = chaithereum.web3.eth.contract(contracts.Store.abi).at(0)
-    const calldatas = [ 
+    const calldatas = [
       pseudoStore.setCurrency.getData(params.currency1),
       pseudoStore.setBufferCentiperun.getData(params.bufferCentiperun1),
       pseudoStore.setDisputeSeconds.getData(params.disputeSeconds1),
@@ -76,14 +75,14 @@ describe('StoreReg', () => {
     return chaithereum.web3.Q.all([
       storeReg.getStoresLength.q().should.eventually.be.bignumber.equal(1),
       storeReg.getCreatedStoresLength.q(chaithereum.account).should.eventually.be.bignumber.equal(1),
-    ]).should.eventually.be.fulfilled
+    ])
   })
 
   it('should get the store address', () => {
     return chaithereum.web3.Q.all([
       storeReg.getStoreAddr.q().should.eventually.be.address,
       storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).should.eventually.be.address,
-    ]).should.eventually.be.fulfilled
+    ])
   })
 
   it('should make the store address a contract', () => {
@@ -118,7 +117,7 @@ describe('StoreReg', () => {
         store.getProductUnits.q(1).should.eventually.be.bignumber.equal(params.units2),
         store.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
         store.getProductIsActive.q(2).should.eventually.be.rejected
-      ]).should.eventually.be.fulfilled
+      ])
     })
 
     it('should have correct transports', () => {
@@ -131,7 +130,7 @@ describe('StoreReg', () => {
         store.getTransportTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
         store.getTransportFileHash.q(1).should.eventually.be.ascii(params.fileHash4),
         store.getTransportIsActive.q(2).should.eventually.be.rejected
-      ]).should.eventually.be.fulfilled
+      ])
     })
 
     it('should have correct approved aliases', () => {
@@ -139,11 +138,12 @@ describe('StoreReg', () => {
         store.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2),
         store.getApprovedAlias.q(0).should.eventually.be.ascii(params.alias1),
         store.getApprovedAlias.q(1).should.eventually.be.ascii(params.alias2)
-      ]).should.eventually.be.fulfilled
+      ])
     })
 
     it('should be able to add a product', () => {
-      return store.addProduct.q(true, params.teraprice5, params.units3, params.fileHash5).should.eventually.be.fulfilled
+      return store.addProduct
+      .q(true, params.teraprice5, params.units3, params.fileHash5).should.eventually.be.fulfilled
     })
 
     it('should have added the product correctly', () => {
@@ -153,7 +153,7 @@ describe('StoreReg', () => {
         store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice5),
         store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units3),
         store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash5)
-      ]).should.eventually.be.fulfilled
+      ])
     })
 
     it('should be able to add a transport', () => {
@@ -166,7 +166,7 @@ describe('StoreReg', () => {
         store.getTransportIsActive.q(2).should.eventually.be.true,
         store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice6),
         store.getTransportFileHash.q(2).should.eventually.be.ascii(params.fileHash6)
-      ]).should.eventually.be.fulfilled
+      ])
     })
 
     it('should set the product active state', () => {
@@ -192,7 +192,7 @@ describe('StoreReg', () => {
         store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
         store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units5),
         store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash7)
-      ]).should.eventually.be.fulfilled
+      ])
     })
 
     it('should set the transport active state', () => {
@@ -213,7 +213,7 @@ describe('StoreReg', () => {
         store.getTransportIsActive.q(2).should.eventually.be.false,
         store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice8),
         store.getTransportFileHash.q(2).should.eventually.be.ascii(params.fileHash8)
-      ]).should.eventually.be.fulfilled
+      ])
     })
 
     // it('should restore product units', () => {

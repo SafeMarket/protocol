@@ -25,6 +25,11 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   bytes32 public fileHash;
   function setFileHash(bytes32 _fileHash) requireOwnership { fileHash = _fileHash; }
 
+  mapping(address => bool) public verifiedBuyers;
+  function setVerifiedBuyer(address key, bool value) requireOwnership { verifiedBuyers[key] = value; }
+  mapping(address => uint) public reviewIndices;
+  function setReviewIndice(address key, uint value) requireOwnership { reviewIndices[key] = value; }
+
   /* START Product structs */
   
   struct Product{
@@ -40,8 +45,16 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
     return Products.length;
   }
   
-  function addProduct(bool isActive, uint teraprice, uint units, bytes32 fileHash) requireOwnership {
-    Products.push(Product(isActive, teraprice, units, fileHash));
+  function addProduct(bool isActive, 
+  uint teraprice, 
+  uint units, 
+  bytes32 fileHash
+  ) requireOwnership {
+    Products.push(Product(  isActive, 
+    teraprice, 
+    units, 
+    fileHash
+  ));
   }
   
   function getProductIsActive (uint index) constant returns (bool isActive) {
@@ -51,7 +64,6 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   function setProductIsActive (uint index, bool value) requireOwnership {
     Products[index].isActive = value;
   }
-  
   function getProductTeraprice (uint index) constant returns (uint teraprice) {
     return Products[index].teraprice;
   }
@@ -59,7 +71,6 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   function setProductTeraprice (uint index, uint value) requireOwnership {
     Products[index].teraprice = value;
   }
-  
   function getProductUnits (uint index) constant returns (uint units) {
     return Products[index].units;
   }
@@ -67,7 +78,6 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   function setProductUnits (uint index, uint value) requireOwnership {
     Products[index].units = value;
   }
-  
   function getProductFileHash (uint index) constant returns (bytes32 fileHash) {
     return Products[index].fileHash;
   }
@@ -75,9 +85,7 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   function setProductFileHash (uint index, bytes32 value) requireOwnership {
     Products[index].fileHash = value;
   }
-  
   /* END Product structs */
-
   /* START Transport structs */
   
   struct Transport{
@@ -92,8 +100,14 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
     return Transports.length;
   }
   
-  function addTransport(bool isActive, uint teraprice, bytes32 fileHash) requireOwnership {
-    Transports.push(Transport(isActive, teraprice, fileHash));
+  function addTransport(bool isActive, 
+  uint teraprice, 
+  bytes32 fileHash
+  ) requireOwnership {
+    Transports.push(Transport(  isActive, 
+    teraprice, 
+    fileHash
+  ));
   }
   
   function getTransportIsActive (uint index) constant returns (bool isActive) {
@@ -103,7 +117,6 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   function setTransportIsActive (uint index, bool value) requireOwnership {
     Transports[index].isActive = value;
   }
-  
   function getTransportTeraprice (uint index) constant returns (uint teraprice) {
     return Transports[index].teraprice;
   }
@@ -111,7 +124,6 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   function setTransportTeraprice (uint index, uint value) requireOwnership {
     Transports[index].teraprice = value;
   }
-  
   function getTransportFileHash (uint index) constant returns (bytes32 fileHash) {
     return Transports[index].fileHash;
   }
@@ -119,44 +131,104 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   function setTransportFileHash (uint index, bytes32 value) requireOwnership {
     Transports[index].fileHash = value;
   }
-  
   /* END Transport structs */
+  /* START Review structs */
+  
+  struct Review{
+    uint blockNumber;
+    uint8 score;
+    address sender;
+    bytes32 fileHash;
+  }
+  
+  Review[] public Reviews;
+  
+  function getReviewsLength() constant returns (uint) {
+    return Reviews.length;
+  }
+  
+  
+  function getReviewBlockNumber (uint index) constant returns (uint blockNumber) {
+    return Reviews[index].blockNumber;
+  }
+  
+  function setReviewBlockNumber (uint index, uint value) requireOwnership {
+    Reviews[index].blockNumber = value;
+  }
+  function getReviewScore (uint index) constant returns (uint8 score) {
+    return Reviews[index].score;
+  }
+  
+  function setReviewScore (uint index, uint8 value) requireOwnership {
+    Reviews[index].score = value;
+  }
+  function getReviewSender (uint index) constant returns (address sender) {
+    return Reviews[index].sender;
+  }
+  
+  function setReviewSender (uint index, address value) requireOwnership {
+    Reviews[index].sender = value;
+  }
+  function getReviewFileHash (uint index) constant returns (bytes32 fileHash) {
+    return Reviews[index].fileHash;
+  }
+  
+  function setReviewFileHash (uint index, bytes32 value) requireOwnership {
+    Reviews[index].fileHash = value;
+  }
+  /* END Review structs */
 
+  function restoreProductUnits(uint index, uint quantity) requireOwnership {
+    Products[index].units = Products[index].units + quantity;
+  }
 
-	// function restoreProductUnits(uint index, uint quantity) requireOwnership {
-	// 	products[index].units = products[index].units + quantity;
-	// }
+  function depleteProductUnits(uint index, uint quantity) requireOwnership {
+    if(Products[index].units < quantity) throw;
+    Products[index].units = Products[index].units - quantity;
+  }
 
-	// function depleteProductUnits(uint index, uint quantity) requireOwnership {
-	// 	if(products[index].units < quantity) throw;
-	// 	products[index].units = products[index].units - quantity;
-	// }
+  function addMessage(address orderAddr, bytes32 fileHash) requireOwnership {
+    Order order = Order(orderAddr);
+    order.addMessage(fileHash);
+  }
 
- //  function addMessage(address orderAddr, bytes32 fileHash) requireOwnership {
- //    Order order = Order(orderAddr);
- //    order.addMessage(fileHash);
- //  }
+  //TODO: cancel needs some tests
+  function cancel(address orderAddr) requireOwnership {
+    Order(orderAddr).cancel();
+  }
 
- //  //TODO: cancel needs some tests
-	// function cancel(address orderAddr) requireOwnership {
-	// 	Order(orderAddr).cancel();
-	// }
+  function markAsShipped(address orderAddr) requireOwnership {
+    Order order = Order(orderAddr);
 
- //    //TODO: markAsShipped needs some tests
-	// function markAsShipped(address orderAddr) requireOwnership {
+    uint productsLength = order.getProductsLength();
 
- //    Order order = Order(orderAddr);
+    for(uint i = 0; i < productsLength; i++) {
+      uint index = order.getProductIndex(i);
+      uint quantity = order.getProductQuantity(i);
+      depleteProductUnits(index, quantity);
+    }
+    order.markAsShipped();
+    verifiedBuyers[Order(orderAddr)] = true;
+  }
 
- //    uint productsLength = order.getProductsLength();
+  function addReview(uint8 score, bytes32 fileHash) {
+    if(verifiedBuyers[msg.sender])
+    throw;
 
- //    for(uint i = 0; i < productsLength; i++) {
- //      uint index = order.getProductIndex(i);
- //      uint quantity = order.getProductQuantity(i);
- //      depleteProductUnits(index, quantity);
- //    }
- //    order.markAsShipped();
+    //TODO: magic numbers are bad, 5 should be a constant
+    if(score > 5)
+    throw;
 
- //    verfifiedBuyers[Order(orderAddr)] = true;
- //  }
+    Review memory review;
+    if(reviewIndices[msg.sender] == 0) {
+      reviewIndices[msg.sender] = Reviews.length;
+      Reviews.length = Reviews.length+1;
+    }
 
+    review.blockNumber = block.number;
+    review.score = score;
+    review.fileHash = fileHash;
+
+    Reviews[reviewIndices[msg.sender]] = review;
+  }
 }

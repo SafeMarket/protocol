@@ -11,7 +11,6 @@ module.exports = function gruntfile(grunt) {
     schemas: require('./modules/schemas')
   }
   templateData.solidityVersion = grunt.file.readJSON('package.json').devDependencies.solc
-
   const templateFiles = glob.readdirSync('contracts/*.sol.handlebars').map((template) => {
     return {
       src: template,

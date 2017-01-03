@@ -62,10 +62,4 @@ describe('OrderReg', () => {
   it('has correct ticker', () => {
     return orderReg.ticker.q().should.eventually.equal(ticker.address)
   })
-
-  it('creates an order', () => {
-
-    
-  })
-
 })

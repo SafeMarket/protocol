@@ -1,0 +1,2 @@
+mapping({{mapping.key}} => {{mapping.value}}) public {{mapping.name}}s;
+function set{{capitalize mapping.name}}({{{mapping.key}}} key, {{mapping.value}} value) requireOwnership { {{mapping.name}}s[key] = value; }

@@ -1,1 +1,5 @@
-{{#each variables}}{{type}} {{name}}{{#unless @last}}, {{/unless}}{{/each}}
+{{#each variables}}
+{{#unless generated}}
+{{type}} {{name}}{{#unless @last}}, {{/unless}}
+{{/unless}}
+{{/each}}

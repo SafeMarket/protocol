@@ -22,7 +22,9 @@ describe('AliasReg', () => {
   })
 
   it('successfully instantiates', () => {
-    return chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({ data: contracts.AliasReg.bytecode }).should.eventually.be.contract.then((_aliasReg) => {
+    return chaithereum.web3.eth.contract(contracts.AliasReg.abi).new
+    .q({data: contracts.AliasReg.bytecode}).should.eventually.be.contract
+    .then((_aliasReg) => {
       aliasReg = _aliasReg
     }).should.be.fulfilled
   })
@@ -45,6 +47,7 @@ describe('AliasReg', () => {
   })
 
   it('can retreive address associated with "myalias"', () => {
-    return aliasReg.getAddr.q('myalias').should.eventually.equal(chaithereum.web3.eth.defaultAccount)
+    return aliasReg.getAddr.q('myalias').should.eventually
+    .equal(chaithereum.web3.eth.defaultAccount)
   })
 })

@@ -17,7 +17,7 @@ before(() => {
 
 
 describe('SubmarketReg', () => {
-  
+
   let aliasReg
   let orderReg
   let submarketReg
@@ -48,7 +48,7 @@ describe('SubmarketReg', () => {
   it('should create a submarket', () => {
 
     const pseudoSubmarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(0)
-    const calldatas = [ 
+    const calldatas = [
       pseudoSubmarket.setIsOpen.getData(true),
       pseudoSubmarket.setCurrency.getData(params.currency1),
       pseudoSubmarket.setEscrowFeeTerabase.getData(params.escrowFeeTerabase1),
@@ -65,11 +65,11 @@ describe('SubmarketReg', () => {
       `0x${calldatas.join('')}`,
       { from: chaithereum.accounts[5] }
     ).should.eventually.be.fulfilled
-
   })
 
   it('should have triggered Registration event', () => {
-    return submarketReg.Registration({}, { fromBlock: 'latest', toBlock: 'latest' }).q().should.eventually.have.length(1)
+    return submarketReg.Registration({}, {fromBlock: 'latest', toBlock: 'latest'})
+    .q().should.eventually.have.length(1)
   })
 
   it('should have updated the submarket counts correctly', () => {
@@ -117,7 +117,7 @@ describe('SubmarketReg', () => {
       submarket.escrowFeeTerabase.q().should.eventually.be.bignumber.equal(params.escrowFeeTerabase1),
       submarket.escrowFeeCentiperun.q().should.eventually.be.bignumber.equal(params.escrowFeeCentiperun1),
       submarket.fileHash.q().should.eventually.be.ascii(params.fileHash1),
-    ]).should.be.fulfilled
+    ])
   })
 
 })

@@ -14,45 +14,65 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   {{>variable.sol variable=this}}
   {{/each}}
 
-  {{#each schemas.Store.structArrays}}
-  {{>structArray.sol struct=this}}
-
+  {{#each schemas.Store.mappings}}
+  {{>mapping.sol mapping=this}}
   {{/each}}
 
-	// function restoreProductUnits(uint index, uint quantity) requireOwnership {
-	// 	products[index].units = products[index].units + quantity;
-	// }
+  {{#each schemas.Store.structArrays}}
+  {{>structArray.sol struct=this}}
+  {{/each}}
 
-	// function depleteProductUnits(uint index, uint quantity) requireOwnership {
-	// 	if(products[index].units < quantity) throw;
-	// 	products[index].units = products[index].units - quantity;
-	// }
+  function restoreProductUnits(uint index, uint quantity) requireOwnership {
+    Products[index].units = Products[index].units + quantity;
+  }
 
- //  function addMessage(address orderAddr, bytes32 fileHash) requireOwnership {
- //    Order order = Order(orderAddr);
- //    order.addMessage(fileHash);
- //  }
+  function depleteProductUnits(uint index, uint quantity) requireOwnership {
+    if(Products[index].units < quantity) throw;
+    Products[index].units = Products[index].units - quantity;
+  }
 
- //  //TODO: cancel needs some tests
-	// function cancel(address orderAddr) requireOwnership {
-	// 	Order(orderAddr).cancel();
-	// }
+  function addMessage(address orderAddr, bytes32 fileHash) requireOwnership {
+    Order order = Order(orderAddr);
+    order.addMessage(fileHash);
+  }
 
- //    //TODO: markAsShipped needs some tests
-	// function markAsShipped(address orderAddr) requireOwnership {
+  //TODO: cancel needs some tests
+  function cancel(address orderAddr) requireOwnership {
+    Order(orderAddr).cancel();
+  }
 
- //    Order order = Order(orderAddr);
+  function markAsShipped(address orderAddr) requireOwnership {
+    Order order = Order(orderAddr);
 
- //    uint productsLength = order.getProductsLength();
+    uint productsLength = order.getProductsLength();
 
- //    for(uint i = 0; i < productsLength; i++) {
- //      uint index = order.getProductIndex(i);
- //      uint quantity = order.getProductQuantity(i);
- //      depleteProductUnits(index, quantity);
- //    }
- //    order.markAsShipped();
+    for(uint i = 0; i < productsLength; i++) {
+      uint index = order.getProductIndex(i);
+      uint quantity = order.getProductQuantity(i);
+      depleteProductUnits(index, quantity);
+    }
+    order.markAsShipped();
+    verifiedBuyers[Order(orderAddr)] = true;
+  }
 
- //    verfifiedBuyers[Order(orderAddr)] = true;
- //  }
+  function addReview(uint8 score, bytes32 fileHash) {
+    if(verifiedBuyers[msg.sender])
+    throw;
 
+    //TODO: magic numbers are bad, 5 should be a constant
+    if(score > 5)
+    throw;
+
+    Review memory review;
+    if(reviewIndices[msg.sender] == 0) {
+      reviewIndices[msg.sender] = Reviews.length;
+      Reviews.length = Reviews.length+1;
+    }
+
+    review.blockNumber = block.number;
+    review.score = score;
+    review.fileHash = fileHash;
+
+    Reviews[reviewIndices[msg.sender]] = review;
+  }
 }

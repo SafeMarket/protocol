@@ -66,7 +66,7 @@ describe('Ticker', () => {
       ticker.setPrice.q(params.currency1, params.currencyInWei1),
       ticker.setPrice.q(params.currency2, params.currencyInWei2),
       ticker.setPrice.q(params.currency3, params.currencyInWei3),
-    ]).should.eventually.be.fulfilled
+    ])
   })
 
   it('gets test params', () => {
@@ -75,7 +75,7 @@ describe('Ticker', () => {
       ticker.getPrice.q(params.currency1).should.eventually.be.bignumber.equal(params.currencyInWei1),
       ticker.getPrice.q(params.currency2).should.eventually.be.bignumber.equal(params.currencyInWei2),
       ticker.getPrice.q(params.currency3).should.eventually.be.bignumber.equal(params.currencyInWei3)
-    ]).should.eventually.be.fulfilled
+    ])
   })
 
 })

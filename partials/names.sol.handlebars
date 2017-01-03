@@ -1,1 +1,7 @@
-{{#each variables}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+{{#each variables}}
+{{#if generated}}
+  msg.{{name}}{{#unless @last}}, {{/unless}}
+{{else}}
+  {{name}}{{#unless @last}}, {{/unless}}
+{{/if}}
+{{/each}}

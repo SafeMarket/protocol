@@ -34,8 +34,10 @@ describe('forumable', () => {
 
   it('should not let random people set the Forum', () => {
     return chaithereum.web3.Q.all([
-      forumable.setForum.q(forum.address, {from: chaithereum.accounts[1]}).should.eventually.be.rejected,
-      forumable.setForum.q(forum.address, {from: chaithereum.accounts[2]}).should.eventually.be.rejected,
+      forumable.setForum.q(forum.address, {from: chaithereum.accounts[1]})
+      .should.eventually.be.rejected,
+      forumable.setForum.q(forum.address, {from: chaithereum.accounts[2]})
+      .should.eventually.be.rejected,
     ])
   })
 
@@ -45,8 +47,10 @@ describe('forumable', () => {
 
   it('should not let random people add a comment', () => {
     return chaithereum.web3.Q.all([
-      forumable.addComment.q(params.id1, params.id1, {from: chaithereum.accounts[1]}).should.eventually.be.rejected,
-      forumable.addComment.q(params.id1, params.data1, {from: chaithereum.accounts[2]}).should.eventually.be.rejected,
+      forumable.addComment.q(params.id1, params.id1, {from: chaithereum.accounts[1]})
+      .should.eventually.be.rejected,
+      forumable.addComment.q(params.id1, params.data1, {from: chaithereum.accounts[2]})
+      .should.eventually.be.rejected,
     ])
   })
 
@@ -55,6 +59,7 @@ describe('forumable', () => {
   })
 
   it('should have triggered a Comment event', () => {
-    return forum.Comment({}, { fromBlock: 'latest', toBlock: 'latest' }).q().should.eventually.have.length(1)
+    return forum.Comment({}, { fromBlock: 'latest', toBlock: 'latest' })
+    .q().should.eventually.have.length(1)
   })
 })
