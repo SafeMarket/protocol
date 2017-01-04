@@ -54,7 +54,6 @@ describe('SubmarketReg', () => {
       pseudoSubmarket.setEscrowFeeTerabase.getData(params.escrowFeeTerabase1),
       pseudoSubmarket.setEscrowFeeCentiperun.getData(params.escrowFeeCentiperun1),
       pseudoSubmarket.setFileHash.getData(params.fileHash1),
-      pseudoSubmarket.setAlias.getData(params.alias2),
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
@@ -99,15 +98,8 @@ describe('SubmarketReg', () => {
     return submarketReg.isRegistered.q(submarket.address).should.eventually.be.true
   })
 
-  it('should have correct alias', () => {
-    return chaithereum.web3.Q.all([
-      aliasReg.getAlias.q(submarket.address).should.eventually.be.ascii(params.alias2),
-      aliasReg.getAddr.q(params.alias2).should.eventually.equal(submarket.address),
-    ])
-  })
-
-  it('should have correct owner', () => {
-    return submarket.owner.q().should.eventually.equal(chaithereum.accounts[5])
+  it('should have account 5 as owner', () => {
+    return submarket.hasOwner.q(chaithereum.accounts[5]).should.eventually.equal(true)
   })
 
   it('should have correct values values', () => {

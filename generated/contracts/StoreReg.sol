@@ -20,10 +20,9 @@ contract StoreReg is executor {
 	function create(uint[] calldataLengths, bytes calldatas) {
 
 		Store store = new Store();
-    store.setAliasReg(aliasRegAddr);
 		address storeAddr = address(store);
     _execute(storeAddr, calldataLengths, calldatas);
-		store.setOwner(msg.sender);
+		store.setOwner(msg.sender, true);
 		registeredAddrsArray.push(storeAddr);
 		registeredAddrsMap[storeAddr] = true;
 

@@ -75,7 +75,6 @@ function createSubmarket (submarketArgs) {
       pseudoSubmarket.setEscrowFeeTerabase.getData(params.escrowFeeTerabase1),
       pseudoSubmarket.setEscrowFeeCentiperun.getData(params.escrowFeeCentiperun1),
       pseudoSubmarket.setFileHash.getData(params.fileHash1),
-      pseudoSubmarket.setAlias.getData(params.alias2),
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
@@ -139,7 +138,6 @@ function createStore (storeArgs) {
       pseudoStore.setMinProductsTeratotal.getData(params.minProductsTeratotal1),
       pseudoStore.setAffiliateFeeCentiperun.getData(params.affiliateFeeCentiperun1),
       pseudoStore.setFileHash.getData(params.fileHash0),
-      pseudoStore.setAlias.getData(params.alias1),
       pseudoStore.addProduct.getData(true, params.teraprice1, params.units1, params.fileHash1),
       pseudoStore.addProduct.getData(false, params.teraprice2, params.units2, params.fileHash2),
       pseudoStore.addTransport.getData(true, params.teraprice3, params.fileHash3),

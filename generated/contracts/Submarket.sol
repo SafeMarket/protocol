@@ -1,11 +1,10 @@
 pragma solidity ^0.4.4;
 
 import "forumable.sol";
-import "aliasable.sol";
 import "approvesAliases.sol";
 import "Order.sol";
 
-contract Submarket is forumable, aliasable {
+contract Submarket is ownable, forumable {
 
   function () payable {}
 

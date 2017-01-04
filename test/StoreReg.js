@@ -51,7 +51,6 @@ describe('StoreReg', () => {
       pseudoStore.setMinProductsTeratotal.getData(params.minProductsTeratotal1),
       pseudoStore.setAffiliateFeeCentiperun.getData(params.affiliateFeeCentiperun1),
       pseudoStore.setFileHash.getData(params.fileHash0),
-      pseudoStore.setAlias.getData(params.alias1),
       pseudoStore.addProduct.getData(true, params.teraprice1, params.units1, params.fileHash1),
       pseudoStore.addProduct.getData(false, params.teraprice2, params.units2, params.fileHash2),
       pseudoStore.addTransport.getData(true, params.teraprice3, params.fileHash3),
@@ -92,7 +91,7 @@ describe('StoreReg', () => {
   })
 
   it('should make the store owner the msg sender', () => {
-    return store.getOwner.q().should.eventually.be.address.equal(chaithereum.account)
+    return store.hasOwner.q(chaithereum.account).should.eventually.equal(true)
   })
 
   it('should make the store as registered', () => {

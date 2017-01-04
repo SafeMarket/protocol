@@ -2,24 +2,24 @@ pragma solidity {{solidityVersion}};
 
 contract ownable {
 
-	address public owner;
+	mapping(address => bool) public owners;
 
 	function ownable() {
-		owner = msg.sender;
+		owners[msg.sender] = true;
 	}
 
 	modifier requireOwnership {
-		if(msg.sender!=owner) {
+		if(!hasOwner(msg.sender)) {
       throw;
     }
     _;
 	}
 
-	function setOwner(address _owner) requireOwnership {
-		owner = _owner;
+	function setOwner(address addr, bool isOwner) requireOwnership {
+		owners[addr] = isOwner;
 	}
 
-  function getOwner() constant returns (address) {
-    return owner;
+  function hasOwner(address addr) constant returns (bool) {
+    return owners[addr];
   }
 }

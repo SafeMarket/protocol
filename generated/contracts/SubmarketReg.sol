@@ -20,10 +20,9 @@ contract SubmarketReg is ownable, executor {
 	function create(uint[] calldataLengths, bytes calldatas) {
 
     Submarket submarket = new Submarket();
-    submarket.setAliasReg(aliasRegAddr);
     address submarketAddr = address(submarket);
     _execute(submarketAddr, calldataLengths, calldatas);
-    submarket.setOwner(msg.sender);
+    submarket.setOwner(msg.sender, true);
     registeredAddrsArray.push(submarketAddr);
     registeredAddrsMap[submarketAddr] = true;
 

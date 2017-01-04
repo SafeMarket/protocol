@@ -2,11 +2,11 @@ pragma solidity ^0.4.4;
 
 import "forumable.sol";
 import "orderable.sol";
-import "aliasable.sol";
 import "approvesAliases.sol";
 import "Order.sol";
+import "ownable.sol";
 
-contract Store is forumable, aliasable, orderable, approvesAliases {
+contract Store is ownable, forumable, orderable, approvesAliases {
 
   function () payable {}
 
