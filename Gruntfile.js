@@ -1,4 +1,6 @@
 const glob = require('glob-fs')()
+const schemas = require('./modules/schemas')
+const solc = require('solc')
 
 module.exports = function gruntfile(grunt) {
   grunt.loadNpmTasks('grunt-solc')
@@ -8,7 +10,7 @@ module.exports = function gruntfile(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean')
 
   const templateData = {
-    schemas: require('./modules/schemas')
+    schemas: schemas
   }
   templateData.solidityVersion = grunt.file.readJSON('package.json').devDependencies.solc
   const templateFiles = glob.readdirSync('contracts/*.sol.handlebars').map((template) => {
@@ -27,7 +29,7 @@ module.exports = function gruntfile(grunt) {
       tests: {
         files: ['test/*'],
         tasks: ['mochaTest']
-      },
+      }
     },
     'compile-handlebars': {
       contracts: {
@@ -44,7 +46,7 @@ module.exports = function gruntfile(grunt) {
       default: {
         options: {
           files: ['generated/contracts/*'],
-          solc: require('solc'),
+          solc: solc,
           output: 'generated/contracts.json',
           doOptimize: true
         }
@@ -59,13 +61,13 @@ module.exports = function gruntfile(grunt) {
         noFail: true,
         timeout: 10000
       }
-    },
+    }
   })
 
   grunt.registerTask('build', [
     'clean',
     'compile-handlebars',
-    'solc',
+    'solc'
   ])
 
   grunt.registerTask('init', [

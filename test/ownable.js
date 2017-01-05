@@ -1,8 +1,3 @@
-/* eslint no-unused-expressions: "off" */
-/* globals describe, it, before */
-
-"use strict";
-
 const Q = require('q')
 const contracts = require('../modules/contracts')
 const chaithereum = require('./chaithereum')
@@ -14,7 +9,7 @@ describe('ownable', () => {
   it('successfully instantiates', () => {
     return chaithereum.web3.eth.contract(contracts.ownable.abi).new.q({
       data: contracts.ownable.bytecode,
-      gas: chaithereum.gasLimit,
+      gas: chaithereum.gasLimit
     }).should.eventually.be.contract.then((_ownable) => {
       ownable = _ownable
     })
@@ -26,7 +21,9 @@ describe('ownable', () => {
 
   it('should prevent randos from setting a new owner', () => {
     return ownable.setOwner
-    .q(chaithereum.accounts[1], true, {from: chaithereum.accounts[1]}).should.eventually.be.rejected
+    .q(chaithereum.accounts[1], true, {
+      from: chaithereum.accounts[1]
+    }).should.eventually.be.rejected
   })
 
   it('should allow the owner to change the owner', () => {
@@ -36,7 +33,7 @@ describe('ownable', () => {
   it('should have both account 0 and 1 as owners', () => {
     return Q.all([
       ownable.hasOwner.q(chaithereum.accounts[0]).should.eventually.equal(true),
-      ownable.hasOwner.q(chaithereum.accounts[1]).should.eventually.equal(true),
+      ownable.hasOwner.q(chaithereum.accounts[1]).should.eventually.equal(true)
     ])
   })
 

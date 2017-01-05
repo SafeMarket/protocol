@@ -2,6 +2,7 @@ const contracts = require('../modules/contracts')
 const chaithereum = require('./chaithereum')
 const Q = require('q')
 const params = require('./testparams.js')
+
 const deferred = Q.defer()
 
 module.exports = deferred.promise
@@ -58,16 +59,16 @@ describe('Ticker', () => {
       ticker.setPrice.q(params.currency0, params.currencyInWei0),
       ticker.setPrice.q(params.currency1, params.currencyInWei1),
       ticker.setPrice.q(params.currency2, params.currencyInWei2),
-      ticker.setPrice.q(params.currency3, params.currencyInWei3),
+      ticker.setPrice.q(params.currency3, params.currencyInWei3)
     ])
   })
 
   it('gets test params', () => {
     return chaithereum.web3.Q.all([
-      ticker.getPrice.q(params.currency0).should.eventually.be.bignumber.equal(params.currencyInWei0),
-      ticker.getPrice.q(params.currency1).should.eventually.be.bignumber.equal(params.currencyInWei1),
-      ticker.getPrice.q(params.currency2).should.eventually.be.bignumber.equal(params.currencyInWei2),
-      ticker.getPrice.q(params.currency3).should.eventually.be.bignumber.equal(params.currencyInWei3)
+      ticker.getPrice.q(params.currency0).should.eventually.bignumber.equal(params.currencyInWei0),
+      ticker.getPrice.q(params.currency1).should.eventually.bignumber.equal(params.currencyInWei1),
+      ticker.getPrice.q(params.currency2).should.eventually.bignumber.equal(params.currencyInWei2),
+      ticker.getPrice.q(params.currency3).should.eventually.bignumber.equal(params.currencyInWei3)
     ])
   })
 

@@ -1,4 +1,6 @@
-let params = {
+/* eslint-disable */
+
+const params = {
   teraprice1: 1001000,
   teraprice2: 2345000,
   teraprice3: 34425200,

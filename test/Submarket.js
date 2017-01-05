@@ -2,12 +2,11 @@ const contracts = require('../modules/contracts')
 const chaithereum = require('./chaithereum')
 const params = require('./testparams.js')
 const Q = require('q')
-const multiproxPromise = require('./multiprox')
+const multiproxPromise = require('./Multiprox')
 const parseTransactionReceipt = require('../modules/parseTransactionReceipt')
 
 const deferred = Q.defer()
 module.exports = deferred.promise
-
 
 let multiprox
 
@@ -32,14 +31,14 @@ describe('Submarket', () => {
       pseudoSubmarket.setCurrency.getData(params.currency1),
       pseudoSubmarket.setEscrowFeeTerabase.getData(params.escrowFeeTerabase1),
       pseudoSubmarket.setEscrowFeeCentiperun.getData(params.escrowFeeCentiperun1),
-      pseudoSubmarket.setFileHash.getData(params.fileHash1),
+      pseudoSubmarket.setFileHash.getData(params.fileHash1)
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
     const lengths = calldatas.map((calldata) => {
       return Math.ceil(calldata.length / 2)
     })
-    const calldatasConcated = '0x' + calldatas.join('')
+    const calldatasConcated = `0x${calldatas.join('')}`
 
     return multiprox.createAndExecute.q(
       contracts.Submarket.bytecode, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
@@ -67,7 +66,7 @@ describe('Submarket', () => {
       submarket.escrowFeeCentiperun.q().should.eventually.be.bignumber.equal(
         params.escrowFeeCentiperun1
       ),
-      submarket.fileHash.q().should.eventually.be.ascii(params.fileHash1),
+      submarket.fileHash.q().should.eventually.be.ascii(params.fileHash1)
     ]).should.be.fulfilled
   })
 

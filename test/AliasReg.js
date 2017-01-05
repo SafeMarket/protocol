@@ -1,12 +1,9 @@
-/* eslint no-unused-expressions: "off" */
-/* globals describe, it, before */
-
-"use strict";
-
 const contracts = require('../modules/contracts')
 const chaithereum = require('./chaithereum')
 const Q = require('q')
+
 const deferred = Q.defer()
+
 module.exports = deferred.promise
 
 describe('AliasReg', () => {
@@ -18,9 +15,9 @@ describe('AliasReg', () => {
   })
 
   it('successfully instantiates', () => {
-    return chaithereum.web3.eth.contract(contracts.AliasReg.abi).new
-    .q({data: contracts.AliasReg.bytecode, gas: chaithereum.gasLimit}).should.eventually.be.contract
-    .then((_aliasReg) => {
+    return chaithereum.web3.eth.contract(contracts.AliasReg.abi).new.q({
+      data: contracts.AliasReg.bytecode, gas: chaithereum.gasLimit
+    }).should.eventually.be.contract.then((_aliasReg) => {
       aliasReg = _aliasReg
     }).should.be.fulfilled
   })
@@ -38,7 +35,7 @@ describe('AliasReg', () => {
       aliasReg.claimAlias.q('myalias'),
       aliasReg.claimAlias.q('myalias', {
         from: chaithereum.accounts[2]
-      }),
+      })
     ]).should.eventually.be.rejected
   })
 

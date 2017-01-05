@@ -1,14 +1,14 @@
 function Contract(name, variables, mappings) {
-  this.name
+  this.name = name
   this.variables = variables || []
   this.structArrays = {}
   this.mappings = mappings || []
 }
 
-Contract.prototype.addStructArray = function(struct) {
+Contract.prototype.addStructArray = function addStructArray(struct) {
   this.structArrays[struct.name] = struct
 }
-Contract.prototype.addVar = function(variable) {
+Contract.prototype.addVar = function addVar(variable) {
   this.variables[variable.name] = variable
 }
 
@@ -25,22 +25,22 @@ function Variable(type, name, generated) {
 }
 
 function Mapping(key, value, name) {
-  this.key = key;
-  this.value = value;
-  this.name = name;
+  this.key = key
+  this.value = value
+  this.name = name
 }
 
-Store = new Contract('Store', [
+const Store = new Contract('Store', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
   new Variable('uint', 'bufferCentiperun'),
   new Variable('uint', 'disputeSeconds'),
   new Variable('uint', 'minProductsTeratotal'),
   new Variable('uint', 'affiliateFeeCentiperun'),
-  new Variable('bytes32', 'fileHash'),
+  new Variable('bytes32', 'fileHash')
 ], [
   new Mapping('address', 'bool', 'verifiedBuyer'),
-  new Mapping('address', 'uint', 'reviewIndice'),
+  new Mapping('address', 'uint', 'reviewIndice')
 ])
 
 Store.addStructArray(new Struct('Product', [
@@ -63,7 +63,7 @@ Store.addStructArray(new Struct('Review', [
   new Variable('bytes32', 'fileHash')
 ], true))
 
-Submarket = new Contract('submarket', [
+const Submarket = new Contract('submarket', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
   new Variable('uint', 'escrowFeeTerabase'),
@@ -71,7 +71,7 @@ Submarket = new Contract('submarket', [
   new Variable('bytes32', 'fileHash')
 ], [
   new Mapping('address', 'bool', 'verifiedBuyer'),
-  new Mapping('address', 'uint', 'reviewIndice'),
+  new Mapping('address', 'uint', 'reviewIndice')
 ])
 
 Submarket.addStructArray(new Struct('Review', [

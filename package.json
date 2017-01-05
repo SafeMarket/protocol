@@ -8,6 +8,11 @@
   "license": "MIT",
   "devDependencies": {
     "chaithereum": "^2.0.6",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-react": "^6.8.0",
     "ethereumjs-testrpc": "^3.0.1",
     "glob-fs": "^0.1.6",
     "grunt": "^1.0.1",
