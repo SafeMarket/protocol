@@ -1,50 +1,31 @@
-/* eslint no-unused-expressions: "off" */
-/* globals describe, it, before */
-
-"use strict";
-
 const contracts = require('../modules/contracts')
-const chaithereum = require('chaithereum')
+const chaithereum = require('./chaithereum')
 const params = require('./testparams.js')
 const Q = require('q')
-const AliasRegTestPromise = require('./AliasReg')
-const deferred = Q.defer()
-module.exports = deferred.promise
+const multiproxPromise = require('./multiprox')
+const parseTransactionReceipt = require('../modules/parseTransactionReceipt')
 
-before(() => {
-  return chaithereum.promise
+const deferred = Q.defer()
+
+let multiprox
+multiproxPromise.then((_multiprox) => {
+  multiprox = _multiprox
 })
 
-describe('StoreReg', () => {
+module.exports = deferred.promise
 
-  let storeReg
-  let aliasReg
+describe('Store', () => {
+
   let store
 
-  AliasRegTestPromise.then((results) => {
-    aliasReg = results.aliasReg
-  })
-
   after(() => {
-    deferred.resolve({ storeReg, store })
+    deferred.resolve(store)
   })
 
-  it('successfully instantiates', () => {
-    return chaithereum.web3.eth.contract(contracts.StoreReg.abi).new.q(
-      aliasReg.address,
-      { data: contracts.StoreReg.bytecode }
-    ).should.eventually.be.contract.then((_storeReg) => {
-      storeReg = _storeReg
-    }).should.be.fulfilled
-  })
-
-  it('should have correct aliasRegAddr', () => {
-    return storeReg.aliasRegAddr.q().should.eventually.equal(aliasReg.address)
-  })
-
-  it('should create a store', () => {
+  it('successfully create via multiprox', () => {
     const pseudoStore = chaithereum.web3.eth.contract(contracts.Store.abi).at(0)
     const calldatas = [
+      pseudoStore.setOwner.getData(chaithereum.account, true),
       pseudoStore.setCurrency.getData(params.currency1),
       pseudoStore.setBufferCentiperun.getData(params.bufferCentiperun1),
       pseudoStore.setDisputeSeconds.getData(params.disputeSeconds1),
@@ -55,54 +36,41 @@ describe('StoreReg', () => {
       pseudoStore.addProduct.getData(false, params.teraprice2, params.units2, params.fileHash2),
       pseudoStore.addTransport.getData(true, params.teraprice3, params.fileHash3),
       pseudoStore.addTransport.getData(false, params.teraprice4, params.fileHash4),
-      pseudoStore.approveAlias.getData(params.alias1),
-      pseudoStore.approveAlias.getData(params.alias2),
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
+    const calldatasConcated = `0x${calldatas.join('')}`
     const lengths = calldatas.map((calldata) => { return Math.ceil(calldata.length / 2) })
 
-    return storeReg.create.q(lengths, `0x${calldatas.join('')}`).should.be.fulfilled
-  })
-
-  it('should have triggered Registration event', () => {
-    return storeReg.Registration({}, { fromBlock: 'latest', toBlock: 'latest' })
-    .q().should.eventually.have.length(1)
-  })
-
-  it('should have updated the store counts correctly', () => {
-    return chaithereum.web3.Q.all([
-      storeReg.getStoresLength.q().should.eventually.be.bignumber.equal(1),
-      storeReg.getCreatedStoresLength.q(chaithereum.account).should.eventually.be.bignumber.equal(1),
-    ])
-  })
-
-  it('should get the store address', () => {
-    return chaithereum.web3.Q.all([
-      storeReg.getStoreAddr.q().should.eventually.be.address,
-      storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).should.eventually.be.address,
-    ])
-  })
-
-  it('should make the store address a contract', () => {
-    return storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).then((_storeAddr) => {
-      store = chaithereum.web3.eth.contract(contracts.Store.abi).at(_storeAddr)
+    return multiprox.createAndExecute.q(
+      contracts.Store.bytecode, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
+    ).then((transactionHash) => {
+      return chaithereum.web3.eth.getTransactionReceipt.q(
+        transactionHash
+      ).then((transactionReceipt) => {
+        const addr = parseTransactionReceipt(transactionReceipt).addr
+        store = chaithereum.web3.eth.contract(contracts.Store.abi).at(addr)
+      })
     })
   })
 
-  it('should make the store owner the msg sender', () => {
+  it('should have right bytecode', () => {
+    return chaithereum.web3.eth.getCode.q(store.address).should.eventually.equal(
+      contracts.Store.runtimeBytecode
+    )
+  })
+
+  it('should have chaithereum.account as owner', () => {
     return store.hasOwner.q(chaithereum.account).should.eventually.equal(true)
   })
 
-  it('should make the store as registered', () => {
-    return storeReg.isRegistered.q(store.address).should.eventually.be.true
+  it('should have correct currency', () => {
+    return store.currency.q().should.eventually.be.ascii(params.currency1)
   })
 
-  describe('store', () => {
-
-    it('should have correct products length', () => {
-      return store.getProductsLength.q().should.eventually.be.bignumber.equal(2)
-    })
+  it('should have correct products length', () => {
+    return store.getProductsLength.q().should.eventually.be.bignumber.equal(2)
+  })
 
     it('should have correct products', () => {
       return chaithereum.web3.Q.all([
@@ -132,17 +100,10 @@ describe('StoreReg', () => {
       ])
     })
 
-    it('should have correct approved aliases', () => {
-      return chaithereum.web3.Q.all([
-        store.getApprovedAliasesLength.q().should.eventually.be.bignumber.equal(2),
-        store.getApprovedAlias.q(0).should.eventually.be.ascii(params.alias1),
-        store.getApprovedAlias.q(1).should.eventually.be.ascii(params.alias2)
-      ])
-    })
-
     it('should be able to add a product', () => {
-      return store.addProduct
-      .q(true, params.teraprice5, params.units3, params.fileHash5).should.eventually.be.fulfilled
+      return store.addProduct.q(
+        true, params.teraprice5, params.units3, params.fileHash5, { gas: chaithereum.gasLimit }
+      ).should.eventually.be.fulfilled
     })
 
     it('should have added the product correctly', () => {
@@ -156,7 +117,9 @@ describe('StoreReg', () => {
     })
 
     it('should be able to add a transport', () => {
-      return store.addTransport.q(true, params.teraprice6, params.fileHash6).should.eventually.be.fulfilled
+      return store.addTransport.q(
+        true, params.teraprice6, params.fileHash6, { gas: chaithereum.gasLimit }
+      ).should.eventually.be.fulfilled
     })
 
     it('should have added the transport correctly', () => {
@@ -235,6 +198,6 @@ describe('StoreReg', () => {
     //   ]).should.eventually.be.fulfilled
     // })
 
-  })
+
 
 })

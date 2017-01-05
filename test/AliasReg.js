@@ -4,14 +4,10 @@
 "use strict";
 
 const contracts = require('../modules/contracts')
-const chaithereum = require('chaithereum')
+const chaithereum = require('./chaithereum')
 const Q = require('q')
 const deferred = Q.defer()
 module.exports = deferred.promise
-
-before(() => {
-  return chaithereum.promise
-})
 
 describe('AliasReg', () => {
 
@@ -23,7 +19,7 @@ describe('AliasReg', () => {
 
   it('successfully instantiates', () => {
     return chaithereum.web3.eth.contract(contracts.AliasReg.abi).new
-    .q({data: contracts.AliasReg.bytecode}).should.eventually.be.contract
+    .q({data: contracts.AliasReg.bytecode, gas: chaithereum.gasLimit}).should.eventually.be.contract
     .then((_aliasReg) => {
       aliasReg = _aliasReg
     }).should.be.fulfilled

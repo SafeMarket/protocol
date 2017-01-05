@@ -1,10 +1,8 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.6;
 
-import "forumable.sol";
-import "approvesAliases.sol";
-import "Order.sol";
+import "ownable.sol";
 
-contract Submarket is ownable, forumable {
+contract Submarket is ownable {
 
   function () payable {}
 
@@ -70,29 +68,4 @@ contract Submarket is ownable, forumable {
   }
   /* END Review structs */
 
-  function resolve(address orderAddr, uint buyerAmountCentiperun) requireOwnership {
-    Order(orderAddr).resolve(buyerAmountCentiperun);
-    verifiedBuyers[orderAddr] = true;
-  }
-
-  function addReview(uint8 score, bytes32 fileHash) {
-    if(verifiedBuyers[msg.sender])
-    throw;
-
-    //TODO: magic numbers are bad, 5 should be a constant
-    if(score > 5)
-    throw;
-
-    Review memory review;
-    if(reviewIndices[msg.sender] == 0) {
-      reviewIndices[msg.sender] = Reviews.length;
-      Reviews.length = Reviews.length+1;
-    }
-
-    review.blockNumber = block.number;
-    review.score = score;
-    review.fileHash = fileHash;
-
-    Reviews[reviewIndices[msg.sender]] = review;
-  }
 }

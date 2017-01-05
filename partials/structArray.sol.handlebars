@@ -13,8 +13,12 @@ function get{{struct.name}}sLength() constant returns (uint) {
 }
 
 {{#unless struct.skipAdd}}
-function add{{struct.name}}({{>inputs.sol variables=struct.variables}}) requireOwnership {
-  {{struct.name}}s.push({{struct.name}}({{>names.sol variables=struct.variables}}));
+function add{{struct.name}}(
+  {{>inputs.sol variables=struct.variables}}
+) requireOwnership {
+  {{struct.name}}s.push({{struct.name}}(
+  {{>names.sol variables=struct.variables}}
+  ));
 }
 {{/unless}}
 

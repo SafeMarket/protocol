@@ -1,17 +1,10 @@
-/* eslint no-unused-expressions: "off" */
-/* globals describe, it, before, beforeEach */
-
-
 const contracts = require('../modules/contracts')
-const chaithereum = require('chaithereum')
+const chaithereum = require('./chaithereum')
 const Q = require('q')
 const params = require('./testparams.js')
 const deferred = Q.defer()
-module.exports = deferred.promise
 
-before(() => {
-  return chaithereum.promise
-})
+module.exports = deferred.promise
 
 describe('Ticker', () => {
 
@@ -23,7 +16,7 @@ describe('Ticker', () => {
 
   it('successfully instantiates', () => {
     return chaithereum.web3.eth.contract(contracts.Ticker.abi).new.q(
-      { data: contracts.Ticker.bytecode }
+      { data: contracts.Ticker.bytecode, gas: chaithereum.gasLimit }
     ).should.eventually.be.contract.then((_ticker) => {
       ticker = _ticker
     })

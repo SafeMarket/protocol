@@ -4,11 +4,7 @@
 "use strict";
 
 const contracts = require('../modules/contracts')
-const chaithereum = require('chaithereum')
-
-before(() => {
-  return chaithereum.promise
-})
+const chaithereum = require('./chaithereum')
 
 describe('AffiliateReg', () => {
 
@@ -16,7 +12,7 @@ describe('AffiliateReg', () => {
 
   it('successfully instantiates', () => {
     return chaithereum.web3.eth.contract(contracts.AffiliateReg.abi).new
-    .q({ data: contracts.AffiliateReg.bytecode }).should.eventually.be.contract
+    .q({ data: contracts.AffiliateReg.bytecode, gas: chaithereum.gasLimit }).should.eventually.be.contract
     .then((_affiliateReg) => {
       affiliateReg = _affiliateReg
     }).should.be.fulfilled

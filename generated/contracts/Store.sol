@@ -1,12 +1,8 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.6;
 
-import "forumable.sol";
-import "orderable.sol";
-import "approvesAliases.sol";
-import "Order.sol";
 import "ownable.sol";
 
-contract Store is ownable, forumable, orderable, approvesAliases {
+contract Store is ownable {
 
   function () payable {}
 
@@ -45,16 +41,18 @@ contract Store is ownable, forumable, orderable, approvesAliases {
     return Products.length;
   }
   
-  function addProduct(bool isActive, 
-  uint teraprice, 
-  uint units, 
-  bytes32 fileHash
+  function addProduct(
+    bool _isActive, 
+    uint _teraprice, 
+    uint _units, 
+    bytes32 _fileHash
   ) requireOwnership {
-    Products.push(Product(  isActive, 
-    teraprice, 
-    units, 
-    fileHash
-  ));
+    Products.push(Product(
+      _isActive, 
+      _teraprice, 
+      _units, 
+      _fileHash
+    ));
   }
   
   function getProductIsActive (uint index) constant returns (bool isActive) {
@@ -100,14 +98,16 @@ contract Store is ownable, forumable, orderable, approvesAliases {
     return Transports.length;
   }
   
-  function addTransport(bool isActive, 
-  uint teraprice, 
-  bytes32 fileHash
+  function addTransport(
+    bool _isActive, 
+    uint _teraprice, 
+    bytes32 _fileHash
   ) requireOwnership {
-    Transports.push(Transport(  isActive, 
-    teraprice, 
-    fileHash
-  ));
+    Transports.push(Transport(
+      _isActive, 
+      _teraprice, 
+      _fileHash
+    ));
   }
   
   function getTransportIsActive (uint index) constant returns (bool isActive) {
@@ -178,57 +178,4 @@ contract Store is ownable, forumable, orderable, approvesAliases {
   }
   /* END Review structs */
 
-  function restoreProductUnits(uint index, uint quantity) requireOwnership {
-    Products[index].units = Products[index].units + quantity;
-  }
-
-  function depleteProductUnits(uint index, uint quantity) requireOwnership {
-    if(Products[index].units < quantity) throw;
-    Products[index].units = Products[index].units - quantity;
-  }
-
-  function addMessage(address orderAddr, bytes32 fileHash) requireOwnership {
-    Order order = Order(orderAddr);
-    order.addMessage(fileHash);
-  }
-
-  //TODO: cancel needs some tests
-  function cancel(address orderAddr) requireOwnership {
-    Order(orderAddr).cancel();
-  }
-
-  function markAsShipped(address orderAddr) requireOwnership {
-    Order order = Order(orderAddr);
-
-    uint productsLength = order.getProductsLength();
-
-    for(uint i = 0; i < productsLength; i++) {
-      uint index = order.getProductIndex(i);
-      uint quantity = order.getProductQuantity(i);
-      depleteProductUnits(index, quantity);
-    }
-    order.markAsShipped();
-    verifiedBuyers[Order(orderAddr)] = true;
-  }
-
-  function addReview(uint8 score, bytes32 fileHash) {
-    if(verifiedBuyers[msg.sender])
-    throw;
-
-    //TODO: magic numbers are bad, 5 should be a constant
-    if(score > 5)
-    throw;
-
-    Review memory review;
-    if(reviewIndices[msg.sender] == 0) {
-      reviewIndices[msg.sender] = Reviews.length;
-      Reviews.length = Reviews.length+1;
-    }
-
-    review.blockNumber = block.number;
-    review.score = score;
-    review.fileHash = fileHash;
-
-    Reviews[reviewIndices[msg.sender]] = review;
-  }
 }

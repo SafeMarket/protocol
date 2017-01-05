@@ -1,4 +1,4 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.6;
 
 contract ownable {
 
@@ -9,7 +9,7 @@ contract ownable {
 	}
 
 	modifier requireOwnership {
-		if(!hasOwner(msg.sender)) {
+		if(msg.sender != address(this) && !hasOwner(msg.sender)) {
       throw;
     }
     _;

@@ -5,11 +5,7 @@
 
 const Q = require('q')
 const contracts = require('../modules/contracts')
-const chaithereum = require('chaithereum')
-
-before(() => {
-  return chaithereum.promise
-})
+const chaithereum = require('./chaithereum')
 
 describe('ownable', () => {
 
@@ -18,6 +14,7 @@ describe('ownable', () => {
   it('successfully instantiates', () => {
     return chaithereum.web3.eth.contract(contracts.ownable.abi).new.q({
       data: contracts.ownable.bytecode,
+      gas: chaithereum.gasLimit,
     }).should.eventually.be.contract.then((_ownable) => {
       ownable = _ownable
     })

@@ -9,7 +9,7 @@ contract ownable {
 	}
 
 	modifier requireOwnership {
-		if(!hasOwner(msg.sender)) {
+		if(msg.sender != address(this) && !hasOwner(msg.sender)) {
       throw;
     }
     _;
