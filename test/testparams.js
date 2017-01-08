@@ -1,4 +1,15 @@
+const chaithereum = require('chaithereum')
+
 let params = {
+  masterAcc: chaithereum.accounts[0],
+  buyerAcc: chaithereum.accounts[1],
+  storeAcc: chaithereum.accounts[2],
+  submarketAcc: chaithereum.accounts[3],
+  affiliateAcc1: chaithereum.accounts[4],
+  affiliateAcc2: chaithereum.accounts[5],
+  randomAcc1: chaithereum.accounts[6],
+  randomAcc2: chaithereum.accounts[7],
+  tickerAcc: chaithereum.accounts[8],
   teraprice1: 1001000,
   teraprice2: 2345000,
   teraprice3: 34425200,

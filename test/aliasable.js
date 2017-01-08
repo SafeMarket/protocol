@@ -34,8 +34,8 @@ describe('aliasable', () => {
 
   it('should not let random people set the AliasReg', () => {
     return chaithereum.web3.Q.all([
-      aliasable.setAliasReg.q(aliasReg.address, {from: chaithereum.accounts[1]}).should.eventually.be.rejected,
-      aliasable.setAliasReg.q(aliasReg.address, {from: chaithereum.accounts[2]}).should.eventually.be.rejected,
+      aliasable.setAliasReg.q(aliasReg.address, {from: params.randomAcc1}).should.eventually.be.rejected,
+      aliasable.setAliasReg.q(aliasReg.address, {from: params.randomAcc2}).should.eventually.be.rejected,
     ])
   })
 
@@ -45,8 +45,8 @@ describe('aliasable', () => {
 
   it('should not let random people set the contract alias', () => {
     return chaithereum.web3.Q.all([
-      aliasable.setAlias.q(params.alias1, {from: chaithereum.accounts[1]}).should.eventually.be.rejected,
-      aliasable.setAlias.q(params.alias1, {from: chaithereum.accounts[2]}).should.eventually.be.rejected,
+      aliasable.setAlias.q(params.alias1, {from: params.randomAcc1}).should.eventually.be.rejected,
+      aliasable.setAlias.q(params.alias1, {from: params.randomAcc2}).should.eventually.be.rejected,
     ])
   })
 

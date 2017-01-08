@@ -24,21 +24,21 @@ describe('ownable', () => {
 
   it('should return the correct owner', () => {
     return ownable.getOwner.q().should.eventually.be.address
-    .equal(chaithereum.accounts[0])
+    .equal(params.masterAcc)
   })
 
   it('should prevent randos from changing the owner', () => {
     return ownable.setOwner
-    .q(chaithereum.accounts[1], {from: chaithereum.accounts[1]}).should.eventually.be.rejected
+    .q(params.randomAcc, {from: params.randomAcc}).should.eventually.be.rejected
   })
 
   it('should allow the owner to change the owner', () => {
-    return ownable.setOwner.q(chaithereum.accounts[1]).should.eventually.be.fulfilled
+    return ownable.setOwner.q(params.randomAcc).should.eventually.be.fulfilled
   })
 
   it('should return the correct owner', () => {
     return ownable.getOwner.q().should.eventually.be.address
-    .equal(chaithereum.accounts[1])
+    .equal(params.randomAcc)
   })
 
 })

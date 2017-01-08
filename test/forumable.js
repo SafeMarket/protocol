@@ -34,9 +34,9 @@ describe('forumable', () => {
 
   it('should not let random people set the Forum', () => {
     return chaithereum.web3.Q.all([
-      forumable.setForum.q(forum.address, {from: chaithereum.accounts[1]})
+      forumable.setForum.q(forum.address, {from: params.randomAcc1})
       .should.eventually.be.rejected,
-      forumable.setForum.q(forum.address, {from: chaithereum.accounts[2]})
+      forumable.setForum.q(forum.address, {from: params.randomAcc2})
       .should.eventually.be.rejected,
     ])
   })
@@ -47,9 +47,9 @@ describe('forumable', () => {
 
   it('should not let random people add a comment', () => {
     return chaithereum.web3.Q.all([
-      forumable.addComment.q(params.id1, params.id1, {from: chaithereum.accounts[1]})
+      forumable.addComment.q(params.id1, params.id1, {from: params.randomAcc1})
       .should.eventually.be.rejected,
-      forumable.addComment.q(params.id1, params.data1, {from: chaithereum.accounts[2]})
+      forumable.addComment.q(params.id1, params.data1, {from: params.randomAcc2})
       .should.eventually.be.rejected,
     ])
   })

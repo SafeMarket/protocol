@@ -74,25 +74,25 @@ describe('StoreReg', () => {
   it('should have updated the store counts correctly', () => {
     return chaithereum.web3.Q.all([
       storeReg.getStoresLength.q().should.eventually.be.bignumber.equal(1),
-      storeReg.getCreatedStoresLength.q(chaithereum.account).should.eventually.be.bignumber.equal(1),
+      storeReg.getCreatedStoresLength.q(params.marketAcc).should.eventually.be.bignumber.equal(1),
     ])
   })
 
   it('should get the store address', () => {
     return chaithereum.web3.Q.all([
       storeReg.getStoreAddr.q().should.eventually.be.address,
-      storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).should.eventually.be.address,
+      storeReg.getCreatedStoreAddr.q(params.marketAcc, 0).should.eventually.be.address,
     ])
   })
 
   it('should make the store address a contract', () => {
-    return storeReg.getCreatedStoreAddr.q(chaithereum.account, 0).then((_storeAddr) => {
+    return storeReg.getCreatedStoreAddr.q(params.marketAcc, 0).then((_storeAddr) => {
       store = chaithereum.web3.eth.contract(contracts.Store.abi).at(_storeAddr)
     })
   })
 
   it('should make the store owner the msg sender', () => {
-    return store.getOwner.q().should.eventually.be.address.equal(chaithereum.account)
+    return store.getOwner.q().should.eventually.be.address.equal(params.marketAcc)
   })
 
   it('should make the store as registered', () => {

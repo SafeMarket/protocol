@@ -34,9 +34,9 @@ describe('orderable', () => {
 
   it('should not let random people set the OrderReg', () => {
     return chaithereum.web3.Q.all([
-      orderable.setOrderReg.q(orderReg.address, {from: chaithereum.accounts[1]})
+      orderable.setOrderReg.q(orderReg.address, {from: params.randomAcc1})
       .should.eventually.be.rejected,
-      orderable.setOrderReg.q(orderReg.address, {from: chaithereum.accounts[2]})
+      orderable.setOrderReg.q(orderReg.address, {from: params.randomAcc2})
       .should.eventually.be.rejected,
     ])
   })

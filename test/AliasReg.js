@@ -41,7 +41,7 @@ describe('AliasReg', () => {
     return chaithereum.web3.Q.all([
       aliasReg.claimAlias.q('myalias'),
       aliasReg.claimAlias.q('myalias', {
-        from: chaithereum.accounts[2]
+        from: params.randomAcc1
       }),
     ]).should.eventually.be.rejected
   })

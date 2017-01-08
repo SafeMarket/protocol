@@ -26,8 +26,8 @@ describe('approvesAliases', () => {
 
   it('should not let random people approve an alias', () => {
     return chaithereum.web3.Q.all([
-      approvesAliases.approveAlias.q(params.alias1, {from: chaithereum.accounts[1]}).should.eventually.be.rejected,
-      approvesAliases.approveAlias.q(params.alias2, {from: chaithereum.accounts[2]}).should.eventually.be.rejected,
+      approvesAliases.approveAlias.q(params.alias1, {from: params.randomAcc1}).should.eventually.be.rejected,
+      approvesAliases.approveAlias.q(params.alias2, {from: params.randomAcc2}).should.eventually.be.rejected,
     ])
   })
 
@@ -45,8 +45,8 @@ describe('approvesAliases', () => {
 
   it('should not let random people disapprove an alias', () => {
     return chaithereum.web3.Q.all([
-      approvesAliases.disapproveAlias.q(params.alias1, {from: chaithereum.accounts[1]}).should.eventually.be.rejected,
-      approvesAliases.disapproveAlias.q(params.alias2, {from: chaithereum.accounts[2]}).should.eventually.be.rejected,
+      approvesAliases.disapproveAlias.q(params.alias1, {from: params.randomAcc1}).should.eventually.be.rejected,
+      approvesAliases.disapproveAlias.q(params.alias2, {from: params.randomAcc2}).should.eventually.be.rejected,
     ])
   })
 

@@ -18,7 +18,7 @@ before(() => {
 function createTicker (tickerArgs) {
   it('successfully creates a new Ticker', () => {
     return chaithereum.web3.eth.contract(contracts.Ticker.abi).new
-    .q({data: contracts.Ticker.bytecode, from: chaithereum.accounts[3]})
+    .q({data: contracts.Ticker.bytecode, from: params.tickerAcc})
     .should.eventually.be.contract.then((_ticker) => {
       tickerArgs.address = _ticker.address
       tickerArgs.contract = _ticker
@@ -28,13 +28,13 @@ function createTicker (tickerArgs) {
   it('sets the ticker prices', () => {
     return chaithereum.web3.Q.all([
       tickerArgs.contract.setPrice.q(params.currency0, params.currencyInWei0,
-        {from: chaithereum.accounts[3]}),
+        {from: params.tickerAcc}),
       tickerArgs.contract.setPrice.q(params.currency1, params.currencyInWei1,
-        {from: chaithereum.accounts[3]}),
+        {from: params.tickerAcc}),
       tickerArgs.contract.setPrice.q(params.currency2, params.currencyInWei2,
-        {from: chaithereum.accounts[3]}),
+        {from: params.tickerAcc}),
       tickerArgs.contract.setPrice.q(params.currency3, params.currencyInWei3,
-        {from: chaithereum.accounts[3]}),
+        {from: params.tickerAcc}),
     ]).should.eventually.be.fulfilled
   })
 }
@@ -84,12 +84,12 @@ function createSubmarket (submarketArgs) {
     return submarketReg.create.q(
       lengths,
       `0x${calldatas.join('')}`,
-      { from: chaithereum.accounts[2] }
+      { from: params.submarketAcc }
     ).should.eventually.be.fulfilled
   })
 
   it('should make the submarket address a contract', (done) => {
-    return submarketReg.getCreatedSubmarketAddr.q(chaithereum.accounts[2], 0)
+    return submarketReg.getCreatedSubmarketAddr.q(params.submarketAcc, 0)
     .then((_submarketAddr) => {
       submarketArgs.address = _submarketAddr
       submarketArgs.contract = chaithereum.web3.eth
@@ -193,7 +193,7 @@ function createOrder (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
     after('creation succeeds', () => {
       return order.create.q(
-        chaithereum.accounts[1],
+        params.buyerAcc,
         storeArgs.address,
         submarketArgs.address,
         params.address0,
@@ -240,7 +240,7 @@ function runCreateOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
       specify('creation fails', () => {
         return order.create.q(
-          chaithereum.accounts[1],
+          params.buyerAcc,
           storeArgs.address,
           params.address0,
           params.address0,
@@ -265,7 +265,7 @@ function runCreateOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
       specify('creation fails', () => {
         return order.create.q(
-          chaithereum.accounts[1],
+          params.buyerAcc,
           storeArgs.address,
           params.address0,
           params.address0,
@@ -291,7 +291,7 @@ function runCreateOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
       specify('creation fails', () => {
         return order.create.q(
-          chaithereum.accounts[1],
+          params.buyerAcc,
           storeArgs.address,
           params.address0,
           params.address0,
@@ -317,7 +317,7 @@ function runCreateOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
       specify('creation fails', () => {
         return order.create.q(
-          chaithereum.accounts[1],
+          params.buyerAcc,
           storeArgs.address,
           params.address0,
           params.address0,
@@ -338,7 +338,7 @@ function runCreateOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
     context('with a valid store', () => {
       specify('creation succeeds', () => {
         return order.create.q(
-          chaithereum.accounts[1],
+          params.buyerAcc,
           storeArgs.address,
           params.address0,
           params.address0,
@@ -394,9 +394,9 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
       before((done) => {
         order = orderArgs.contract
         chaithereum.web3.eth.sendTransaction
-        .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000})
+        .q({from: params.buyerAcc, to: order.address, value: value, gas: 500000})
         .should.eventually.be.fulfilled.then(() => {
-          chaithereum.web3.eth.getBalance.q(chaithereum.accounts[1]).then((_balance) => {
+          chaithereum.web3.eth.getBalance.q(params.buyerAcc).then((_balance) => {
             balance = _balance
             done()
           })
@@ -404,15 +404,15 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
       })
 
       specify('randos cannot cancel the order', () => {
-        return order.cancel.q({from: chaithereum.accounts[3]}).should.eventually.be.rejected
+        return order.cancel.q({from: params.tickerAcc}).should.eventually.be.rejected
       })
 
       specify('the store owner can cancel the order', () => {
-        return order.cancel.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+        return order.cancel.q({from: params.buyerAcc}).should.eventually.be.fulfilled
       })
 
       it('should have returned the funds', () => {
-        return chaithereum.web3.eth.getBalance.q(chaithereum.accounts[1])
+        return chaithereum.web3.eth.getBalance.q(params.buyerAcc)
         .should.eventually.be.bignumber.then((_balance) =>{
           let sigpow = Math.pow(10, 7)
           _balance.div(sigpow).toFixed(0).should.equal(balance.plus(value).div(sigpow).toFixed(0))
@@ -438,14 +438,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
           specify('non store cannot ship the order', () => {
             return chaithereum.web3.Q.all([
-              order.markAsShipped.q({from: chaithereum.accounts[0]}),
-              order.markAsShipped.q({from: chaithereum.accounts[1]}),
-              order.markAsShipped.q({from: chaithereum.accounts[4]}),
+              order.markAsShipped.q({from: params.masterAcc}),
+              order.markAsShipped.q({from: params.buyerAcc}),
+              order.markAsShipped.q({from: params.randomAcc1}),
             ]).should.eventually.be.rejected
           })
 
           specify('the store cannot ship if payment is low', () => {
-            return store.markAsShipped.q(order.address, {from: chaithereum.accounts[0]})
+            return store.markAsShipped.q(order.address, {from: params.masterAcc})
             .should.eventually.be.rejected
           })
 
@@ -462,15 +462,15 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
             return chaithereum.web3.Q.all([
               chaithereum.web3.eth.sendTransaction
-              .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+              .q({from: params.buyerAcc, to: order.address, value: value, gas: 500000}),
               chaithereum.web3.eth.sendTransaction
-              .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+              .q({from: params.buyerAcc, to: order.address, value: value, gas: 500000}),
               chaithereum.web3.eth.sendTransaction
-              .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+              .q({from: params.buyerAcc, to: order.address, value: value, gas: 500000}),
               chaithereum.web3.eth.sendTransaction
-              .q({from: chaithereum.accounts[1], to: order.address, value: value, gas: 500000}),
+              .q({from: params.buyerAcc, to: order.address, value: value, gas: 500000}),
               chaithereum.web3.eth.sendTransaction
-              .q({from: chaithereum.accounts[1], to: order.address, value: remainderValue, gas: 500000}),
+              .q({from: params.buyerAcc, to: order.address, value: remainderValue, gas: 500000}),
             ]).should.eventually.be.fulfilled
           })
 
@@ -480,12 +480,12 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
           })
 
           specify('the buyer cannnot finalize early', () => {
-            return order.finalize.q({from: chaithereum.accounts[1]})
+            return order.finalize.q({from: params.buyerAcc})
             .should.eventually.be.rejected
           })
 
           specify('the store can ship the order', () => {
-            return store.markAsShipped.q(order.address, {from: chaithereum.accounts[0]})
+            return store.markAsShipped.q(order.address, {from: params.masterAcc})
             .should.eventually.be.fulfilled
             .then(() => {
               chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -498,24 +498,24 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
             chaithereum.web3.Q.all([
               order.getUpdatesLength.q().should.eventually.be.bignumber.equal(1),
               order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber1),
-              order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+              order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
               order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.shipped),
             ])
           })
 
           specify('no one can cancel the order', () => {
             return chaithereum.web3.Q.all([
-              order.cancel.q({from: chaithereum.accounts[0]}),
-              order.cancel.q({from: chaithereum.accounts[1]}),
+              order.cancel.q({from: params.masterAcc}),
+              order.cancel.q({from: params.buyerAcc}),
             ]).should.eventually.be.rejected
           })
 
           specify('randos cannot finalize the order', () => {
             return chaithereum.web3.Q.all([
-              order.finalize.q({from: chaithereum.accounts[0]}).should.eventually.be.rejected,
-              order.finalize.q({from: chaithereum.accounts[2]}).should.eventually.be.rejected,
-              order.finalize.q({from: chaithereum.accounts[3]}).should.eventually.be.rejected,
-              order.finalize.q({from: chaithereum.accounts[4]}).should.eventually.be.rejected,
+              order.finalize.q({from: params.masterAcc}).should.eventually.be.rejected,
+              order.finalize.q({from: params.submarketAcc}).should.eventually.be.rejected,
+              order.finalize.q({from: params.tickerAcc}).should.eventually.be.rejected,
+              order.finalize.q({from: params.randomAcc1}).should.eventually.be.rejected,
             ])
           })
         })
@@ -557,7 +557,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
       context('then nothing fancy happens', () => {
         let blockNumber2;
         specify('the buyer can finalize', () => {
-          return order.finalize.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+          return order.finalize.q({from: params.buyerAcc}).should.eventually.be.fulfilled
           .then(() => {
             chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
               blockNumber2 = _blockNumber
@@ -569,7 +569,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
           ])
         })
@@ -585,7 +585,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         })
 
         specify('anyone can finalize', () => {
-          return order.finalize.q({from: chaithereum.accounts[4]}).should.eventually.be.fulfilled
+          return order.finalize.q({from: params.randomAcc1}).should.eventually.be.fulfilled
           .then(() => {
             chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
               blockNumber2 = _blockNumber
@@ -597,7 +597,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
           ])
         })
@@ -609,12 +609,12 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         let blockNumber2;
         it('jacks the ticker prices', () => {
           tickerArgs.contract.setPrice.q(params.currency1, params.currencyInWei2,{
-            from: chaithereum.accounts[3]
+            from: params.tickerAcc
           }).should.eventually.be.fulfilled
         })
 
         specify('anyone can compute the payouts', () => {
-          return order.computePayouts.q({from: chaithereum.accounts[4]})
+          return order.computePayouts.q({from: params.randomAcc1})
           .should.eventually.be.fulfilled
         })
 
@@ -627,7 +627,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         })
 
         specify('the buyer cannot finalize if they haven\'t sent enough money ', () => {
-          return order.finalize.q({from: chaithereum.accounts[1]}).should.eventually.be.rejected
+          return order.finalize.q({from: params.buyerAcc}).should.eventually.be.rejected
         })
 
         specify('anyone can deposit money', () => {
@@ -641,14 +641,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         specify('non buyers cannot finalize the order', () => {
           return chaithereum.web3.Q.all([
-            order.finalize.q({from: chaithereum.accounts[0]}),
-            order.finalize.q({from: chaithereum.accounts[2]}),
-            order.finalize.q({from: chaithereum.accounts[4]}),
+            order.finalize.q({from: params.masterAcc}),
+            order.finalize.q({from: params.submarketAcc}),
+            order.finalize.q({from: params.randomAcc1}),
           ]).should.eventually.be.rejected
         })
 
         specify('the buyer can finalize', () => {
-          return order.finalize.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+          return order.finalize.q({from: params.buyerAcc}).should.eventually.be.fulfilled
           .then(() => {
             chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
               blockNumber1 = _blockNumber
@@ -660,7 +660,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
           ])
         })
@@ -675,41 +675,41 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         specify('non buyers cannot dispute the order', () => {
           return chaithereum.web3.Q.all([
-            order.dispute.q({from: chaithereum.accounts[0]}),
-            order.dispute.q({from: chaithereum.accounts[2]}),
-            order.dispute.q({from: chaithereum.accounts[4]}),
+            order.dispute.q({from: params.masterAcc}),
+            order.dispute.q({from: params.submarketAcc}),
+            order.dispute.q({from: params.randomAcc1}),
           ]).should.eventually.be.rejected
         })
 
         specify('the buyer can dispute', () => {
-          return order.dispute.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+          return order.dispute.q({from: params.buyerAcc}).should.eventually.be.fulfilled
         })
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.disputed),
           ])
         })
 
         specify('those that aren\'t the submarket can\'t resolve the order', () => {
           return chaithereum.web3.Q.all([
-            order.resolve.q(0, {from: chaithereum.accounts[0]}),
-            order.resolve.q(1, {from: chaithereum.accounts[1]}),
-            order.resolve.q(1, {from: chaithereum.accounts[2]}),
-            order.resolve.q(0.5, {from: chaithereum.accounts[4]}),
+            order.resolve.q(0, {from: params.masterAcc}),
+            order.resolve.q(1, {from: params.buyerAcc}),
+            order.resolve.q(1, {from: params.submarketAcc}),
+            order.resolve.q(0.5, {from: params.randomAcc1}),
           ]).should.eventually.be.rejected
         })
 
         specify('the buyer cannot finalize yet', () => {
-          return order.finalize.q({from: chaithereum.accounts[1]}).should.eventually.be.rejected
+          return order.finalize.q({from: params.buyerAcc}).should.eventually.be.rejected
         })
 
         specify('those submarket should resolve the order', () => {
           return submarketArgs.contract.resolve
-          .q(order.address, 5, {from: chaithereum.accounts[2]})
+          .q(order.address, 5, {from: params.submarketAcc})
           .should.eventually.be.fulfilled
         })
 
@@ -717,20 +717,20 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(3),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber3),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.resolved),
           ])
         })
 
         specify('the buyer can finalize', () => {
-          return order.finalize.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+          return order.finalize.q({from: params.buyerAcc}).should.eventually.be.fulfilled
         })
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(4),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber4),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
           ])
         })
@@ -743,31 +743,31 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         let blockNumber3;
         specify('non buyers cannot dispute the order', () => {
           return chaithereum.web3.Q.all([
-            order.dispute.q({from: chaithereum.accounts[0]}),
-            order.dispute.q({from: chaithereum.accounts[2]}),
-            order.dispute.q({from: chaithereum.accounts[4]}),
+            order.dispute.q({from: params.masterAcc}),
+            order.dispute.q({from: params.submarketAcc}),
+            order.dispute.q({from: params.randomAcc1}),
           ]).should.eventually.be.rejected
         })
 
         specify('the buyer can dispute', () => {
-          return order.dispute.q({from: chaithereum.accounts[1]}).should.eventually.be.fulfilled
+          return order.dispute.q({from: params.buyerAcc}).should.eventually.be.fulfilled
         })
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(2),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber2),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.disputed),
           ])
         })
 
         specify('those that aren\'t the submarket can\'t resolve the order', () => {
           return chaithereum.web3.Q.all([
-            order.resolve.q(0, {from: chaithereum.accounts[0]}),
-            order.resolve.q(1, {from: chaithereum.accounts[1]}),
-            order.resolve.q(1, {from: chaithereum.accounts[2]}),
-            order.resolve.q(0.5, {from: chaithereum.accounts[4]}),
+            order.resolve.q(0, {from: params.masterAcc}),
+            order.resolve.q(1, {from: params.buyerAcc}),
+            order.resolve.q(1, {from: params.submarketAcc}),
+            order.resolve.q(0.5, {from: params.randomAcc1}),
           ]).should.eventually.be.rejected
         })
 
@@ -776,14 +776,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         });
 
         specify('anyone can finalize', () => {
-          return order.finalize.q({from: chaithereum.accounts[4]}).should.eventually.be.fulfilled
+          return order.finalize.q({from: params.randomAcc1}).should.eventually.be.fulfilled
         })
 
         it('should have updated the status correctly', () => {
           chaithereum.web3.Q.all([
             order.getUpdatesLength.q().should.eventually.be.bignumber.equal(3),
             order.getUpdateBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber3),
-            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+            order.getUpdateSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
             order.getUpdateStatus.q(0).should.eventually.be.bignumber.equal(params.status.finalized),
           ])
         })
@@ -797,14 +797,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
     let blockNumber2;
     it('should add a message', () => {
       return chaithereum.web3.Q.all([
-        store.addMessage.q(order.address, params.fileHash3, {from: chaithereum.accounts[0]})
+        store.addMessage.q(order.address, params.fileHash3, {from: params.masterAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
             blockNumber1 = _blockNumber
           })
         }),
-        order.addMessage.q(params.fileHash4, {from: chaithereum.accounts[1]})
+        order.addMessage.q(params.fileHash4, {from: params.buyerAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -815,7 +815,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
     })
 
     it('should reject unauthorized messages', () => {
-      return order.addMessage.q(params.fileHash5, {from: chaithereum.accounts[4]})
+      return order.addMessage.q(params.fileHash5, {from: params.randomAcc1})
       .should.eventually.be.rejected
     })
 
@@ -824,8 +824,8 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         order.getMessagesLength.q().should.eventually.be.bignumber.equal(2),
         order.getMessageBlockNumber.q(0).should.eventually.be.bignumber.equal(blockNumber1),
         order.getMessageBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
-        order.getMessageSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
-        order.getMessageSender.q(1).should.eventually.be.bignumber.equal(chaithereum.accounts[1]),
+        order.getMessageSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
+        order.getMessageSender.q(1).should.eventually.be.bignumber.equal(params.buyerAcc),
         order.getMessageFileHash.q(0).should.eventually.be.bignumber.equal(params.fileHash3),
         order.getMessageFileHash.q(1).should.eventually.be.bignumber.equal(params.fileHash4),
       ])
@@ -837,14 +837,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
     let blockNumber2;
     it('should add reviews', () => {
       return chaithereum.web3.Q.all([
-        store.addReview.q(params.score1, params.fileHash3, {from: chaithereum.accounts[0]})
+        store.addReview.q(params.score1, params.fileHash3, {from: params.masterAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
             blockNumber1 = _blockNumber
           })
         }),
-        store.addReview.q(params.score2, params.fileHash4, {from: chaithereum.accounts[0]})
+        store.addReview.q(params.score2, params.fileHash4, {from: params.masterAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -855,7 +855,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
     })
 
     it('fails from an unauthorized buyer', () => {
-      return store.addReview.q(params.score1, params.fileHash4, {from: chaithereum.accounts[1]})
+      return store.addReview.q(params.score1, params.fileHash4, {from: params.buyerAcc})
       .should.eventually.be.fulfilled
       .then(() => {
         chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -866,14 +866,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
     it('fails with an out of bounds score', () => {
       return chaithereum.web3.Q.all([
-        store.addReview.q(params.score0, params.fileHash3, {from: chaithereum.accounts[0]})
+        store.addReview.q(params.score0, params.fileHash3, {from: params.masterAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
             blockNumber1 = _blockNumber
           })
         }),
-        store.addReview.q(params.score6, params.fileHash4, {from: chaithereum.accounts[0]})
+        store.addReview.q(params.score6, params.fileHash4, {from: params.masterAcc})
         .should.eventually.be.rejected
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -890,8 +890,8 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         store.getReviewBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
         store.getReviewScore.q(0).should.eventually.be.bignumber.equal(params.score1),
         store.getReviewScore.q(1).should.eventually.be.bignumber.equal(params.score2),
-        store.getReviewSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
-        store.getReviewSender.q(1).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+        store.getReviewSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
+        store.getReviewSender.q(1).should.eventually.be.bignumber.equal(params.masterAcc),
         store.getReviewFileHash.q(0).should.eventually.be.ascii(params.fileHash3),
         store.getReviewFileHash.q(1).should.eventually.be.ascii(params.fileHash4),
       ])
@@ -903,14 +903,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
     let blockNumber2;
     it('should add reviews', () => {
       return chaithereum.web3.Q.all([
-        submarket.addReview.q(params.score1, params.fileHash3, {from: chaithereum.accounts[0]})
+        submarket.addReview.q(params.score1, params.fileHash3, {from: params.masterAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
             blockNumber1 = _blockNumber
           })
         }),
-        submarket.addReview.q(params.score2, params.fileHash4, {from: chaithereum.accounts[0]})
+        submarket.addReview.q(params.score2, params.fileHash4, {from: params.masterAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -921,7 +921,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
     })
 
     it('fails from an unauthorized buyer', () => {
-      return submarket.addReview.q(params.score1, params.fileHash4, {from: chaithereum.accounts[1]})
+      return submarket.addReview.q(params.score1, params.fileHash4, {from: params.buyerAcc})
       .should.eventually.be.fulfilled
       .then(() => {
         chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -932,14 +932,14 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
     it('fails with an out of bounds score', () => {
       return chaithereum.web3.Q.all([
-        submarket.addReview.q(params.score0, params.fileHash3, {from: chaithereum.accounts[0]})
+        submarket.addReview.q(params.score0, params.fileHash3, {from: params.masterAcc})
         .should.eventually.be.fulfilled
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
             blockNumber1 = _blockNumber
           })
         }),
-        submarket.addReview.q(params.score6, params.fileHash4, {from: chaithereum.accounts[0]})
+        submarket.addReview.q(params.score6, params.fileHash4, {from: params.masterAcc})
         .should.eventually.be.rejected
         .then(() => {
           chaithereum.web3.eth.getBlockNumber.q().then((_blockNumber) => {
@@ -956,8 +956,8 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         submarket.getReviewBlockNumber.q(1).should.eventually.be.bignumber.equal(blockNumber2),
         submarket.getReviewScore.q(0).should.eventually.be.bignumber.equal(params.score1),
         submarket.getReviewScore.q(1).should.eventually.be.bignumber.equal(params.score2),
-        submarket.getReviewSender.q(0).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
-        submarket.getReviewSender.q(1).should.eventually.be.bignumber.equal(chaithereum.accounts[0]),
+        submarket.getReviewSender.q(0).should.eventually.be.bignumber.equal(params.masterAcc),
+        submarket.getReviewSender.q(1).should.eventually.be.bignumber.equal(params.masterAcc),
         submarket.getReviewFileHash.q(0).should.eventually.be.ascii(params.fileHash3),
         submarket.getReviewFileHash.q(1).should.eventually.be.ascii(params.fileHash4),
       ])
