@@ -20,8 +20,8 @@ function add{{struct.name}}({{>inputs.sol variables=struct.variables}}) requireO
 
 {{#each struct.variables}}
 {{#unless ../struct.generated}}
-function get{{../struct.name}}{{capitalize name}} (uint index) constant returns ({{type}} {{name}}) {
-  return {{../struct.name}}s[index].{{name}};
+function get{{../struct.name}}{{capitalize name}} (uint _index) constant returns ({{type}} {{name}}) {
+  return {{../struct.name}}s[_index].{{name}};
 }
 
 function set{{../struct.name}}{{capitalize name}} (uint index, {{type}} value) requireOwnership {

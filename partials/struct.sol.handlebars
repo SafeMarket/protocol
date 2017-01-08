@@ -1,0 +1,22 @@
+/* START {{struct.name}} structs */
+
+struct {{struct.name}}{
+  {{#each struct.variables}}
+  {{type}} {{name}};
+  {{/each}}
+}
+
+{{struct.name}} public {{lowercase struct.name}};
+
+{{#each struct.variables}}
+{{#unless ../struct.generated}}
+function get{{../struct.name}}{{capitalize name}} () constant returns ({{type}} {{name}}) {
+  return {{lowercase ../struct.name}}.{{name}};
+}
+
+function set{{../struct.name}}{{capitalize name}} ({{type}} value) requireOwnership {
+  {{lowercase ../struct.name}}.{{name}} = value;
+}
+{{/unless}}
+{{/each}}
+/* END {{struct.name}} structs */

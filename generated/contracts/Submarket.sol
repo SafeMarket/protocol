@@ -9,16 +9,16 @@ contract Submarket is forumable, aliasable {
 
   function () payable {}
 
-  bool public isOpen;
-  function setIsOpen(bool _isOpen) requireOwnership { isOpen = _isOpen; }
-  bytes4 public currency;
-  function setCurrency(bytes4 _currency) requireOwnership { currency = _currency; }
-  uint public escrowFeeTerabase;
-  function setEscrowFeeTerabase(uint _escrowFeeTerabase) requireOwnership { escrowFeeTerabase = _escrowFeeTerabase; }
-  uint public escrowFeeCentiperun;
-  function setEscrowFeeCentiperun(uint _escrowFeeCentiperun) requireOwnership { escrowFeeCentiperun = _escrowFeeCentiperun; }
-  bytes32 public fileHash;
-  function setFileHash(bytes32 _fileHash) requireOwnership { fileHash = _fileHash; }
+    bool public isOpen;
+    function setIsOpen(bool _isOpen) requireOwnership { isOpen = _isOpen; }
+    bytes4 public currency;
+    function setCurrency(bytes4 _currency) requireOwnership { currency = _currency; }
+    uint public escrowFeeTerabase;
+    function setEscrowFeeTerabase(uint _escrowFeeTerabase) requireOwnership { escrowFeeTerabase = _escrowFeeTerabase; }
+    uint public escrowFeeCentiperun;
+    function setEscrowFeeCentiperun(uint _escrowFeeCentiperun) requireOwnership { escrowFeeCentiperun = _escrowFeeCentiperun; }
+    bytes32 public fileHash;
+    function setFileHash(bytes32 _fileHash) requireOwnership { fileHash = _fileHash; }
 
   mapping(address => bool) public verifiedBuyers;
   function setVerifiedBuyer(address key, bool value) requireOwnership { verifiedBuyers[key] = value; }
@@ -41,29 +41,29 @@ contract Submarket is forumable, aliasable {
   }
   
   
-  function getReviewBlockNumber (uint index) constant returns (uint blockNumber) {
-    return Reviews[index].blockNumber;
+  function getReviewBlockNumber (uint _index) constant returns (uint blockNumber) {
+    return Reviews[_index].blockNumber;
   }
   
   function setReviewBlockNumber (uint index, uint value) requireOwnership {
     Reviews[index].blockNumber = value;
   }
-  function getReviewScore (uint index) constant returns (uint8 score) {
-    return Reviews[index].score;
+  function getReviewScore (uint _index) constant returns (uint8 score) {
+    return Reviews[_index].score;
   }
   
   function setReviewScore (uint index, uint8 value) requireOwnership {
     Reviews[index].score = value;
   }
-  function getReviewSender (uint index) constant returns (address sender) {
-    return Reviews[index].sender;
+  function getReviewSender (uint _index) constant returns (address sender) {
+    return Reviews[_index].sender;
   }
   
   function setReviewSender (uint index, address value) requireOwnership {
     Reviews[index].sender = value;
   }
-  function getReviewFileHash (uint index) constant returns (bytes32 fileHash) {
-    return Reviews[index].fileHash;
+  function getReviewFileHash (uint _index) constant returns (bytes32 fileHash) {
+    return Reviews[_index].fileHash;
   }
   
   function setReviewFileHash (uint index, bytes32 value) requireOwnership {

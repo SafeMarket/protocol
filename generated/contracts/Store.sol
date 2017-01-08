@@ -10,20 +10,20 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
 
   function () payable {}
 
-  bool public isOpen;
-  function setIsOpen(bool _isOpen) requireOwnership { isOpen = _isOpen; }
-  bytes4 public currency;
-  function setCurrency(bytes4 _currency) requireOwnership { currency = _currency; }
-  uint public bufferCentiperun;
-  function setBufferCentiperun(uint _bufferCentiperun) requireOwnership { bufferCentiperun = _bufferCentiperun; }
-  uint public disputeSeconds;
-  function setDisputeSeconds(uint _disputeSeconds) requireOwnership { disputeSeconds = _disputeSeconds; }
-  uint public minProductsTeratotal;
-  function setMinProductsTeratotal(uint _minProductsTeratotal) requireOwnership { minProductsTeratotal = _minProductsTeratotal; }
-  uint public affiliateFeeCentiperun;
-  function setAffiliateFeeCentiperun(uint _affiliateFeeCentiperun) requireOwnership { affiliateFeeCentiperun = _affiliateFeeCentiperun; }
-  bytes32 public fileHash;
-  function setFileHash(bytes32 _fileHash) requireOwnership { fileHash = _fileHash; }
+    bool public isOpen;
+    function setIsOpen(bool _isOpen) requireOwnership { isOpen = _isOpen; }
+    bytes4 public currency;
+    function setCurrency(bytes4 _currency) requireOwnership { currency = _currency; }
+    uint public bufferCentiperun;
+    function setBufferCentiperun(uint _bufferCentiperun) requireOwnership { bufferCentiperun = _bufferCentiperun; }
+    uint public disputeSeconds;
+    function setDisputeSeconds(uint _disputeSeconds) requireOwnership { disputeSeconds = _disputeSeconds; }
+    uint public minProductsTeratotal;
+    function setMinProductsTeratotal(uint _minProductsTeratotal) requireOwnership { minProductsTeratotal = _minProductsTeratotal; }
+    uint public affiliateFeeCentiperun;
+    function setAffiliateFeeCentiperun(uint _affiliateFeeCentiperun) requireOwnership { affiliateFeeCentiperun = _affiliateFeeCentiperun; }
+    bytes32 public fileHash;
+    function setFileHash(bytes32 _fileHash) requireOwnership { fileHash = _fileHash; }
 
   mapping(address => bool) public verifiedBuyers;
   function setVerifiedBuyer(address key, bool value) requireOwnership { verifiedBuyers[key] = value; }
@@ -57,29 +57,29 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   ));
   }
   
-  function getProductIsActive (uint index) constant returns (bool isActive) {
-    return Products[index].isActive;
+  function getProductIsActive (uint _index) constant returns (bool isActive) {
+    return Products[_index].isActive;
   }
   
   function setProductIsActive (uint index, bool value) requireOwnership {
     Products[index].isActive = value;
   }
-  function getProductTeraprice (uint index) constant returns (uint teraprice) {
-    return Products[index].teraprice;
+  function getProductTeraprice (uint _index) constant returns (uint teraprice) {
+    return Products[_index].teraprice;
   }
   
   function setProductTeraprice (uint index, uint value) requireOwnership {
     Products[index].teraprice = value;
   }
-  function getProductUnits (uint index) constant returns (uint units) {
-    return Products[index].units;
+  function getProductUnits (uint _index) constant returns (uint units) {
+    return Products[_index].units;
   }
   
   function setProductUnits (uint index, uint value) requireOwnership {
     Products[index].units = value;
   }
-  function getProductFileHash (uint index) constant returns (bytes32 fileHash) {
-    return Products[index].fileHash;
+  function getProductFileHash (uint _index) constant returns (bytes32 fileHash) {
+    return Products[_index].fileHash;
   }
   
   function setProductFileHash (uint index, bytes32 value) requireOwnership {
@@ -110,22 +110,22 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   ));
   }
   
-  function getTransportIsActive (uint index) constant returns (bool isActive) {
-    return Transports[index].isActive;
+  function getTransportIsActive (uint _index) constant returns (bool isActive) {
+    return Transports[_index].isActive;
   }
   
   function setTransportIsActive (uint index, bool value) requireOwnership {
     Transports[index].isActive = value;
   }
-  function getTransportTeraprice (uint index) constant returns (uint teraprice) {
-    return Transports[index].teraprice;
+  function getTransportTeraprice (uint _index) constant returns (uint teraprice) {
+    return Transports[_index].teraprice;
   }
   
   function setTransportTeraprice (uint index, uint value) requireOwnership {
     Transports[index].teraprice = value;
   }
-  function getTransportFileHash (uint index) constant returns (bytes32 fileHash) {
-    return Transports[index].fileHash;
+  function getTransportFileHash (uint _index) constant returns (bytes32 fileHash) {
+    return Transports[_index].fileHash;
   }
   
   function setTransportFileHash (uint index, bytes32 value) requireOwnership {
@@ -148,29 +148,29 @@ contract Store is forumable, aliasable, orderable, approvesAliases {
   }
   
   
-  function getReviewBlockNumber (uint index) constant returns (uint blockNumber) {
-    return Reviews[index].blockNumber;
+  function getReviewBlockNumber (uint _index) constant returns (uint blockNumber) {
+    return Reviews[_index].blockNumber;
   }
   
   function setReviewBlockNumber (uint index, uint value) requireOwnership {
     Reviews[index].blockNumber = value;
   }
-  function getReviewScore (uint index) constant returns (uint8 score) {
-    return Reviews[index].score;
+  function getReviewScore (uint _index) constant returns (uint8 score) {
+    return Reviews[_index].score;
   }
   
   function setReviewScore (uint index, uint8 value) requireOwnership {
     Reviews[index].score = value;
   }
-  function getReviewSender (uint index) constant returns (address sender) {
-    return Reviews[index].sender;
+  function getReviewSender (uint _index) constant returns (address sender) {
+    return Reviews[_index].sender;
   }
   
   function setReviewSender (uint index, address value) requireOwnership {
     Reviews[index].sender = value;
   }
-  function getReviewFileHash (uint index) constant returns (bytes32 fileHash) {
-    return Reviews[index].fileHash;
+  function getReviewFileHash (uint _index) constant returns (bytes32 fileHash) {
+    return Reviews[_index].fileHash;
   }
   
   function setReviewFileHash (uint index, bytes32 value) requireOwnership {

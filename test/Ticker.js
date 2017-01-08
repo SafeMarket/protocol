@@ -46,7 +46,7 @@ describe('Ticker', () => {
   })
 
   it('cannot set prices from non-owner', () => {
-    return ticker.setPrice.q('P', 1, { from: chaithereum.accounts[1] }).should.be.rejected
+    return ticker.setPrice.q('P', 1, { from: params.randomAcc2 }).should.be.rejected
   })
 
   it('correctly converts', () => {

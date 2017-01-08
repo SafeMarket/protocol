@@ -1,2 +1,6 @@
-{{variable.type}} public {{variable.name}};
-function set{{capitalize variable.name}}({{variable.type}} _{{variable.name}}) requireOwnership { {{variable.name}} = _{{variable.name}}; }
+{{#if variable.isConstant}}
+  {{variable.type}} constant public {{uppercase variable.name}}{{#if (equality variable.value '!=' NULL)}} = {{variable.value}}{{/if}};
+{{else}}
+  {{variable.type}} public {{variable.name}}{{#if (equality variable.value '!=' NULL)}} = {{variable.value}}{{/if}};
+  function set{{capitalize variable.name}}({{variable.type}} _{{variable.name}}) requireOwnership { {{variable.name}} = _{{variable.name}}; }
+{{/if}}

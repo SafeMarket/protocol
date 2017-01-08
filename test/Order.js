@@ -632,7 +632,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
 
         specify('anyone can deposit money', () => {
           return chaithereum.web3.eth.sendTransaction.q({
-            from:  chaithereum.accounts[5],
+            from:  params.randomAcc2,
             to:    order.address,
             value: outstandingBalance,
             gas:   500000,
