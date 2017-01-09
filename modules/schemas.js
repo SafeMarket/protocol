@@ -1,7 +1,8 @@
-function Contract(name, variables, mappings) {
+function Contract(name, variables, mappings, arrays) {
   this.name
   this.variables = variables || []
   this.mappings = mappings || []
+  this.arrays = arrays || []
   this.structs = {}
   this.structArrays = {}
 }
@@ -16,6 +17,11 @@ Contract.prototype.addStructArray = function(struct) {
 
 Contract.prototype.addVar = function(variable) {
   this.variables[variable.name] = variable
+}
+
+function Array(args) {
+  this.type = args.type
+  this.name = args.name
 }
 
 function Struct(name, variables, skipAdd) {
@@ -82,6 +88,15 @@ var Submarket = new Contract('submarket', [
   new Mapping('address', 'uint', 'reviewIndice'),
 ])
 
+var StoreReg = new Contract('StoreReg', [
+  new Variable({type: 'address', name: 'aliasRegAddr'}),
+], [
+  new Mapping('address', 'address[]', 'createdAddr'),
+  new Mapping('address', 'bool', 'registeredAddr'),
+], [
+  new Array({type: 'address', name: 'registeredAddrsArray'}),
+])
+
 Submarket.addStructArray(new Struct('Review', [
   new Variable({type: 'uint', name: 'blockNumber', generated: true}),
   new Variable({type: 'uint8', name: 'score'}),
@@ -89,6 +104,14 @@ Submarket.addStructArray(new Struct('Review', [
   new Variable({type: 'bytes32', name: 'fileHash'}),
 ], true))
 
+var SubmarketReg = new Contract('SubmarketReg', [
+  new Variable({type: 'address', name: 'aliasRegAddr'}),
+], [
+  new Mapping('address', 'address[]', 'createdAddr'),
+  new Mapping('address', 'bool', 'registeredAddr'),
+], [
+  new Array({type: 'address', name: 'registeredAddrsArray'}),
+])
 
 var Order = new Contract('Order', [
   new Variable({type: 'Ticker', name: 'ticker'}),
@@ -168,6 +191,8 @@ Order.addStructArray(new Struct('Update', [
 
 module.exports = {
   Store,
+  StoreReg,
   Submarket,
+  SubmarketReg,
   Order,
 }

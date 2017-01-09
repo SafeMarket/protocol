@@ -63,7 +63,8 @@ describe('StoreReg', () => {
     })
     const lengths = calldatas.map((calldata) => { return Math.ceil(calldata.length / 2) })
 
-    return storeReg.create.q(lengths, `0x${calldatas.join('')}`).should.be.fulfilled
+    return storeReg.create.q(lengths, `0x${calldatas.join('')}`,
+      {from: params.storeAcc}).should.be.fulfilled
   })
 
   it('should have triggered Registration event', () => {
@@ -73,26 +74,26 @@ describe('StoreReg', () => {
 
   it('should have updated the store counts correctly', () => {
     return chaithereum.web3.Q.all([
-      storeReg.getStoresLength.q().should.eventually.be.bignumber.equal(1),
-      storeReg.getCreatedStoresLength.q(params.marketAcc).should.eventually.be.bignumber.equal(1),
+      storeReg.getRegisteredAddrsArraysLength.q().should.eventually.be.bignumber.equal(1),
+      storeReg.getCreatedStoresLength.q(params.storeAcc).should.eventually.be.bignumber.equal(1),
     ])
   })
 
   it('should get the store address', () => {
     return chaithereum.web3.Q.all([
-      storeReg.getStoreAddr.q().should.eventually.be.address,
-      storeReg.getCreatedStoreAddr.q(params.marketAcc, 0).should.eventually.be.address,
+      storeReg.registeredAddrsArray.q(0).should.eventually.be.address,
+      storeReg.getCreatedStoreAddr.q(params.storeAcc, 0).should.eventually.be.address,
     ])
   })
 
   it('should make the store address a contract', () => {
-    return storeReg.getCreatedStoreAddr.q(params.marketAcc, 0).then((_storeAddr) => {
+    return storeReg.getCreatedStoreAddr.q(params.storeAcc, 0).then((_storeAddr) => {
       store = chaithereum.web3.eth.contract(contracts.Store.abi).at(_storeAddr)
     })
   })
 
   it('should make the store owner the msg sender', () => {
-    return store.getOwner.q().should.eventually.be.address.equal(params.marketAcc)
+    return store.getOwner.q().should.eventually.be.address.equal(params.storeAcc)
   })
 
   it('should make the store as registered', () => {
@@ -143,7 +144,8 @@ describe('StoreReg', () => {
 
     it('should be able to add a product', () => {
       return store.addProduct
-      .q(true, params.teraprice5, params.units3, params.fileHash5).should.eventually.be.fulfilled
+      .q(true, params.teraprice5, params.units3, params.fileHash5,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should have added the product correctly', () => {
@@ -157,7 +159,8 @@ describe('StoreReg', () => {
     })
 
     it('should be able to add a transport', () => {
-      return store.addTransport.q(true, params.teraprice6, params.fileHash6).should.eventually.be.fulfilled
+      return store.addTransport.q(true, params.teraprice6, params.fileHash6,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should have added the transport correctly', () => {
@@ -170,19 +173,23 @@ describe('StoreReg', () => {
     })
 
     it('should set the product active state', () => {
-      return store.setProductIsActive.q(2, false).should.eventually.be.fulfilled
+      return store.setProductIsActive.q(2, false,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should set the product teraprice', () => {
-      return store.setProductTeraprice.q(2, params.teraprice7).should.eventually.be.fulfilled
+      return store.setProductTeraprice.q(2, params.teraprice7,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should set the product units', () => {
-      return store.setProductUnits.q(2, params.units5).should.eventually.be.fulfilled
+      return store.setProductUnits.q(2, params.units5,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should set the product fileHash', () => {
-      return store.setProductFileHash.q(2, params.fileHash7).should.eventually.be.fulfilled
+      return store.setProductFileHash.q(2, params.fileHash7,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should have updated the product correctly', () => {
@@ -196,15 +203,18 @@ describe('StoreReg', () => {
     })
 
     it('should set the transport active state', () => {
-      return store.setTransportIsActive.q(2, false).should.eventually.be.fulfilled
+      return store.setTransportIsActive.q(2, false,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should set the transport teraprice', () => {
-      return store.setTransportTeraprice.q(2, params.teraprice8).should.eventually.be.fulfilled
+      return store.setTransportTeraprice.q(2, params.teraprice8,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('set the transport fileHash', () => {
-      return store.setTransportFileHash.q(2, params.fileHash8).should.eventually.be.fulfilled
+      return store.setTransportFileHash.q(2, params.fileHash8,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
     })
 
     it('should have updated the transport correctly', () => {
@@ -216,25 +226,27 @@ describe('StoreReg', () => {
       ])
     })
 
-    // it('should restore product units', () => {
-    //   return store.restoreProductUnits.q(2, params.units6).should.eventually.be.fulfilled
-    // })
+    it('should restore product units', () => {
+      return store.restoreProductUnits.q(2, params.units6,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
+    })
 
-    // it('should deplete product units', () => {
-    //   return store.depleteProductUnits.q(2, params.units1).should.eventually.be.fulfilled
-    // })
+    it('should deplete product units', () => {
+      return store.depleteProductUnits.q(2, params.units1,
+        {from: params.storeAcc}).should.eventually.be.fulfilled
+    })
 
-    // it('should have updated the product correctly', () => {
-    //   let currentProductUnits = params.units5+params.units6-params.units1;
+    it('should have updated the product correctly', () => {
+      let currentProductUnits = params.units5 + params.units6 - params.units1;
 
-    //   return chaithereum.web3.Q.all([
-    //     store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
-    //     store.getProductIsActive.q(2).should.eventually.be.false,
-    //     store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
-    //     store.getProductUnits.q(2).should.eventually.be.bignumber.equal(currentProductUnits),
-    //     store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash7)
-    //   ]).should.eventually.be.fulfilled
-    // })
+      return chaithereum.web3.Q.all([
+        store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
+        store.getProductIsActive.q(2).should.eventually.be.false,
+        store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
+        store.getProductUnits.q(2).should.eventually.be.bignumber.equal(currentProductUnits),
+        store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash7)
+      ]).should.eventually.be.fulfilled
+    })
 
   })
 

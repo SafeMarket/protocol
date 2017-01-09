@@ -45,7 +45,9 @@ describe('OrderReg', () => {
       storeReg.address,
       submarketReg.address,
       ticker.address,
-      { data: contracts.OrderReg.bytecode }
+      { data: contracts.OrderReg.bytecode,
+        gas: "0xffffff",
+      }
     ).should.eventually.be.contract.then((_orderReg) => {
       orderReg = _orderReg
     }).should.eventually.be.fulfilled

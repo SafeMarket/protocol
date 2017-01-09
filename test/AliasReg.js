@@ -5,6 +5,7 @@
 
 const contracts = require('../modules/contracts')
 const chaithereum = require('chaithereum')
+const params = require('./testparams.js')
 const Q = require('q')
 const deferred = Q.defer()
 module.exports = deferred.promise

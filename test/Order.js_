@@ -450,7 +450,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
           })
 
           specify('the buyer can get how much they owe', (done) => {
-            return order.getTotalTotal.q().should.eventually.be.bignumber.then((value) => {
+            return order.getTotalsTotal.q().should.eventually.be.bignumber.then((value) => {
               outstandingBalance = value;
               done();
             })
@@ -619,7 +619,7 @@ function runOrderTests (orderArgs, storeArgs, submarketArgs, tickerArgs) {
         })
 
         specify('the buyer did not send enough money', (done) => {
-          return order.getTotalPayout.q().should.eventually.be.bignumber.then((totalPayout) => {
+          return order.getPayoutsTotal.q().should.eventually.be.bignumber.then((totalPayout) => {
             outstandingBalance = totalPayout.minus(outstandingBalance)
             outstandingBalance.should.be.above(0)
             done();

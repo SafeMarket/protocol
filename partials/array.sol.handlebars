@@ -1,0 +1,15 @@
+/* START {{array.name}} arrays */
+{{array.type}}[] public {{array.name}};
+
+function get{{capitalize array.name}}sLength() constant returns (uint) {
+  return {{array.name}}.length;
+}
+
+function add{{capitalize array.name}}({{array.type}} value) requireOwnership {
+  {{array.name}}.push(value);
+}
+
+function get{{capitalize array.name}}(uint index) returns ({{array.type}}) {
+  return {{array.name}}[index];
+}
+/* END {{array.name}} arrays */

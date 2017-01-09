@@ -4,14 +4,44 @@ import "ownable.sol";
 import "Store.sol";
 import "executor.sol";
 
-contract StoreReg is executor {
-  mapping(address => address[]) created;
-	address[] registeredAddrsArray;
-	mapping(address=>bool) registeredAddrsMap;
-
+contract StoreReg is executor, ownable {
 	event Registration(address storeAddr);
 
-  address public aliasRegAddr;
+    address public aliasRegAddr;
+    function setAliasRegAddr(address _aliasRegAddr) requireOwnership { aliasRegAddr = _aliasRegAddr; }
+
+  mapping(address => address[]) public createdAddrs;
+  function setCreatedAddr(address key, address[] value) requireOwnership { createdAddrs[key] = value; }
+  mapping(address => bool) public registeredAddrs;
+  function setRegisteredAddr(address key, bool value) requireOwnership { registeredAddrs[key] = value; }
+
+  /* START registeredAddrsArray arrays */
+  address[] public registeredAddrsArray;
+  
+  function getRegisteredAddrsArraysLength() constant returns (uint) {
+    return registeredAddrsArray.length;
+  }
+  
+  function addRegisteredAddrsArray(address value) requireOwnership {
+    registeredAddrsArray.push(value);
+  }
+  
+  function getRegisteredAddrsArray(uint index) returns (address) {
+    return registeredAddrsArray[index];
+  }
+  /* END registeredAddrsArray arrays */
+
+  function getCreatedStoresLength(address creator) constant returns(uint) {
+    return createdAddrs[creator].length;
+  }
+
+  function getCreatedStoreAddr(address creator, uint index) constant returns(address) {
+    return createdAddrs[creator][index];
+  }
+
+	function isRegistered(address addr) constant returns(bool) {
+		return registeredAddrs[addr];
+	}
 
   function StoreReg(address _aliasRegAddr) {
     aliasRegAddr = _aliasRegAddr;
@@ -25,30 +55,10 @@ contract StoreReg is executor {
     _execute(storeAddr, calldataLengths, calldatas);
 		store.setOwner(msg.sender);
 		registeredAddrsArray.push(storeAddr);
-		registeredAddrsMap[storeAddr] = true;
+		registeredAddrs[storeAddr] = true;
 
-    created[msg.sender].push(storeAddr);
+    createdAddrs[msg.sender].push(storeAddr);
 
     Registration(storeAddr);
-	}
-
-	function getStoresLength() constant returns(uint) {
-		return registeredAddrsArray.length;
-	}
-
-	function getStoreAddr(uint index) constant returns(address) {
-		return registeredAddrsArray[index];
-	}
-
-  function getCreatedStoresLength(address creator) constant returns(uint) {
-    return created[creator].length;
-  }
-
-  function getCreatedStoreAddr(address creator, uint index) constant returns(address) {
-    return created[creator][index];
-  }
-
-	function isRegistered(address addr) constant returns(bool) {
-		return registeredAddrsMap[addr];
 	}
 }

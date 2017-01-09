@@ -63,7 +63,7 @@ describe('SubmarketReg', () => {
     return submarketReg.create.q(
       lengths,
       `0x${calldatas.join('')}`,
-      { from: params.submarketAcc1 }
+      { from: params.submarketAcc }
     ).should.eventually.be.fulfilled
   })
 
@@ -74,22 +74,22 @@ describe('SubmarketReg', () => {
 
   it('should have updated the submarket counts correctly', () => {
     return chaithereum.web3.Q.all([
-      submarketReg.getSubmarketCount.q().should.eventually.be.bignumber.equal(1),
-      submarketReg.getCreatedSubmarketCount.q(params.submarketAcc1)
+      submarketReg.getRegisteredAddrsArraysLength.q().should.eventually.be.bignumber.equal(1),
+      submarketReg.getCreatedSubmarketCount.q(params.submarketAcc)
       .should.eventually.be.bignumber.equal(1),
     ])
   })
 
   it('should get the submarket address', () => {
     return chaithereum.web3.Q.all([
-      submarketReg.getSubmarketAddr.q(0).should.eventually.be.address,
-      submarketReg.getCreatedSubmarketAddr.q(params.submarketAcc1, 0)
+      submarketReg.registeredAddrsArray.q(0).should.eventually.be.address,
+      submarketReg.getCreatedSubmarketAddr.q(params.submarketAcc, 0)
       .should.eventually.be.address,
     ])
   })
 
   it('should make the submarket address a contract', () => {
-    return submarketReg.getCreatedSubmarketAddr.q(params.submarketAcc1, 0)
+    return submarketReg.getCreatedSubmarketAddr.q(params.submarketAcc, 0)
     .then((_submarketAddr) => {
       submarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(_submarketAddr)
     })
@@ -107,7 +107,7 @@ describe('SubmarketReg', () => {
   })
 
   it('should have correct owner', () => {
-    return submarket.owner.q().should.eventually.equal(params.submarketAcc1)
+    return submarket.owner.q().should.eventually.equal(params.submarketAcc)
   })
 
   it('should have correct values values', () => {
