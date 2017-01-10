@@ -26,13 +26,24 @@ describe('Multiprox', () => {
       }).should.be.fulfilled
   })
 
-  describe('create', () => {
+  describe('registerCode', () => {
+    it('should register Simple', () => {
+      return multiprox.registerCode.q(contracts.Simple.bytecode, { gas: chaithereum.gasLimit })
+    })
+    it('should register Store', () => {
+      return multiprox.registerCode.q(contracts.Store.bytecode, { gas: chaithereum.gasLimit })
+    })
+    it('should register Store', () => {
+      return multiprox.registerCode.q(contracts.Submarket.bytecode, { gas: chaithereum.gasLimit })
+    })
+  })
 
+  describe('create', () => {
     let transactionHash
     let transactionReceipt
 
     it('should be fulfilled', () => {
-      return multiprox.create.q(contracts.Simple.bytecode, {
+      return multiprox.create.q(contracts.Simple.codeHash, {
         gas: chaithereum.gasLimit
       }).then((_transactionHash) => {
         transactionHash = _transactionHash
@@ -86,7 +97,7 @@ describe('Multiprox', () => {
 
     it('should be fulfilled', () => {
       return multiprox.createAndExecute.q(
-        contracts.Simple.bytecode,
+        contracts.Simple.codeHash,
         lengths,
         calldatasConcated,
         {

@@ -40,14 +40,21 @@ describe('Submarket', () => {
     })
     const calldatasConcated = `0x${calldatas.join('')}`
 
-    return multiprox.createAndExecute.q(
-      contracts.Submarket.bytecode, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
-    ).then((transactionHash) => {
-      return chaithereum.web3.eth.getTransactionReceipt.q(
-        transactionHash
-      ).then((transactionReceipt) => {
-        const addr = parseTransactionReceipt(transactionReceipt).addr
-        submarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(addr)
+    return multiprox.createAndExecute.estimateGas.q(
+      contracts.Submarket.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
+    ).then((gas) => {
+      console.log('==================')
+      console.log('Submarket Gas', gas)
+      console.log('==================')
+      return multiprox.createAndExecute.q(
+        contracts.Submarket.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
+      ).then((transactionHash) => {
+        return chaithereum.web3.eth.getTransactionReceipt.q(
+          transactionHash
+        ).then((transactionReceipt) => {
+          const addr = parseTransactionReceipt(transactionReceipt).addr
+          submarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(addr)
+        })
       })
     })
   })

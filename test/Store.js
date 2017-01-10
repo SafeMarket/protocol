@@ -42,16 +42,24 @@ describe('Store', () => {
     const calldatasConcated = `0x${calldatas.join('')}`
     const lengths = calldatas.map((calldata) => { return Math.ceil(calldata.length / 2) })
 
-    return multiprox.createAndExecute.q(
-      contracts.Store.bytecode, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
-    ).then((transactionHash) => {
-      return chaithereum.web3.eth.getTransactionReceipt.q(
-        transactionHash
-      ).then((transactionReceipt) => {
-        const addr = parseTransactionReceipt(transactionReceipt).addr
-        store = chaithereum.web3.eth.contract(contracts.Store.abi).at(addr)
+    return multiprox.createAndExecute.estimateGas.q(
+      contracts.Store.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
+    ).then((gas) => {
+      console.log('==================')
+      console.log('Store Gas', gas)
+      console.log('==================')
+      return multiprox.createAndExecute.q(
+        contracts.Store.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
+      ).then((transactionHash) => {
+        return chaithereum.web3.eth.getTransactionReceipt.q(
+          transactionHash
+        ).then((transactionReceipt) => {
+          const addr = parseTransactionReceipt(transactionReceipt).addr
+          store = chaithereum.web3.eth.contract(contracts.Store.abi).at(addr)
+        })
       })
     })
+
   })
 
   it('should have right bytecode', () => {
