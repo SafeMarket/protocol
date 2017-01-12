@@ -8,7 +8,7 @@ contract Multiprox is executor, ownable{
   mapping (bytes32 => bool) isCodeHashRegisteredMap;
   mapping (bytes32 => bytes) codeHashToCodeMap;
 
-  function registerCode(bytes code) requireOwnership {
+  function registerCode(bytes code) require_isOwner(msg.sender) {
     bytes32 codeHash = sha3(code);
     if (isCodeHashRegisteredMap[codeHash]) {
       throw;
@@ -17,7 +17,7 @@ contract Multiprox is executor, ownable{
     codeHashToCodeMap[codeHash] = code;
   }
 
-  function unregisterCodeHash(bytes32 codeHash) requireOwnership {
+  function unregisterCodeHash(bytes32 codeHash) require_isOwner(msg.sender) {
     isCodeHashRegisteredMap[codeHash] = false;
   }
 
@@ -32,7 +32,7 @@ contract Multiprox is executor, ownable{
   );
 
   function execute(address addr, uint[] calldataLengths, bytes calldatas) {
-    if(ownable(addr).hasOwner(msg.sender) != true) {
+    if(ownable(addr).get_isOwner(msg.sender) != true) {
       throw;
     }
     _execute(addr, calldataLengths, calldatas);

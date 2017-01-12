@@ -26,12 +26,12 @@ describe('Submarket', () => {
 
     const pseudoSubmarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(0)
     const calldatas = [
-      pseudoSubmarket.setOwner.getData(chaithereum.accounts[5], true),
-      pseudoSubmarket.setIsOpen.getData(true),
-      pseudoSubmarket.setCurrency.getData(params.currency1),
-      pseudoSubmarket.setEscrowFeeTerabase.getData(params.escrowFeeTerabase1),
-      pseudoSubmarket.setEscrowFeeCentiperun.getData(params.escrowFeeCentiperun1),
-      pseudoSubmarket.setMetaMultihash.getData(params.fileHash1)
+      pseudoSubmarket.set_isOwner.getData(chaithereum.accounts[5], true),
+      pseudoSubmarket.set_isOpen.getData(true),
+      pseudoSubmarket.set_currency.getData(params.currency1),
+      pseudoSubmarket.set_escrowFeeTerabase.getData(params.escrowFeeTerabase1),
+      pseudoSubmarket.set_escrowFeeCentiperun.getData(params.escrowFeeCentiperun1),
+      pseudoSubmarket.set_metaMultihash.getData(params.fileHash1)
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
@@ -60,7 +60,7 @@ describe('Submarket', () => {
   })
 
   it('should have account 5 as owner', () => {
-    return submarket.hasOwner.q(chaithereum.accounts[5]).should.eventually.equal(true)
+    return submarket.get_isOwner.q(chaithereum.accounts[5]).should.eventually.equal(true)
   })
 
   it('should have correct values', () => {

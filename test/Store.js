@@ -25,17 +25,17 @@ describe('Store', () => {
   it('successfully create via multiprox', () => {
     const pseudoStore = chaithereum.web3.eth.contract(contracts.Store.abi).at(0)
     const calldatas = [
-      pseudoStore.setOwner.getData(chaithereum.account, true),
-      pseudoStore.setCurrency.getData(params.currency1),
-      pseudoStore.setBufferCentiperun.getData(params.bufferCentiperun1),
-      pseudoStore.setDisputeSeconds.getData(params.disputeSeconds1),
-      pseudoStore.setMinProductsTeratotal.getData(params.minProductsTeratotal1),
-      pseudoStore.setAffiliateFeeCentiperun.getData(params.affiliateFeeCentiperun1),
-      pseudoStore.setMetaMultihash.getData(params.fileHash0),
-      pseudoStore.addProduct.getData(true, params.teraprice1, params.units1),
-      pseudoStore.addProduct.getData(false, params.teraprice2, params.units2),
-      pseudoStore.addTransport.getData(true, params.teraprice3),
-      pseudoStore.addTransport.getData(false, params.teraprice4)
+      pseudoStore.set_isOwner.getData(chaithereum.account, true),
+      pseudoStore.set_currency.getData(params.currency1),
+      pseudoStore.set_bufferCentiperun.getData(params.bufferCentiperun1),
+      pseudoStore.set_disputeSeconds.getData(params.disputeSeconds1),
+      pseudoStore.set_minProductsTeratotal.getData(params.minProductsTeratotal1),
+      pseudoStore.set_affiliateFeeCentiperun.getData(params.affiliateFeeCentiperun1),
+      pseudoStore.set_metaMultihash.getData(params.fileHash0),
+      pseudoStore.add_Product.getData(true, params.teraprice1, params.units1),
+      pseudoStore.add_Product.getData(false, params.teraprice2, params.units2),
+      pseudoStore.add_Transport.getData(true, params.teraprice3),
+      pseudoStore.add_Transport.getData(false, params.teraprice4)
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
@@ -69,7 +69,7 @@ describe('Store', () => {
   })
 
   it('should have chaithereum.account as owner', () => {
-    return store.hasOwner.q(chaithereum.account).should.eventually.equal(true)
+    return store.get_isOwner.q(chaithereum.account).should.eventually.equal(true)
   })
 
   it('should have correct currency', () => {
@@ -81,96 +81,96 @@ describe('Store', () => {
   })
 
   it('should have correct products length', () => {
-    return store.getProductsLength.q().should.eventually.be.bignumber.equal(2)
+    return store.get_Product_array_length.q().should.eventually.be.bignumber.equal(2)
   })
 
   it('should have correct products', () => {
     return chaithereum.web3.Q.all([
-      store.getProductsLength.q().should.eventually.be.bignumber.equal(2),
-      store.getProductIsActive.q(0).should.eventually.be.true,
-      store.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
-      store.getProductUnits.q(0).should.eventually.be.bignumber.equal(params.units1),
-      store.getProductIsActive.q(1).should.eventually.be.false,
-      store.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
-      store.getProductUnits.q(1).should.eventually.be.bignumber.equal(params.units2),
-      store.getProductIsActive.q(2).should.eventually.be.rejected
+      store.get_Product_array_length.q().should.eventually.be.bignumber.equal(2),
+      store.get_Product_isActive.q(0).should.eventually.be.true,
+      store.get_Product_teraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
+      store.get_Product_units.q(0).should.eventually.be.bignumber.equal(params.units1),
+      store.get_Product_isActive.q(1).should.eventually.be.false,
+      store.get_Product_teraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
+      store.get_Product_units.q(1).should.eventually.be.bignumber.equal(params.units2),
+      store.get_Product_isActive.q(2).should.eventually.be.rejected
     ])
   })
 
   it('should have correct transports', () => {
     return chaithereum.web3.Q.all([
-      store.getTransportsLength.q().should.eventually.be.bignumber.equal(2),
-      store.getTransportIsActive.q(0).should.eventually.be.true,
-      store.getTransportTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice3),
-      store.getTransportIsActive.q(1).should.eventually.be.false,
-      store.getTransportTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
-      store.getTransportIsActive.q(2).should.eventually.be.rejected
+      store.get_Transport_array_length.q().should.eventually.be.bignumber.equal(2),
+      store.get_Transport_isActive.q(0).should.eventually.be.true,
+      store.get_Transport_teraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice3),
+      store.get_Transport_isActive.q(1).should.eventually.be.false,
+      store.get_Transport_teraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
+      store.get_Transport_isActive.q(2).should.eventually.be.rejected
     ])
   })
 
   it('should be able to add a product', () => {
-    return store.addProduct.q(
+    return store.add_Product.q(
       true, params.teraprice5, params.units3, { gas: chaithereum.gasLimit }
     ).should.eventually.be.fulfilled
   })
 
   it('should have added the product correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
-      store.getProductIsActive.q(2).should.eventually.be.true,
-      store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice5),
-      store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units3)
+      store.get_Product_array_length.q().should.eventually.be.bignumber.equal(3),
+      store.get_Product_isActive.q(2).should.eventually.be.true,
+      store.get_Product_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice5),
+      store.get_Product_units.q(2).should.eventually.be.bignumber.equal(params.units3)
     ])
   })
 
   it('should be able to add a transport', () => {
-    return store.addTransport.q(
+    return store.add_Transport.q(
       true, params.teraprice6, { gas: chaithereum.gasLimit }
     ).should.eventually.be.fulfilled
   })
 
   it('should have added the transport correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getTransportsLength.q().should.eventually.be.bignumber.equal(3),
-      store.getTransportIsActive.q(2).should.eventually.be.true,
-      store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice6)
+      store.get_Transport_array_length.q().should.eventually.be.bignumber.equal(3),
+      store.get_Transport_isActive.q(2).should.eventually.be.true,
+      store.get_Transport_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice6)
     ])
   })
 
   it('should set the product active state', () => {
-    return store.setProductIsActive.q(2, false).should.eventually.be.fulfilled
+    return store.set_Product_isActive.q(2, false).should.eventually.be.fulfilled
   })
 
   it('should set the product teraprice', () => {
-    return store.setProductTeraprice.q(2, params.teraprice7).should.eventually.be.fulfilled
+    return store.set_Product_teraprice.q(2, params.teraprice7).should.eventually.be.fulfilled
   })
 
   it('should set the product units', () => {
-    return store.setProductUnits.q(2, params.units5).should.eventually.be.fulfilled
+    return store.set_Product_units.q(2, params.units5).should.eventually.be.fulfilled
   })
 
   it('should have updated the product correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
-      store.getProductIsActive.q(2).should.eventually.be.false,
-      store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
-      store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units5)
+      store.get_Product_array_length.q().should.eventually.be.bignumber.equal(3),
+      store.get_Product_isActive.q(2).should.eventually.be.false,
+      store.get_Product_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
+      store.get_Product_units.q(2).should.eventually.be.bignumber.equal(params.units5)
     ])
   })
 
   it('should set the transport active state', () => {
-    return store.setTransportIsActive.q(2, false).should.eventually.be.fulfilled
+    return store.set_Transport_isActive.q(2, false).should.eventually.be.fulfilled
   })
 
   it('should set the transport teraprice', () => {
-    return store.setTransportTeraprice.q(2, params.teraprice8).should.eventually.be.fulfilled
+    return store.set_Transport_teraprice.q(2, params.teraprice8).should.eventually.be.fulfilled
   })
 
   it('should have updated the transport correctly', () => {
     return chaithereum.web3.Q.all([
-      store.getTransportsLength.q().should.eventually.be.bignumber.equal(3),
-      store.getTransportIsActive.q(2).should.eventually.be.false,
-      store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice8)
+      store.get_Transport_array_length.q().should.eventually.be.bignumber.equal(3),
+      store.get_Transport_isActive.q(2).should.eventually.be.false,
+      store.get_Transport_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice8)
     ])
   })
 

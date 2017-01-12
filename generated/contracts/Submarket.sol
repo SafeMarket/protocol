@@ -7,20 +7,16 @@ contract Submarket is ownable {
   function () payable {}
 
   bool public isOpen;
-  function setIsOpen(bool _isOpen) requireOwnership { isOpen = _isOpen; }
+  function set_isOpen(bool _isOpen) require_isOwner(msg.sender) { isOpen = _isOpen; }
   bytes4 public currency;
-  function setCurrency(bytes4 _currency) requireOwnership { currency = _currency; }
+  function set_currency(bytes4 _currency) require_isOwner(msg.sender) { currency = _currency; }
   uint public escrowFeeTerabase;
-  function setEscrowFeeTerabase(uint _escrowFeeTerabase) requireOwnership { escrowFeeTerabase = _escrowFeeTerabase; }
+  function set_escrowFeeTerabase(uint _escrowFeeTerabase) require_isOwner(msg.sender) { escrowFeeTerabase = _escrowFeeTerabase; }
   uint public escrowFeeCentiperun;
-  function setEscrowFeeCentiperun(uint _escrowFeeCentiperun) requireOwnership { escrowFeeCentiperun = _escrowFeeCentiperun; }
+  function set_escrowFeeCentiperun(uint _escrowFeeCentiperun) require_isOwner(msg.sender) { escrowFeeCentiperun = _escrowFeeCentiperun; }
   bytes public metaMultihash;
-  function setMetaMultihash(bytes _metaMultihash) requireOwnership { metaMultihash = _metaMultihash; }
+  function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
 
-  mapping(address => bool) public verifiedBuyers;
-  function setVerifiedBuyer(address key, bool value) requireOwnership { verifiedBuyers[key] = value; }
-  mapping(address => uint) public reviewIndices;
-  function setReviewIndice(address key, uint value) requireOwnership { reviewIndices[key] = value; }
 
 
 }

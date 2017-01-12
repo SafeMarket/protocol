@@ -7,24 +7,20 @@ contract Store is ownable {
   function () payable {}
 
   bool public isOpen;
-  function setIsOpen(bool _isOpen) requireOwnership { isOpen = _isOpen; }
+  function set_isOpen(bool _isOpen) require_isOwner(msg.sender) { isOpen = _isOpen; }
   bytes4 public currency;
-  function setCurrency(bytes4 _currency) requireOwnership { currency = _currency; }
+  function set_currency(bytes4 _currency) require_isOwner(msg.sender) { currency = _currency; }
   uint public bufferCentiperun;
-  function setBufferCentiperun(uint _bufferCentiperun) requireOwnership { bufferCentiperun = _bufferCentiperun; }
+  function set_bufferCentiperun(uint _bufferCentiperun) require_isOwner(msg.sender) { bufferCentiperun = _bufferCentiperun; }
   uint public disputeSeconds;
-  function setDisputeSeconds(uint _disputeSeconds) requireOwnership { disputeSeconds = _disputeSeconds; }
+  function set_disputeSeconds(uint _disputeSeconds) require_isOwner(msg.sender) { disputeSeconds = _disputeSeconds; }
   uint public minProductsTeratotal;
-  function setMinProductsTeratotal(uint _minProductsTeratotal) requireOwnership { minProductsTeratotal = _minProductsTeratotal; }
+  function set_minProductsTeratotal(uint _minProductsTeratotal) require_isOwner(msg.sender) { minProductsTeratotal = _minProductsTeratotal; }
   uint public affiliateFeeCentiperun;
-  function setAffiliateFeeCentiperun(uint _affiliateFeeCentiperun) requireOwnership { affiliateFeeCentiperun = _affiliateFeeCentiperun; }
+  function set_affiliateFeeCentiperun(uint _affiliateFeeCentiperun) require_isOwner(msg.sender) { affiliateFeeCentiperun = _affiliateFeeCentiperun; }
   bytes public metaMultihash;
-  function setMetaMultihash(bytes _metaMultihash) requireOwnership { metaMultihash = _metaMultihash; }
+  function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
 
-  mapping(address => bool) public verifiedBuyers;
-  function setVerifiedBuyer(address key, bool value) requireOwnership { verifiedBuyers[key] = value; }
-  mapping(address => uint) public reviewIndices;
-  function setReviewIndice(address key, uint value) requireOwnership { reviewIndices[key] = value; }
 
   /* START Product structs */
   
@@ -34,44 +30,44 @@ contract Store is ownable {
     uint units;
   }
   
-  Product[] public Products;
+  Product[] public Product_array;
   
-  function getProductsLength() constant returns (uint) {
-    return Products.length;
+  function get_Product_array_length() constant returns (uint) {
+    return Product_array.length;
   }
   
-  function addProduct(
+  function add_Product(
     bool _isActive, 
     uint _teraprice, 
     uint _units
-  ) requireOwnership {
-    Products.push(Product(
+  ) require_isOwner(msg.sender) {
+    Product_array.push(Product(
       _isActive, 
       _teraprice, 
       _units
     ));
   }
   
-  function getProductIsActive (uint index) constant returns (bool isActive) {
-    return Products[index].isActive;
+  function get_Product_isActive (uint index) constant returns (bool isActive) {
+    return Product_array[index].isActive;
   }
   
-  function setProductIsActive (uint index, bool value) requireOwnership {
-    Products[index].isActive = value;
+  function set_Product_isActive (uint index, bool value) require_isOwner(msg.sender) {
+    Product_array[index].isActive = value;
   }
-  function getProductTeraprice (uint index) constant returns (uint teraprice) {
-    return Products[index].teraprice;
-  }
-  
-  function setProductTeraprice (uint index, uint value) requireOwnership {
-    Products[index].teraprice = value;
-  }
-  function getProductUnits (uint index) constant returns (uint units) {
-    return Products[index].units;
+  function get_Product_teraprice (uint index) constant returns (uint teraprice) {
+    return Product_array[index].teraprice;
   }
   
-  function setProductUnits (uint index, uint value) requireOwnership {
-    Products[index].units = value;
+  function set_Product_teraprice (uint index, uint value) require_isOwner(msg.sender) {
+    Product_array[index].teraprice = value;
+  }
+  function get_Product_units (uint index) constant returns (uint units) {
+    return Product_array[index].units;
+  }
+  
+  function set_Product_units (uint index, uint value) require_isOwner(msg.sender) {
+    Product_array[index].units = value;
   }
   /* END Product structs */
   /* START Transport structs */
@@ -81,35 +77,35 @@ contract Store is ownable {
     uint teraprice;
   }
   
-  Transport[] public Transports;
+  Transport[] public Transport_array;
   
-  function getTransportsLength() constant returns (uint) {
-    return Transports.length;
+  function get_Transport_array_length() constant returns (uint) {
+    return Transport_array.length;
   }
   
-  function addTransport(
+  function add_Transport(
     bool _isActive, 
     uint _teraprice
-  ) requireOwnership {
-    Transports.push(Transport(
+  ) require_isOwner(msg.sender) {
+    Transport_array.push(Transport(
       _isActive, 
       _teraprice
     ));
   }
   
-  function getTransportIsActive (uint index) constant returns (bool isActive) {
-    return Transports[index].isActive;
+  function get_Transport_isActive (uint index) constant returns (bool isActive) {
+    return Transport_array[index].isActive;
   }
   
-  function setTransportIsActive (uint index, bool value) requireOwnership {
-    Transports[index].isActive = value;
+  function set_Transport_isActive (uint index, bool value) require_isOwner(msg.sender) {
+    Transport_array[index].isActive = value;
   }
-  function getTransportTeraprice (uint index) constant returns (uint teraprice) {
-    return Transports[index].teraprice;
+  function get_Transport_teraprice (uint index) constant returns (uint teraprice) {
+    return Transport_array[index].teraprice;
   }
   
-  function setTransportTeraprice (uint index, uint value) requireOwnership {
-    Transports[index].teraprice = value;
+  function set_Transport_teraprice (uint index, uint value) require_isOwner(msg.sender) {
+    Transport_array[index].teraprice = value;
   }
   /* END Transport structs */
 

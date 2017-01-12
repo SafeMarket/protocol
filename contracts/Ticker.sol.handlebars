@@ -6,7 +6,7 @@ import "ownable.sol";
 contract Ticker is ownable {
 	mapping(bytes4 => uint) prices;
 
-	function setPrice(bytes4 currency, uint price) requireOwnership {
+	function setPrice(bytes4 currency, uint price) require_isOwner(msg.sender) {
 		prices[currency] = price;
 	}
 

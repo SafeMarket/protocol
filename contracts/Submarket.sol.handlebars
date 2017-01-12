@@ -14,8 +14,8 @@ contract Submarket is ownable {
   {{>mapping.sol mapping=this}}
   {{/each}}
 
-  {{#each schemas.Submarket.structArrays}}
-  {{>structArray.sol struct=this}}
+  {{#each schemas.Submarket.structs}}
+  {{>struct.sol struct=this}}
   {{/each}}
 
 }

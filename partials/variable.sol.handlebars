@@ -1,2 +1,2 @@
 {{variable.type}} public {{variable.name}};
-function set{{capitalize variable.name}}({{variable.type}} _{{variable.name}}) requireOwnership { {{variable.name}} = _{{variable.name}}; }
+function {{variable.setMethodName}}({{variable.type}} _{{variable.name}}) require_isOwner(msg.sender) { {{variable.name}} = _{{variable.name}}; }
