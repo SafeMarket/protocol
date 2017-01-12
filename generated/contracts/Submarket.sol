@@ -12,8 +12,8 @@ contract Submarket is ownable {
   function set_currency(bytes4 _currency) require_isOwner(msg.sender) { currency = _currency; }
   uint public escrowFeeTerabase;
   function set_escrowFeeTerabase(uint _escrowFeeTerabase) require_isOwner(msg.sender) { escrowFeeTerabase = _escrowFeeTerabase; }
-  uint public escrowFeeCentiperun;
-  function set_escrowFeeCentiperun(uint _escrowFeeCentiperun) require_isOwner(msg.sender) { escrowFeeCentiperun = _escrowFeeCentiperun; }
+  uint public escrowFeeTeraperun;
+  function set_escrowFeeTeraperun(uint _escrowFeeTeraperun) require_isOwner(msg.sender) { escrowFeeTeraperun = _escrowFeeTeraperun; }
   bytes public metaMultihash;
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
 

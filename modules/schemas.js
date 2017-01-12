@@ -36,10 +36,10 @@ function Variable(type, name, generated) {
 const Store = new Contract('Store', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
-  new Variable('uint', 'bufferCentiperun'),
+  new Variable('uint', 'bufferTeraperun'),
   new Variable('uint', 'disputeSeconds'),
   new Variable('uint', 'minProductsTeratotal'),
-  new Variable('uint', 'affiliateFeeCentiperun'),
+  new Variable('uint', 'affiliateFeeTeraperun'),
   new Variable('bytes', 'metaMultihash')
 ], [
   new StructArray('Product', [
@@ -57,7 +57,7 @@ const Submarket = new Contract('submarket', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
   new Variable('uint', 'escrowFeeTerabase'),
-  new Variable('uint', 'escrowFeeCentiperun'),
+  new Variable('uint', 'escrowFeeTeraperun'),
   new Variable('bytes', 'metaMultihash')
 ])
 
