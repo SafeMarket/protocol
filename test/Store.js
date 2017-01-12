@@ -31,11 +31,11 @@ describe('Store', () => {
       pseudoStore.setDisputeSeconds.getData(params.disputeSeconds1),
       pseudoStore.setMinProductsTeratotal.getData(params.minProductsTeratotal1),
       pseudoStore.setAffiliateFeeCentiperun.getData(params.affiliateFeeCentiperun1),
-      pseudoStore.setFileHash.getData(params.fileHash0),
-      pseudoStore.addProduct.getData(true, params.teraprice1, params.units1, params.fileHash1),
-      pseudoStore.addProduct.getData(false, params.teraprice2, params.units2, params.fileHash2),
-      pseudoStore.addTransport.getData(true, params.teraprice3, params.fileHash3),
-      pseudoStore.addTransport.getData(false, params.teraprice4, params.fileHash4)
+      pseudoStore.setMetaMultihash.getData(params.fileHash0),
+      pseudoStore.addProduct.getData(true, params.teraprice1, params.units1),
+      pseudoStore.addProduct.getData(false, params.teraprice2, params.units2),
+      pseudoStore.addTransport.getData(true, params.teraprice3),
+      pseudoStore.addTransport.getData(false, params.teraprice4)
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
@@ -76,6 +76,10 @@ describe('Store', () => {
     return store.currency.q().should.eventually.be.ascii(params.currency1)
   })
 
+  it('should have correct metaMultihash', () => {
+    return store.metaMultihash.q().should.eventually.be.ascii(params.fileHash0)
+  })
+
   it('should have correct products length', () => {
     return store.getProductsLength.q().should.eventually.be.bignumber.equal(2)
   })
@@ -86,11 +90,9 @@ describe('Store', () => {
       store.getProductIsActive.q(0).should.eventually.be.true,
       store.getProductTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
       store.getProductUnits.q(0).should.eventually.be.bignumber.equal(params.units1),
-      store.getProductFileHash.q(0).should.eventually.be.ascii(params.fileHash1),
       store.getProductIsActive.q(1).should.eventually.be.false,
       store.getProductTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
       store.getProductUnits.q(1).should.eventually.be.bignumber.equal(params.units2),
-      store.getProductFileHash.q(1).should.eventually.be.ascii(params.fileHash2),
       store.getProductIsActive.q(2).should.eventually.be.rejected
     ])
   })
@@ -100,17 +102,15 @@ describe('Store', () => {
       store.getTransportsLength.q().should.eventually.be.bignumber.equal(2),
       store.getTransportIsActive.q(0).should.eventually.be.true,
       store.getTransportTeraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice3),
-      store.getTransportFileHash.q(0).should.eventually.be.ascii(params.fileHash3),
       store.getTransportIsActive.q(1).should.eventually.be.false,
       store.getTransportTeraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
-      store.getTransportFileHash.q(1).should.eventually.be.ascii(params.fileHash4),
       store.getTransportIsActive.q(2).should.eventually.be.rejected
     ])
   })
 
   it('should be able to add a product', () => {
     return store.addProduct.q(
-      true, params.teraprice5, params.units3, params.fileHash5, { gas: chaithereum.gasLimit }
+      true, params.teraprice5, params.units3, { gas: chaithereum.gasLimit }
     ).should.eventually.be.fulfilled
   })
 
@@ -119,14 +119,13 @@ describe('Store', () => {
       store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
       store.getProductIsActive.q(2).should.eventually.be.true,
       store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice5),
-      store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units3),
-      store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash5)
+      store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units3)
     ])
   })
 
   it('should be able to add a transport', () => {
     return store.addTransport.q(
-      true, params.teraprice6, params.fileHash6, { gas: chaithereum.gasLimit }
+      true, params.teraprice6, { gas: chaithereum.gasLimit }
     ).should.eventually.be.fulfilled
   })
 
@@ -134,8 +133,7 @@ describe('Store', () => {
     return chaithereum.web3.Q.all([
       store.getTransportsLength.q().should.eventually.be.bignumber.equal(3),
       store.getTransportIsActive.q(2).should.eventually.be.true,
-      store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice6),
-      store.getTransportFileHash.q(2).should.eventually.be.ascii(params.fileHash6)
+      store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice6)
     ])
   })
 
@@ -151,17 +149,12 @@ describe('Store', () => {
     return store.setProductUnits.q(2, params.units5).should.eventually.be.fulfilled
   })
 
-  it('should set the product fileHash', () => {
-    return store.setProductFileHash.q(2, params.fileHash7).should.eventually.be.fulfilled
-  })
-
   it('should have updated the product correctly', () => {
     return chaithereum.web3.Q.all([
       store.getProductsLength.q().should.eventually.be.bignumber.equal(3),
       store.getProductIsActive.q(2).should.eventually.be.false,
       store.getProductTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
-      store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units5),
-      store.getProductFileHash.q(2).should.eventually.be.ascii(params.fileHash7)
+      store.getProductUnits.q(2).should.eventually.be.bignumber.equal(params.units5)
     ])
   })
 
@@ -173,16 +166,11 @@ describe('Store', () => {
     return store.setTransportTeraprice.q(2, params.teraprice8).should.eventually.be.fulfilled
   })
 
-  it('set the transport fileHash', () => {
-    return store.setTransportFileHash.q(2, params.fileHash8).should.eventually.be.fulfilled
-  })
-
   it('should have updated the transport correctly', () => {
     return chaithereum.web3.Q.all([
       store.getTransportsLength.q().should.eventually.be.bignumber.equal(3),
       store.getTransportIsActive.q(2).should.eventually.be.false,
-      store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice8),
-      store.getTransportFileHash.q(2).should.eventually.be.ascii(params.fileHash8)
+      store.getTransportTeraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice8)
     ])
   })
 

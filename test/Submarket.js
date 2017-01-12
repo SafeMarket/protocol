@@ -31,7 +31,7 @@ describe('Submarket', () => {
       pseudoSubmarket.setCurrency.getData(params.currency1),
       pseudoSubmarket.setEscrowFeeTerabase.getData(params.escrowFeeTerabase1),
       pseudoSubmarket.setEscrowFeeCentiperun.getData(params.escrowFeeCentiperun1),
-      pseudoSubmarket.setFileHash.getData(params.fileHash1)
+      pseudoSubmarket.setMetaMultihash.getData(params.fileHash1)
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
@@ -73,7 +73,7 @@ describe('Submarket', () => {
       submarket.escrowFeeCentiperun.q().should.eventually.be.bignumber.equal(
         params.escrowFeeCentiperun1
       ),
-      submarket.fileHash.q().should.eventually.be.ascii(params.fileHash1)
+      submarket.metaMultihash.q().should.eventually.be.ascii(params.fileHash1)
     ]).should.be.fulfilled
   })
 

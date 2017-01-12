@@ -37,7 +37,7 @@ const Store = new Contract('Store', [
   new Variable('uint', 'disputeSeconds'),
   new Variable('uint', 'minProductsTeratotal'),
   new Variable('uint', 'affiliateFeeCentiperun'),
-  new Variable('bytes32', 'fileHash')
+  new Variable('bytes', 'metaMultihash')
 ], [
   new Mapping('address', 'bool', 'verifiedBuyer'),
   new Mapping('address', 'uint', 'reviewIndice')
@@ -46,40 +46,24 @@ const Store = new Contract('Store', [
 Store.addStructArray(new Struct('Product', [
   new Variable('bool', 'isActive'),
   new Variable('uint', 'teraprice'),
-  new Variable('uint', 'units'),
-  new Variable('bytes32', 'fileHash')
+  new Variable('uint', 'units')
 ]))
 
 Store.addStructArray(new Struct('Transport', [
   new Variable('bool', 'isActive'),
-  new Variable('uint', 'teraprice'),
-  new Variable('bytes32', 'fileHash')
+  new Variable('uint', 'teraprice')
 ]))
-
-Store.addStructArray(new Struct('Review', [
-  new Variable('uint', 'blockNumber'),
-  new Variable('uint8', 'score'),
-  new Variable('address', 'sender'),
-  new Variable('bytes32', 'fileHash')
-], true))
 
 const Submarket = new Contract('submarket', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
   new Variable('uint', 'escrowFeeTerabase'),
   new Variable('uint', 'escrowFeeCentiperun'),
-  new Variable('bytes32', 'fileHash')
+  new Variable('bytes', 'metaMultihash')
 ], [
   new Mapping('address', 'bool', 'verifiedBuyer'),
   new Mapping('address', 'uint', 'reviewIndice')
 ])
-
-Submarket.addStructArray(new Struct('Review', [
-  new Variable('uint', 'blockNumber', true),
-  new Variable('uint8', 'score'),
-  new Variable('address', 'sender', true),
-  new Variable('bytes32', 'fileHash')
-], true))
 
 module.exports = {
   Store,
