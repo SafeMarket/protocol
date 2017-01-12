@@ -1,0 +1,32 @@
+/* START {{structArray.name}} struct array */
+
+struct {{structArray.name}}{
+  {{#each structArray.variables}}
+  {{type}} {{name}};
+  {{/each}}
+}
+
+{{structArray.name}}[] public {{structArray.arrayName}};
+
+function {{structArray.getLengthName}}() constant returns (uint) {
+  return {{structArray.arrayName}}.length;
+}
+
+function {{structArray.addName}}(
+  {{>inputs.sol variables=structArray.variables}}
+) require_isOwner(msg.sender) {
+  {{structArray.arrayName}}.push({{structArray.name}}(
+  {{>names.sol variables=structArray.variables}}
+  ));
+}
+
+{{#each structArray.variables}}
+function {{getMethodName}} (uint index) constant returns ({{type}} {{name}}) {
+  return {{../structArray.arrayName}}[index].{{name}};
+}
+
+function {{setMethodName}} (uint index, {{type}} value) require_isOwner(msg.sender) {
+  {{../structArray.arrayName}}[index].{{name}} = value;
+}
+{{/each}}
+/* END {{structArray.name}} structs */

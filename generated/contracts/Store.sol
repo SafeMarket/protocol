@@ -22,7 +22,7 @@ contract Store is ownable {
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
 
 
-  /* START Product structs */
+  /* START Product struct array */
   
   struct Product{
     bool isActive;
@@ -70,7 +70,7 @@ contract Store is ownable {
     Product_array[index].units = value;
   }
   /* END Product structs */
-  /* START Transport structs */
+  /* START Transport struct array */
   
   struct Transport{
     bool isActive;

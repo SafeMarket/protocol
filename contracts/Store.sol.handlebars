@@ -14,8 +14,8 @@ contract Store is ownable {
   {{>mapping.sol mapping=this}}
   {{/each}}
 
-  {{#each schemas.Store.structs}}
-  {{>struct.sol struct=this}}
+  {{#each schemas.Store.structArrays}}
+  {{>structArray.sol structArray=this}}
   {{/each}}
 
 }

@@ -1,10 +1,10 @@
-function Contract(name, variables, structs) {
+function Contract(name, variables, structArrays) {
   this.name = name
   this.variables = variables || []
-  this.structs = structs || []
+  this.structArrays = structArrays || []
 }
 
-function Struct(name, variables) {
+function StructArray(name, variables) {
   this.name = name
   this.variables = variables || []
   const variableTypes = variables.map((variable) => { return variable.type })
@@ -42,12 +42,12 @@ const Store = new Contract('Store', [
   new Variable('uint', 'affiliateFeeCentiperun'),
   new Variable('bytes', 'metaMultihash')
 ], [
-  new Struct('Product', [
+  new StructArray('Product', [
     new Variable('bool', 'isActive'),
     new Variable('uint', 'teraprice'),
     new Variable('uint', 'units')
   ]),
-  new Struct('Transport', [
+  new StructArray('Transport', [
     new Variable('bool', 'isActive'),
     new Variable('uint', 'teraprice')
   ])
