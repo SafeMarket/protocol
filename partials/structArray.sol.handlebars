@@ -8,11 +8,11 @@ struct {{structArray.name}}{
 
 {{structArray.name}}[] public {{structArray.arrayName}};
 
-function {{structArray.getLengthName}}() constant returns (uint) {
+function {{structArray.getLengthMethodName}}() constant returns (uint) {
   return {{structArray.arrayName}}.length;
 }
 
-function {{structArray.addName}}(
+function {{structArray.addMethodName}}(
   {{>inputs.sol variables=structArray.variables}}
 ) require_isOwner(msg.sender) {
   {{structArray.arrayName}}.push({{structArray.name}}(

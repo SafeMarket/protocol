@@ -10,10 +10,10 @@ function StructArray(name, variables) {
   const variableTypes = variables.map((variable) => { return variable.type })
 
   this.arrayName = `${this.name}_array`
-  this.addName = `add_${this.name}`
-  this.addAbi = `${this.addName}(${variableTypes.join(',')})`
-  this.getLengthName = `get_${this.arrayName}_length`
-  this.getLengthAbi = `${this.getLengthName}()`
+  this.addMethodName = `add_${this.name}`
+  this.addMethodAbi = `${this.addName}(${variableTypes.join(',')})`
+  this.getLengthMethodName = `get_${this.arrayName}_length`
+  this.getLengthMethodAbi = `${this.getLengthName}()`
 
   this.variables.forEach((variable) => {
     variable.getMethodName = `get_${this.name}_${variable.name}`
