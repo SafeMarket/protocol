@@ -11,9 +11,9 @@ function StructArray(name, variables) {
 
   this.arrayName = `${this.name}_array`
   this.addMethodName = `add_${this.name}`
-  this.addMethodAbi = `${this.addName}(${variableTypes.join(',')})`
+  this.addMethodAbi = `${this.addMethodName}(${variableTypes.join(',')})`
   this.getLengthMethodName = `get_${this.arrayName}_length`
-  this.getLengthMethodAbi = `${this.getLengthName}()`
+  this.getLengthMethodAbi = `${this.getLengthMethodName}()`
 
   this.variables.forEach((variable) => {
     variable.getMethodName = `get_${this.name}_${variable.name}`
