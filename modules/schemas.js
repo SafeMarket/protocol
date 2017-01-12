@@ -43,12 +43,12 @@ const Store = new Contract('Store', [
   new Variable('bytes', 'metaMultihash')
 ], [
   new StructArray('Product', [
-    new Variable('bool', 'isActive'),
+    new Variable('bool', 'isArchived'),
     new Variable('uint', 'teraprice'),
     new Variable('uint', 'units')
   ]),
   new StructArray('Transport', [
-    new Variable('bool', 'isActive'),
+    new Variable('bool', 'isArchived'),
     new Variable('uint', 'teraprice')
   ])
 ])

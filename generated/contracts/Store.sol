@@ -25,7 +25,7 @@ contract Store is ownable {
   /* START Product struct array */
   
   struct Product{
-    bool isActive;
+    bool isArchived;
     uint teraprice;
     uint units;
   }
@@ -37,23 +37,23 @@ contract Store is ownable {
   }
   
   function add_Product(
-    bool _isActive, 
+    bool _isArchived, 
     uint _teraprice, 
     uint _units
   ) require_isOwner(msg.sender) {
     Product_array.push(Product(
-      _isActive, 
+      _isArchived, 
       _teraprice, 
       _units
     ));
   }
   
-  function get_Product_isActive (uint index) constant returns (bool isActive) {
-    return Product_array[index].isActive;
+  function get_Product_isArchived (uint index) constant returns (bool isArchived) {
+    return Product_array[index].isArchived;
   }
   
-  function set_Product_isActive (uint index, bool value) require_isOwner(msg.sender) {
-    Product_array[index].isActive = value;
+  function set_Product_isArchived (uint index, bool value) require_isOwner(msg.sender) {
+    Product_array[index].isArchived = value;
   }
   function get_Product_teraprice (uint index) constant returns (uint teraprice) {
     return Product_array[index].teraprice;
@@ -73,7 +73,7 @@ contract Store is ownable {
   /* START Transport struct array */
   
   struct Transport{
-    bool isActive;
+    bool isArchived;
     uint teraprice;
   }
   
@@ -84,21 +84,21 @@ contract Store is ownable {
   }
   
   function add_Transport(
-    bool _isActive, 
+    bool _isArchived, 
     uint _teraprice
   ) require_isOwner(msg.sender) {
     Transport_array.push(Transport(
-      _isActive, 
+      _isArchived, 
       _teraprice
     ));
   }
   
-  function get_Transport_isActive (uint index) constant returns (bool isActive) {
-    return Transport_array[index].isActive;
+  function get_Transport_isArchived (uint index) constant returns (bool isArchived) {
+    return Transport_array[index].isArchived;
   }
   
-  function set_Transport_isActive (uint index, bool value) require_isOwner(msg.sender) {
-    Transport_array[index].isActive = value;
+  function set_Transport_isArchived (uint index, bool value) require_isOwner(msg.sender) {
+    Transport_array[index].isArchived = value;
   }
   function get_Transport_teraprice (uint index) constant returns (uint teraprice) {
     return Transport_array[index].teraprice;

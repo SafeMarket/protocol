@@ -87,24 +87,24 @@ describe('Store', () => {
   it('should have correct products', () => {
     return chaithereum.web3.Q.all([
       store.get_Product_array_length.q().should.eventually.be.bignumber.equal(2),
-      store.get_Product_isActive.q(0).should.eventually.be.true,
+      store.get_Product_isArchived.q(0).should.eventually.be.true,
       store.get_Product_teraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice1),
       store.get_Product_units.q(0).should.eventually.be.bignumber.equal(params.units1),
-      store.get_Product_isActive.q(1).should.eventually.be.false,
+      store.get_Product_isArchived.q(1).should.eventually.be.false,
       store.get_Product_teraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
       store.get_Product_units.q(1).should.eventually.be.bignumber.equal(params.units2),
-      store.get_Product_isActive.q(2).should.eventually.be.rejected
+      store.get_Product_isArchived.q(2).should.eventually.be.rejected
     ])
   })
 
   it('should have correct transports', () => {
     return chaithereum.web3.Q.all([
       store.get_Transport_array_length.q().should.eventually.be.bignumber.equal(2),
-      store.get_Transport_isActive.q(0).should.eventually.be.true,
+      store.get_Transport_isArchived.q(0).should.eventually.be.true,
       store.get_Transport_teraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice3),
-      store.get_Transport_isActive.q(1).should.eventually.be.false,
+      store.get_Transport_isArchived.q(1).should.eventually.be.false,
       store.get_Transport_teraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
-      store.get_Transport_isActive.q(2).should.eventually.be.rejected
+      store.get_Transport_isArchived.q(2).should.eventually.be.rejected
     ])
   })
 
@@ -117,7 +117,7 @@ describe('Store', () => {
   it('should have added the product correctly', () => {
     return chaithereum.web3.Q.all([
       store.get_Product_array_length.q().should.eventually.be.bignumber.equal(3),
-      store.get_Product_isActive.q(2).should.eventually.be.true,
+      store.get_Product_isArchived.q(2).should.eventually.be.true,
       store.get_Product_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice5),
       store.get_Product_units.q(2).should.eventually.be.bignumber.equal(params.units3)
     ])
@@ -132,13 +132,13 @@ describe('Store', () => {
   it('should have added the transport correctly', () => {
     return chaithereum.web3.Q.all([
       store.get_Transport_array_length.q().should.eventually.be.bignumber.equal(3),
-      store.get_Transport_isActive.q(2).should.eventually.be.true,
+      store.get_Transport_isArchived.q(2).should.eventually.be.true,
       store.get_Transport_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice6)
     ])
   })
 
   it('should set the product active state', () => {
-    return store.set_Product_isActive.q(2, false).should.eventually.be.fulfilled
+    return store.set_Product_isArchived.q(2, false).should.eventually.be.fulfilled
   })
 
   it('should set the product teraprice', () => {
@@ -152,14 +152,14 @@ describe('Store', () => {
   it('should have updated the product correctly', () => {
     return chaithereum.web3.Q.all([
       store.get_Product_array_length.q().should.eventually.be.bignumber.equal(3),
-      store.get_Product_isActive.q(2).should.eventually.be.false,
+      store.get_Product_isArchived.q(2).should.eventually.be.false,
       store.get_Product_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice7),
       store.get_Product_units.q(2).should.eventually.be.bignumber.equal(params.units5)
     ])
   })
 
   it('should set the transport active state', () => {
-    return store.set_Transport_isActive.q(2, false).should.eventually.be.fulfilled
+    return store.set_Transport_isArchived.q(2, false).should.eventually.be.fulfilled
   })
 
   it('should set the transport teraprice', () => {
@@ -169,7 +169,7 @@ describe('Store', () => {
   it('should have updated the transport correctly', () => {
     return chaithereum.web3.Q.all([
       store.get_Transport_array_length.q().should.eventually.be.bignumber.equal(3),
-      store.get_Transport_isActive.q(2).should.eventually.be.false,
+      store.get_Transport_isArchived.q(2).should.eventually.be.false,
       store.get_Transport_teraprice.q(2).should.eventually.be.bignumber.equal(params.teraprice8)
     ])
   })
