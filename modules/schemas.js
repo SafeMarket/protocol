@@ -36,28 +36,28 @@ function Variable(type, name, generated) {
 const Store = new Contract('Store', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
-  new Variable('uint', 'bufferTeraperun'),
-  new Variable('uint', 'disputeSeconds'),
-  new Variable('uint', 'minProductsTeratotal'),
-  new Variable('uint', 'affiliateFeeTeraperun'),
+  new Variable('uint256', 'bufferTeraperun'),
+  new Variable('uint256', 'disputeSeconds'),
+  new Variable('uint256', 'minProductsTeratotal'),
+  new Variable('uint256', 'affiliateFeeTeraperun'),
   new Variable('bytes', 'metaMultihash')
 ], [
   new StructArray('Product', [
     new Variable('bool', 'isArchived'),
-    new Variable('uint', 'teraprice'),
-    new Variable('uint', 'units')
+    new Variable('uint256', 'teraprice'),
+    new Variable('uint256', 'units')
   ]),
   new StructArray('Transport', [
     new Variable('bool', 'isArchived'),
-    new Variable('uint', 'teraprice')
+    new Variable('uint256', 'teraprice')
   ])
 ])
 
 const Submarket = new Contract('submarket', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
-  new Variable('uint', 'escrowFeeTerabase'),
-  new Variable('uint', 'escrowFeeTeraperun'),
+  new Variable('uint256', 'escrowFeeTerabase'),
+  new Variable('uint256', 'escrowFeeTeraperun'),
   new Variable('bytes', 'metaMultihash')
 ])
 
