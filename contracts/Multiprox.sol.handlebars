@@ -40,6 +40,9 @@ contract Multiprox is executor, ownable{
 
   function create(bytes32 codeHash) returns(address addr){
     bytes memory code = codeHashToCodeMap[codeHash];
+    if (code.length == 0) {
+      throw;
+    }
     assembly{
       addr := create(0, add(code,0x20), mload(code))
       jumpi(invalidJumpLabel, iszero(extcodesize(addr)))
