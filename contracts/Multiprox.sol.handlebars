@@ -7,6 +7,7 @@ contract Multiprox is executor, ownable{
 
   mapping (bytes32 => bool) isCodeHashRegisteredMap;
   mapping (bytes32 => bytes) codeHashToCodeMap;
+  mapping (address => bytes32) addrToCodeHashMap;
 
   function registerCode(bytes code) require_isOwner(msg.sender) {
     bytes32 codeHash = sha3(code);
@@ -23,6 +24,10 @@ contract Multiprox is executor, ownable{
 
   function getIsCodeHashRegistered(bytes32 codeHash) constant returns(bool) {
     return isCodeHashRegisteredMap[codeHash];
+  }
+
+  function getCodeHash(address addr) constant returns(bytes32) {
+    return addrToCodeHashMap[addr];
   }
 
   event Creation(
@@ -47,6 +52,7 @@ contract Multiprox is executor, ownable{
       addr := create(0, add(code,0x20), mload(code))
       jumpi(invalidJumpLabel, iszero(extcodesize(addr)))
     }
+    addrToCodeHashMap[addr] = codeHash;
     Creation(msg.sender, sha3(code), addr);
   }
 

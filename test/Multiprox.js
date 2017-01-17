@@ -33,7 +33,7 @@ describe('Multiprox', () => {
     it('should register Store', () => {
       return multiprox.registerCode.q(contracts.Store.bytecode, { gas: chaithereum.gasLimit })
     })
-    it('should register Store', () => {
+    it('should register Submarket', () => {
       return multiprox.registerCode.q(contracts.Submarket.bytecode, { gas: chaithereum.gasLimit })
     })
   })
@@ -78,6 +78,12 @@ describe('Multiprox', () => {
       return chaithereum.web3.eth.getCode.q(
         parseTransactionReceipt(transactionReceipt).addr
       ).should.eventually.equal(contracts.Simple.runtimeBytecode)
+    })
+
+    it('getCodeHash(addr) should be correct', () => {
+      return multiprox.getCodeHash.q(
+        parseTransactionReceipt(transactionReceipt).addr
+      ).should.eventually.equal(contracts.Simple.codeHash)
     })
   })
 
@@ -138,6 +144,12 @@ describe('Multiprox', () => {
       return chaithereum.web3.eth.getCode.q(
         parseTransactionReceipt(transactionReceipt).addr
       ).should.eventually.equal(contracts.Simple.runtimeBytecode)
+    })
+
+    it('getCodeHash(addr) should be correct', () => {
+      return multiprox.getCodeHash.q(
+        parseTransactionReceipt(transactionReceipt).addr
+      ).should.eventually.equal(contracts.Simple.codeHash)
     })
 
     describe('Simple', () => {
