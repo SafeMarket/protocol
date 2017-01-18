@@ -10,6 +10,7 @@ function StructArray(name, variables) {
   const variableTypes = variables.map((variable) => { return variable.type })
 
   this.arrayName = `${this.name}_array`
+  this.getMethodAbi = `${this.arrayName}(uint256)`
   this.addMethodName = `add_${this.name}`
   this.addMethodAbi = `${this.addMethodName}(${variableTypes.join(',')})`
   this.getLengthMethodName = `get_${this.arrayName}_length`
@@ -17,9 +18,9 @@ function StructArray(name, variables) {
 
   this.variables.forEach((variable) => {
     variable.getMethodName = `get_${this.name}_${variable.name}`
-    variable.getMethodAbi = `${variable.getMethodName}(uint)`
+    variable.getMethodAbi = `${variable.getMethodName}(uint256)`
     variable.setMethodName = `set_${this.name}_${variable.name}`
-    variable.setMethodAbi = `${variable.setMethodName}(uint,${variable.type})`
+    variable.setMethodAbi = `${variable.setMethodName}(uint256,${variable.type})`
   })
 }
 

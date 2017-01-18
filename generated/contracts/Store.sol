@@ -32,7 +32,7 @@ contract Store is ownable {
   
   Product[] public Product_array;
   
-  function get_Product_array_length() constant returns (uint) {
+  function get_Product_array_length() constant returns (uint256) {
     return Product_array.length;
   }
   
@@ -48,25 +48,25 @@ contract Store is ownable {
     ));
   }
   
-  function get_Product_isArchived (uint index) constant returns (bool isArchived) {
+  function get_Product_isArchived (uint256 index) constant returns (bool isArchived) {
     return Product_array[index].isArchived;
   }
   
-  function set_Product_isArchived (uint index, bool value) require_isOwner(msg.sender) {
+  function set_Product_isArchived (uint256 index, bool value) require_isOwner(msg.sender) {
     Product_array[index].isArchived = value;
   }
-  function get_Product_teraprice (uint index) constant returns (uint256 teraprice) {
+  function get_Product_teraprice (uint256 index) constant returns (uint256 teraprice) {
     return Product_array[index].teraprice;
   }
   
-  function set_Product_teraprice (uint index, uint256 value) require_isOwner(msg.sender) {
+  function set_Product_teraprice (uint256 index, uint256 value) require_isOwner(msg.sender) {
     Product_array[index].teraprice = value;
   }
-  function get_Product_units (uint index) constant returns (uint256 units) {
+  function get_Product_units (uint256 index) constant returns (uint256 units) {
     return Product_array[index].units;
   }
   
-  function set_Product_units (uint index, uint256 value) require_isOwner(msg.sender) {
+  function set_Product_units (uint256 index, uint256 value) require_isOwner(msg.sender) {
     Product_array[index].units = value;
   }
   /* END Product structs */
@@ -79,7 +79,7 @@ contract Store is ownable {
   
   Transport[] public Transport_array;
   
-  function get_Transport_array_length() constant returns (uint) {
+  function get_Transport_array_length() constant returns (uint256) {
     return Transport_array.length;
   }
   
@@ -93,18 +93,18 @@ contract Store is ownable {
     ));
   }
   
-  function get_Transport_isArchived (uint index) constant returns (bool isArchived) {
+  function get_Transport_isArchived (uint256 index) constant returns (bool isArchived) {
     return Transport_array[index].isArchived;
   }
   
-  function set_Transport_isArchived (uint index, bool value) require_isOwner(msg.sender) {
+  function set_Transport_isArchived (uint256 index, bool value) require_isOwner(msg.sender) {
     Transport_array[index].isArchived = value;
   }
-  function get_Transport_teraprice (uint index) constant returns (uint256 teraprice) {
+  function get_Transport_teraprice (uint256 index) constant returns (uint256 teraprice) {
     return Transport_array[index].teraprice;
   }
   
-  function set_Transport_teraprice (uint index, uint256 value) require_isOwner(msg.sender) {
+  function set_Transport_teraprice (uint256 index, uint256 value) require_isOwner(msg.sender) {
     Transport_array[index].teraprice = value;
   }
   /* END Transport structs */

@@ -8,7 +8,7 @@ struct {{structArray.name}}{
 
 {{structArray.name}}[] public {{structArray.arrayName}};
 
-function {{structArray.getLengthMethodName}}() constant returns (uint) {
+function {{structArray.getLengthMethodName}}() constant returns (uint256) {
   return {{structArray.arrayName}}.length;
 }
 
@@ -21,11 +21,11 @@ function {{structArray.addMethodName}}(
 }
 
 {{#each structArray.variables}}
-function {{getMethodName}} (uint index) constant returns ({{type}} {{name}}) {
+function {{getMethodName}} (uint256 index) constant returns ({{type}} {{name}}) {
   return {{../structArray.arrayName}}[index].{{name}};
 }
 
-function {{setMethodName}} (uint index, {{type}} value) require_isOwner(msg.sender) {
+function {{setMethodName}} (uint256 index, {{type}} value) require_isOwner(msg.sender) {
   {{../structArray.arrayName}}[index].{{name}} = value;
 }
 {{/each}}
