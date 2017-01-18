@@ -10,14 +10,14 @@ contract Store is ownable {
   function set_isOpen(bool _isOpen) require_isOwner(msg.sender) { isOpen = _isOpen; }
   bytes4 public currency;
   function set_currency(bytes4 _currency) require_isOwner(msg.sender) { currency = _currency; }
-  uint256 public bufferTeraperun;
-  function set_bufferTeraperun(uint256 _bufferTeraperun) require_isOwner(msg.sender) { bufferTeraperun = _bufferTeraperun; }
+  uint256 public bufferPicoperun;
+  function set_bufferPicoperun(uint256 _bufferPicoperun) require_isOwner(msg.sender) { bufferPicoperun = _bufferPicoperun; }
   uint256 public disputeSeconds;
   function set_disputeSeconds(uint256 _disputeSeconds) require_isOwner(msg.sender) { disputeSeconds = _disputeSeconds; }
   uint256 public minProductsTeratotal;
   function set_minProductsTeratotal(uint256 _minProductsTeratotal) require_isOwner(msg.sender) { minProductsTeratotal = _minProductsTeratotal; }
-  uint256 public affiliateFeeTeraperun;
-  function set_affiliateFeeTeraperun(uint256 _affiliateFeeTeraperun) require_isOwner(msg.sender) { affiliateFeeTeraperun = _affiliateFeeTeraperun; }
+  uint256 public affiliateFeePicoperun;
+  function set_affiliateFeePicoperun(uint256 _affiliateFeePicoperun) require_isOwner(msg.sender) { affiliateFeePicoperun = _affiliateFeePicoperun; }
   bytes public metaMultihash;
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
 

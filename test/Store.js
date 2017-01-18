@@ -27,10 +27,10 @@ describe('Store', () => {
     const calldatas = [
       pseudoStore.set_isOwner.getData(chaithereum.account, true),
       pseudoStore.set_currency.getData(params.currency1),
-      pseudoStore.set_bufferTeraperun.getData(params.bufferTeraperun1),
+      pseudoStore.set_bufferPicoperun.getData(params.bufferPicoperun1),
       pseudoStore.set_disputeSeconds.getData(params.disputeSeconds1),
       pseudoStore.set_minProductsTeratotal.getData(params.minProductsTeratotal1),
-      pseudoStore.set_affiliateFeeTeraperun.getData(params.affiliateFeeTeraperun1),
+      pseudoStore.set_affiliateFeePicoperun.getData(params.affiliateFeePicoperun1),
       pseudoStore.set_metaMultihash.getData(params.fileHash0),
       pseudoStore.add_Product.getData(true, params.teraprice1, params.units1),
       pseudoStore.add_Product.getData(false, params.teraprice2, params.units2),
