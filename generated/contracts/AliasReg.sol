@@ -27,7 +27,7 @@ contract AliasReg {
 		ownerToAliasMap[msg.sender] = bytes32(0);
 	}
 
-	function register(address owner, bytes32 alias) {
+	function register(bytes32 alias) {
 		if (alias == bytes32(0)) {
 			throw;
 		}
@@ -50,8 +50,8 @@ contract AliasReg {
 				throw;
 			}
 		}
-		aliasToOwnerMap[alias] = owner;
-		ownerToAliasMap[owner] = alias;
+		aliasToOwnerMap[alias] = msg.sender;
+		ownerToAliasMap[msg.sender] = alias;
 	}
 
 	function getOwner(bytes32 alias) constant returns(address) {

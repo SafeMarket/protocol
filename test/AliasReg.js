@@ -23,25 +23,25 @@ describe('AliasReg', () => {
   })
 
   it('cannot register a blank alias', () => {
-    return aliasReg.register.q(chaithereum.account, '', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+    return aliasReg.register.q('', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('cannot register an alias with an uppercase letter', () => {
-    return aliasReg.register.q(chaithereum.account, 'myAlias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+    return aliasReg.register.q('myAlias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('cannot register an alias with an space', () => {
-    return aliasReg.register.q(chaithereum.account, 'my alias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+    return aliasReg.register.q('my alias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('cannot register an alias with a middle 0x00', () => {
     const myAliasHex = chaithereum.web3.fromAscii('myalias').substr(2)
     const badAliasHex = `${myAliasHex}00${myAliasHex}`
-    return aliasReg.register.q(chaithereum.account, badAliasHex, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+    return aliasReg.register.q(badAliasHex, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('can register "myalias"', () => {
-    return aliasReg.register.q(chaithereum.account, 'myalias', { gas: chaithereum.gasLimit })
+    return aliasReg.register.q('myalias', { gas: chaithereum.gasLimit })
   })
 
   it('can retreive owner associated with "myalias"', () => {
@@ -59,11 +59,15 @@ describe('AliasReg', () => {
   })
 
   it('cannot re-register "myalias"', () => {
-    return aliasReg.register.q(chaithereum.account, 'myalias', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+    return aliasReg.register.q('myalias', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+  })
+
+  it('cannot re-register "myalias" from accounts[1]', () => {
+    return aliasReg.register.q('myalias', { from: chaithereum.accounts[1], gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('cannot register "myalias2"', () => {
-    return aliasReg.register.q(chaithereum.accounts[1], 'myalias2', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+    return aliasReg.register.q('myalias2', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('can retreive owner associated with "myalias"', () => {
@@ -95,7 +99,7 @@ describe('AliasReg', () => {
   })
 
   it('can re-register "myalias" from accounts[2]', () => {
-    return aliasReg.register.q(chaithereum.accounts[2], 'myalias', { gas: chaithereum.gasLimit })
+    return aliasReg.register.q('myalias', { from: chaithereum.accounts[2], gas: chaithereum.gasLimit })
   })
 
   it('can retreive owner associated with "myalias"', () => {
