@@ -33,8 +33,8 @@ describe('Multiprox', () => {
     it('should register Store', () => {
       return multiprox.registerCode.q(contracts.Store.bytecode, { gas: chaithereum.gasLimit })
     })
-    it('should register Submarket', () => {
-      return multiprox.registerCode.q(contracts.Submarket.bytecode, { gas: chaithereum.gasLimit })
+    it('should register Arbitrator', () => {
+      return multiprox.registerCode.q(contracts.Arbitrator.bytecode, { gas: chaithereum.gasLimit })
     })
   })
 

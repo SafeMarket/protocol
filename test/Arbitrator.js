@@ -14,24 +14,24 @@ multiproxPromise.then((_multiprox) => {
   multiprox = _multiprox
 })
 
-describe('Submarket', () => {
+describe('Arbitrator', () => {
 
-  let submarket
+  let arbitrator
 
   after(() => {
-    deferred.resolve(submarket)
+    deferred.resolve(arbitrator)
   })
 
-  it('should create a submarket via multiprox', () => {
+  it('should create a arbitrator via multiprox', () => {
 
-    const pseudoSubmarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(0)
+    const pseudoArbitrator = chaithereum.web3.eth.contract(contracts.Arbitrator.abi).at(0)
     const calldatas = [
-      pseudoSubmarket.set_isOwner.getData(chaithereum.accounts[5], true),
-      pseudoSubmarket.set_isOpen.getData(true),
-      pseudoSubmarket.set_currency.getData(params.currency1),
-      pseudoSubmarket.set_escrowFeeTerabase.getData(params.escrowFeeTerabase1),
-      pseudoSubmarket.set_escrowFeePicoperun.getData(params.escrowFeePicoperun1),
-      pseudoSubmarket.set_metaMultihash.getData(params.fileHash1)
+      pseudoArbitrator.set_isOwner.getData(chaithereum.accounts[5], true),
+      pseudoArbitrator.set_isOpen.getData(true),
+      pseudoArbitrator.set_currency.getData(params.currency1),
+      pseudoArbitrator.set_escrowFeeTerabase.getData(params.escrowFeeTerabase1),
+      pseudoArbitrator.set_escrowFeePicoperun.getData(params.escrowFeePicoperun1),
+      pseudoArbitrator.set_metaMultihash.getData(params.fileHash1)
     ].map((calldata) => {
       return calldata.replace('0x', '')
     })
@@ -41,39 +41,39 @@ describe('Submarket', () => {
     const calldatasConcated = `0x${calldatas.join('')}`
 
     return multiprox.createAndExecute.estimateGas.q(
-      contracts.Submarket.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
+      contracts.Arbitrator.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
     ).then((gas) => {
       console.log('==================')
-      console.log('Submarket Gas', gas)
+      console.log('Arbitrator Gas', gas)
       console.log('==================')
       return multiprox.createAndExecute.q(
-        contracts.Submarket.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
+        contracts.Arbitrator.codeHash, lengths, calldatasConcated, { gas: chaithereum.gasLimit }
       ).then((transactionHash) => {
         return chaithereum.web3.eth.getTransactionReceipt.q(
           transactionHash
         ).then((transactionReceipt) => {
           const addr = parseTransactionReceipt(transactionReceipt).addr
-          submarket = chaithereum.web3.eth.contract(contracts.Submarket.abi).at(addr)
+          arbitrator = chaithereum.web3.eth.contract(contracts.Arbitrator.abi).at(addr)
         })
       })
     })
   })
 
   it('should have account 5 as owner', () => {
-    return submarket.get_isOwner.q(chaithereum.accounts[5]).should.eventually.equal(true)
+    return arbitrator.get_isOwner.q(chaithereum.accounts[5]).should.eventually.equal(true)
   })
 
   it('should have correct values', () => {
     return chaithereum.web3.Q.all([
-      submarket.isOpen.q().should.eventually.equal(true),
-      submarket.currency.q().should.eventually.be.ascii(params.currency1),
-      submarket.escrowFeeTerabase.q().should.eventually.be.bignumber.equal(
+      arbitrator.isOpen.q().should.eventually.equal(true),
+      arbitrator.currency.q().should.eventually.be.ascii(params.currency1),
+      arbitrator.escrowFeeTerabase.q().should.eventually.be.bignumber.equal(
         params.escrowFeeTerabase1
       ),
-      submarket.escrowFeePicoperun.q().should.eventually.be.bignumber.equal(
+      arbitrator.escrowFeePicoperun.q().should.eventually.be.bignumber.equal(
         params.escrowFeePicoperun1
       ),
-      submarket.metaMultihash.q().should.eventually.be.ascii(params.fileHash1)
+      arbitrator.metaMultihash.q().should.eventually.be.ascii(params.fileHash1)
     ]).should.be.fulfilled
   })
 

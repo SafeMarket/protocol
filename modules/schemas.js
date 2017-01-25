@@ -54,7 +54,7 @@ const Store = new Contract('Store', [
   ])
 ])
 
-const Submarket = new Contract('submarket', [
+const Arbitrator = new Contract('Arbitrator', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
   new Variable('uint256', 'escrowFeeTerabase'),
@@ -64,5 +64,5 @@ const Submarket = new Contract('submarket', [
 
 module.exports = {
   Store,
-  Submarket
+  Arbitrator
 }

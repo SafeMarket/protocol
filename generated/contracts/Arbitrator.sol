@@ -2,7 +2,7 @@ pragma solidity ^0.4.6;
 
 import "ownable.sol";
 
-contract Submarket is ownable {
+contract Arbitrator is ownable {
 
   function () payable {}
 

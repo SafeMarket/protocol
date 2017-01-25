@@ -2,19 +2,19 @@ pragma solidity {{solidityVersion}};
 
 import "ownable.sol";
 
-contract Submarket is ownable {
+contract Arbitrator is ownable {
 
   function () payable {}
 
-  {{#each schemas.Submarket.variables}}
+  {{#each schemas.Arbitrator.variables}}
   {{>variable.sol variable=this}}
   {{/each}}
 
-  {{#each schemas.Submarket.mappings}}
+  {{#each schemas.Arbitrator.mappings}}
   {{>mapping.sol mapping=this}}
   {{/each}}
 
-  {{#each schemas.Submarket.structs}}
+  {{#each schemas.Arbitrator.structs}}
   {{>struct.sol struct=this}}
   {{/each}}
 
