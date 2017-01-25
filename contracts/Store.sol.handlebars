@@ -1,8 +1,9 @@
 pragma solidity {{solidityVersion}};
 
 import "ownable.sol";
+import "executor.sol";
 
-contract Store is ownable {
+contract Store is ownable, executor {
 
   function () payable {}
 
@@ -17,5 +18,9 @@ contract Store is ownable {
   {{#each schemas.Store.structArrays}}
   {{>structArray.sol structArray=this}}
   {{/each}}
+
+  function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {
+    _execute(addr, calldataLengths, calldatas);
+  }
 
 }

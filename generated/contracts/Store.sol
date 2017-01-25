@@ -1,8 +1,9 @@
 pragma solidity ^0.4.6;
 
 import "ownable.sol";
+import "executor.sol";
 
-contract Store is ownable {
+contract Store is ownable, executor {
 
   function () payable {}
 
@@ -108,5 +109,9 @@ contract Store is ownable {
     Transport_array[index].teraprice = value;
   }
   /* END Transport structs */
+
+  function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {
+    _execute(addr, calldataLengths, calldatas);
+  }
 
 }
