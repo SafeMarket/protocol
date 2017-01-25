@@ -3,6 +3,7 @@ pragma solidity {{solidityVersion}};
 contract AliasReg {
 
 	mapping(bytes32=>address) aliasToOwnerMap;
+	mapping(address=>bytes32) ownerToAliasMap;
 
 	function validateCharCode(uint256 charCode) constant {
 		if (charCode >= 48 && charCode < 57) {
@@ -20,17 +21,22 @@ contract AliasReg {
     throw;
 	}
 
-	function setOwner(bytes32 alias, address owner) {
-		if (alias == 0) {
-			// no zero aliases
+	function unregister() {
+		bytes32 alias = ownerToAliasMap[msg.sender];
+		aliasToOwnerMap[alias] = address(0);
+		ownerToAliasMap[msg.sender] = bytes32(0);
+	}
+
+	function register(address owner, bytes32 alias) {
+		if (alias == bytes32(0)) {
+			throw;
+		}
+		if (ownerToAliasMap[msg.sender] != bytes32(0)) {
+			// cannot register multiple aliases
 			throw;
 		}
 		if (aliasToOwnerMap[alias] != address(0)) {
-			// if owned
-			if (aliasToOwnerMap[alias] != msg.sender) {
-				// if owner is not msg.sender
-				throw;
-			}
+			throw;
 		}
 
 		for (uint256 i = 0; i < 32; i ++) {
@@ -44,11 +50,15 @@ contract AliasReg {
 				throw;
 			}
 		}
-
 		aliasToOwnerMap[alias] = owner;
+		ownerToAliasMap[owner] = alias;
 	}
 
 	function getOwner(bytes32 alias) constant returns(address) {
 		return aliasToOwnerMap[alias];
+	}
+
+	function getAlias(address owner) constant returns(bytes32) {
+		return ownerToAliasMap[owner];
 	}
 }
