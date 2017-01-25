@@ -74,7 +74,7 @@ describe('AffiliateReg', () => {
   it('should not allow owner reassignment of aff by others', () => {
     return affiliateReg.setAffiliate.q('aff', chaithereum.accounts[0], chaithereum.accounts[3], {
       from: chaithereum.accounts[0]
-    }).should.be.rejected
+    }).should.be.rejectedWith(Error)
   })
 
   it('should have correct owner for "aff"', () => {

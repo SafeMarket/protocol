@@ -93,7 +93,7 @@ describe('Store', () => {
       store.get_Product_isArchived.q(1).should.eventually.be.false,
       store.get_Product_teraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice2),
       store.get_Product_units.q(1).should.eventually.be.bignumber.equal(params.units2),
-      store.get_Product_isArchived.q(2).should.eventually.be.rejected
+      store.get_Product_isArchived.q(2).should.eventually.be.rejectedWith(Error)
     ])
   })
 
@@ -104,7 +104,7 @@ describe('Store', () => {
       store.get_Transport_teraprice.q(0).should.eventually.be.bignumber.equal(params.teraprice3),
       store.get_Transport_isArchived.q(1).should.eventually.be.false,
       store.get_Transport_teraprice.q(1).should.eventually.be.bignumber.equal(params.teraprice4),
-      store.get_Transport_isArchived.q(2).should.eventually.be.rejected
+      store.get_Transport_isArchived.q(2).should.eventually.be.rejectedWith(Error)
     ])
   })
 

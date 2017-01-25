@@ -23,7 +23,7 @@ describe('ownable', () => {
     return ownable.set_isOwner
     .q(chaithereum.accounts[1], true, {
       from: chaithereum.accounts[1]
-    }).should.eventually.be.rejected
+    }).should.eventually.be.rejectedWith(Error)
   })
 
   it('should allow the owner to change the owner', () => {

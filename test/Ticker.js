@@ -40,7 +40,7 @@ describe('Ticker', () => {
   })
 
   it('cannot set prices from non-owner', () => {
-    return ticker.setPrice.q('P', 1, { from: chaithereum.accounts[1] }).should.be.rejected
+    return ticker.setPrice.q('P', 1, { from: chaithereum.accounts[1] }).should.be.rejectedWith(Error)
   })
 
   it('correctly converts', () => {
@@ -49,8 +49,8 @@ describe('Ticker', () => {
       ticker.convert.q(5, 'P', 'N').should.eventually.bignumber.equal(1),
       ticker.convert.q(5, 'P', 'D').should.eventually.bignumber.equal(0),
       ticker.convert.q(1, 'D', 'P').should.eventually.bignumber.equal(10),
-      ticker.convert.q(1, 'P', 'X').should.eventually.be.rejected,
-      ticker.convert.q(1, 'X', 'P').should.eventually.be.rejected
+      ticker.convert.q(1, 'P', 'X').should.eventually.be.rejectedWith(Error),
+      ticker.convert.q(1, 'X', 'P').should.eventually.be.rejectedWith(Error)
     ])
   })
 

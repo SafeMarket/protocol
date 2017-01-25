@@ -23,21 +23,21 @@ describe('AliasReg', () => {
   })
 
   it('cannot claim a blank alias', () => {
-    return aliasReg.setOwner.q('', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
+    return aliasReg.setOwner.q('', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('cannot claim an alias with an uppercase letter', () => {
-    return aliasReg.setOwner.q('myAlias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
+    return aliasReg.setOwner.q('myAlias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('cannot claim an alias with an space', () => {
-    return aliasReg.setOwner.q('my alias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
+    return aliasReg.setOwner.q('my alias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('cannot claim an middle 0x00', () => {
     const myAliasHex = chaithereum.web3.fromAscii('myalias').substr(2)
     const badAliasHex = `${myAliasHex}00${myAliasHex}`
-    return aliasReg.setOwner.q(badAliasHex, chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
+    return aliasReg.setOwner.q(badAliasHex, chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
   })
 
   it('can claim "myalias"', () => {

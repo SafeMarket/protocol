@@ -45,7 +45,7 @@ describe('Multiprox', () => {
     it('should reject unregistered codeHash', () => {
       return multiprox.create.q(contracts.Ticker.codeHash, {
         gas: chaithereum.gasLimit
-      }).should.be.rejected
+      }).should.be.rejectedWith(Error)
     })
 
     it('should be fulfilled', () => {
