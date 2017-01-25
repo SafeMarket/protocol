@@ -19,28 +19,39 @@ describe('AliasReg', () => {
       data: contracts.AliasReg.bytecode, gas: chaithereum.gasLimit
     }).should.eventually.be.contract.then((_aliasReg) => {
       aliasReg = _aliasReg
-    }).should.be.fulfilled
+    })
   })
 
   it('cannot claim a blank alias', () => {
-    return aliasReg.claimAlias.q('').should.eventually.be.rejected
+    return aliasReg.setOwner.q('', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
+  })
+
+  it('cannot claim an alias with an uppercase letter', () => {
+    return aliasReg.setOwner.q('myAlias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
+  })
+
+  it('cannot claim an alias with an space', () => {
+    return aliasReg.setOwner.q('my alias', chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
+  })
+
+  it('cannot claim an middle 0x00', () => {
+    const myAliasHex = chaithereum.web3.fromAscii('myalias').substr(2)
+    const badAliasHex = `${myAliasHex}00${myAliasHex}`
+    return aliasReg.setOwner.q(badAliasHex, chaithereum.account, { gas: chaithereum.gasLimit }).should.be.rejected
   })
 
   it('can claim "myalias"', () => {
-    return aliasReg.claimAlias.q('myalias').should.eventually.be.fullfilled
+    return aliasReg.setOwner.q('myalias', chaithereum.account, { gas: chaithereum.gasLimit })
   })
 
   it('denies others claiming rights to "myalias"', () => {
-    return chaithereum.web3.Q.all([
-      aliasReg.claimAlias.q('myalias'),
-      aliasReg.claimAlias.q('myalias', {
-        from: chaithereum.accounts[2]
-      })
-    ]).should.eventually.be.rejected
+    return aliasReg.setOwner.q('myalias', chaithereum.account, {
+      from: chaithereum.accounts[2],
+      gasLimit: chaithereum.gasLimit
+    }).should.be.rejectedWith(Error)
   })
 
   it('can retreive address associated with "myalias"', () => {
-    return aliasReg.getAddr.q('myalias').should.eventually
-    .equal(chaithereum.web3.eth.defaultAccount)
+    return aliasReg.getOwner.q('myalias', { gas: chaithereum.gasLimit }).should.eventually.equal(chaithereum.account)
   })
 })
