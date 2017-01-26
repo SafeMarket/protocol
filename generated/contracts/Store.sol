@@ -21,6 +21,8 @@ contract Store is ownable, executor {
   function set_affiliateFeePicoperun(uint256 _affiliateFeePicoperun) require_isOwner(msg.sender) { affiliateFeePicoperun = _affiliateFeePicoperun; }
   bytes public metaMultihash;
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
+  bytes32[] public approvedArbitratorAliases;
+  function set_approvedArbitratorAliases(bytes32[] _approvedArbitratorAliases) require_isOwner(msg.sender) { approvedArbitratorAliases = _approvedArbitratorAliases; }
 
 
   /* START Product struct array */

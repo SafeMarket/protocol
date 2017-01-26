@@ -17,6 +17,8 @@ contract Arbitrator is ownable, executor {
   function set_feePicoperun(uint256 _feePicoperun) require_isOwner(msg.sender) { feePicoperun = _feePicoperun; }
   bytes public metaMultihash;
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
+  bytes32[] public approvedStoreAliases;
+  function set_approvedStoreAliases(bytes32[] _approvedStoreAliases) require_isOwner(msg.sender) { approvedStoreAliases = _approvedStoreAliases; }
 
 
 

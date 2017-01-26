@@ -41,7 +41,8 @@ const Store = new Contract('Store', [
   new Variable('uint256', 'disputeSeconds'),
   new Variable('uint256', 'minProductsTeratotal'),
   new Variable('uint256', 'affiliateFeePicoperun'),
-  new Variable('bytes', 'metaMultihash')
+  new Variable('bytes', 'metaMultihash'),
+  new Variable('bytes32[]', 'approvedArbitratorAliases')
 ], [
   new StructArray('Product', [
     new Variable('bool', 'isArchived'),
@@ -59,7 +60,8 @@ const Arbitrator = new Contract('Arbitrator', [
   new Variable('bytes4', 'currency'),
   new Variable('uint256', 'feeTerabase'),
   new Variable('uint256', 'feePicoperun'),
-  new Variable('bytes', 'metaMultihash')
+  new Variable('bytes', 'metaMultihash'),
+  new Variable('bytes32[]', 'approvedStoreAliases')
 ])
 
 module.exports = {
