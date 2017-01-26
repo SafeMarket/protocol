@@ -21,8 +21,6 @@ contract Store is ownable, executor {
   function set_affiliateFeePicoperun(uint256 _affiliateFeePicoperun) require_isOwner(msg.sender) { affiliateFeePicoperun = _affiliateFeePicoperun; }
   bytes public metaMultihash;
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
-  bytes32[] public approvedArbitratorAliases;
-  function set_approvedArbitratorAliases(bytes32[] _approvedArbitratorAliases) require_isOwner(msg.sender) { approvedArbitratorAliases = _approvedArbitratorAliases; }
 
 
   /* START Product struct array */
@@ -111,6 +109,37 @@ contract Store is ownable, executor {
     Transport_array[index].teraprice = value;
   }
   /* END Transport structs */
+
+  /* START approvedArbitratorAlias unique array */
+  
+  bytes32[] public approvedArbitratorAlias_array;
+  mapping(bytes32 => bool) public approvedArbitratorAlias_map;
+  
+  function get_approvedArbitratorAlias_array_length() constant returns (uint256) {
+    return approvedArbitratorAlias_array.length;
+  }
+  
+  function add_approvedArbitratorAlias(bytes32 approvedArbitratorAlias) require_isOwner(msg.sender) {
+    if (approvedArbitratorAlias_map[approvedArbitratorAlias]) {
+      throw;
+    }
+    approvedArbitratorAlias_array.push(approvedArbitratorAlias);
+    approvedArbitratorAlias_map[approvedArbitratorAlias] = true;
+  }
+  
+  function remove_approvedArbitratorAlias(uint256 index, bytes32 approvedArbitratorAlias) require_isOwner(msg.sender) {
+    if (!approvedArbitratorAlias_map[approvedArbitratorAlias]) {
+      throw;
+    }
+    if (approvedArbitratorAlias_array[index] != approvedArbitratorAlias) {
+      throw;
+    }
+    approvedArbitratorAlias_array[index] = approvedArbitratorAlias_array[approvedArbitratorAlias_array.length - 1];
+    approvedArbitratorAlias_array.length = approvedArbitratorAlias_array.length - 1;
+    approvedArbitratorAlias_map[approvedArbitratorAlias] = false;
+  }
+  
+  /* END approvedArbitratorAlias unique array */
 
   function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {
     _execute(addr, calldataLengths, calldatas);

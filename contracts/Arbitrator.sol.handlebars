@@ -11,12 +11,8 @@ contract Arbitrator is ownable, executor {
   {{>variable.sol variable=this}}
   {{/each}}
 
-  {{#each schemas.Arbitrator.mappings}}
-  {{>mapping.sol mapping=this}}
-  {{/each}}
-
-  {{#each schemas.Arbitrator.structs}}
-  {{>struct.sol struct=this}}
+  {{#each schemas.Arbitrator.uniqueArrays}}
+  {{>uniqueArray.sol uniqueArray=this}}
   {{/each}}
 
   function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {

@@ -19,6 +19,10 @@ contract Store is ownable, executor {
   {{>structArray.sol structArray=this}}
   {{/each}}
 
+  {{#each schemas.Store.uniqueArrays}}
+  {{>uniqueArray.sol uniqueArray=this}}
+  {{/each}}
+
   function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {
     _execute(addr, calldataLengths, calldatas);
   }

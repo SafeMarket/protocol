@@ -174,4 +174,80 @@ describe('Store', () => {
     ])
   })
 
+  it('should have an approved arbitrator aliases length of 0', () => {
+    return store.get_approvedArbitratorAlias_array_length.q().should.eventually.bignumber.equal(0)
+  })
+
+  it('should be able to add @myarbitrator', () => {
+    return store.add_approvedArbitratorAlias.q('myarbitrator', { gas: chaithereum.gasLimit })
+  })
+
+  it('should have an approved arbitrator aliases length of 1', () => {
+    return store.get_approvedArbitratorAlias_array_length.q().should.eventually.bignumber.equal(1)
+  })
+
+  it('should get 0th approvedArbitratorAlias as myarbitrator', () => {
+    return store.approvedArbitratorAlias_array.q(0).should.eventually.ascii('myarbitrator')
+  })
+
+  it('should have @myarbitrator as approved in map', () => {
+    return store.approvedArbitratorAlias_map.q('myarbitrator').should.eventually.equal(true)
+  })
+
+  it('should NOT be able to re-add @myarbitrator', () => {
+    return store.add_approvedArbitratorAlias.q('myarbitrator', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+  })
+
+  it('should have an approved arbitrator aliases length of 1', () => {
+    return store.get_approvedArbitratorAlias_array_length.q().should.eventually.bignumber.equal(1)
+  })
+
+  it('should be able to add @myarbitrator2', () => {
+    return store.add_approvedArbitratorAlias.q('myarbitrator2', { gas: chaithereum.gasLimit })
+  })
+
+  it('should be able to add @myarbitrator3', () => {
+    return store.add_approvedArbitratorAlias.q('myarbitrator3', { gas: chaithereum.gasLimit })
+  })
+
+  it('should have an approved arbitrator aliases length of 3', () => {
+    return store.get_approvedArbitratorAlias_array_length.q().should.eventually.bignumber.equal(3)
+  })
+
+  it('should have @myarbitrator2 as approved in map', () => {
+    return store.approvedArbitratorAlias_map.q('myarbitrator2').should.eventually.equal(true)
+  })
+
+  it('should have @myarbitrator3 as approved in map', () => {
+    return store.approvedArbitratorAlias_map.q('myarbitrator2').should.eventually.equal(true)
+  })
+
+  it('should NOT be able to remove 1:@myarbitrator', () => {
+    return store.remove_approvedArbitratorAlias.q(1, 'myarbitrator', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+  })
+
+  it('should be able to remove 0:@myarbitrator', () => {
+    return store.remove_approvedArbitratorAlias.q(0, 'myarbitrator', { gas: chaithereum.gasLimit })
+  })
+
+  it('should have an approved arbitrator aliases length of 2', () => {
+    return store.get_approvedArbitratorAlias_array_length.q().should.eventually.bignumber.equal(2)
+  })
+
+  it('should have NOT @myarbitrator as approved in map', () => {
+    return store.approvedArbitratorAlias_map.q('myarbitrator').should.eventually.equal(false)
+  })
+
+  it('should have @myarbitrator2 as approved in map', () => {
+    return store.approvedArbitratorAlias_map.q('myarbitrator2').should.eventually.equal(true)
+  })
+
+  it('should have @myarbitrator3 as approved in map', () => {
+    return store.approvedArbitratorAlias_map.q('myarbitrator2').should.eventually.equal(true)
+  })
+
+  it('should be able to re-remove @myarbitrator', () => {
+    return store.remove_approvedArbitratorAlias.q(0, 'myarbitrator', { gas: chaithereum.gasLimit }).should.be.rejectedWith(Error)
+  })
+
 })

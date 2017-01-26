@@ -1,0 +1,30 @@
+/* START {{uniqueArray.name}} unique array */
+
+{{uniqueArray.type}}[] public {{uniqueArray.arrayName}};
+mapping({{uniqueArray.type}} => bool) public {{uniqueArray.mappingName}};
+
+function {{uniqueArray.getLengthMethodName}}() constant returns (uint256) {
+  return {{uniqueArray.arrayName}}.length;
+}
+
+function {{uniqueArray.addMethodName}}({{uniqueArray.type}} {{uniqueArray.name}}) require_isOwner(msg.sender) {
+  if ({{uniqueArray.mappingName}}[{{uniqueArray.name}}]) {
+    throw;
+  }
+  {{uniqueArray.arrayName}}.push({{uniqueArray.name}});
+  {{uniqueArray.mappingName}}[{{uniqueArray.name}}] = true;
+}
+
+function {{uniqueArray.removeMethodName}}(uint256 index, {{uniqueArray.type}} {{uniqueArray.name}}) require_isOwner(msg.sender) {
+  if (!{{uniqueArray.mappingName}}[{{uniqueArray.name}}]) {
+    throw;
+  }
+  if ({{uniqueArray.arrayName}}[index] != {{uniqueArray.name}}) {
+    throw;
+  }
+  {{uniqueArray.arrayName}}[index] = {{uniqueArray.arrayName}}[{{uniqueArray.arrayName}}.length - 1];
+  {{uniqueArray.arrayName}}.length = {{uniqueArray.arrayName}}.length - 1;
+  {{uniqueArray.mappingName}}[{{uniqueArray.name}}] = false;
+}
+
+/* END {{uniqueArray.name}} unique array */

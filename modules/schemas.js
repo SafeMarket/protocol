@@ -1,7 +1,8 @@
-function Contract(name, variables, structArrays) {
+function Contract(name, schemas) {
   this.name = name
-  this.variables = variables || []
-  this.structArrays = structArrays || []
+  this.variables = schemas.filter((schema) => { return schema instanceof Variable })
+  this.structArrays = schemas.filter((schema) => { return schema instanceof StructArray })
+  this.uniqueArrays = schemas.filter((schema) => { return schema instanceof UniqueArray })
 }
 
 function StructArray(name, variables) {
@@ -24,14 +25,28 @@ function StructArray(name, variables) {
   })
 }
 
-function Variable(type, name, generated) {
+function Variable(type, name) {
   this.type = type
   this.name = name
   this.getMethodName = `${this.name}`
   this.getMethodAbi = `${this.getMethodName}()`
   this.setMethodName = `set_${this.name}`
   this.setMethodAbi = `${this.setMethodName}(${this.type})`
-  this.generated = generated
+}
+
+function UniqueArray(type, name) {
+  this.type = type
+  this.name = name
+  this.mappingName = `${this.name}_map`
+  this.arrayName = `${this.name}_array`
+  this.getMethodName = `${this.name}`
+  this.getMethodAbi = `${this.getMethodName}(uint256)`
+  this.addMethodName = `add_${this.name}`
+  this.addMethodAbi = `${this.addMethodName}(${this.type})`
+  this.removeMethodName = `remove_${this.name}`
+  this.removeMethodAbi = `${this.removeMethodName}(uint26,${this.type})`
+  this.getLengthMethodName = `get_${this.arrayName}_length`
+  this.getLengthMethodAbi = `${this.getLengthMethodName}()`
 }
 
 const Store = new Contract('Store', [
@@ -42,8 +57,6 @@ const Store = new Contract('Store', [
   new Variable('uint256', 'minProductsTeratotal'),
   new Variable('uint256', 'affiliateFeePicoperun'),
   new Variable('bytes', 'metaMultihash'),
-  new Variable('bytes32[]', 'approvedArbitratorAliases')
-], [
   new StructArray('Product', [
     new Variable('bool', 'isArchived'),
     new Variable('uint256', 'teraprice'),
@@ -52,7 +65,8 @@ const Store = new Contract('Store', [
   new StructArray('Transport', [
     new Variable('bool', 'isArchived'),
     new Variable('uint256', 'teraprice')
-  ])
+  ]),
+  new UniqueArray('bytes32', 'approvedArbitratorAlias')
 ])
 
 const Arbitrator = new Contract('Arbitrator', [
@@ -61,7 +75,7 @@ const Arbitrator = new Contract('Arbitrator', [
   new Variable('uint256', 'feeTerabase'),
   new Variable('uint256', 'feePicoperun'),
   new Variable('bytes', 'metaMultihash'),
-  new Variable('bytes32[]', 'approvedStoreAliases')
+  new UniqueArray('bytes32', 'approvedStoreAlias')
 ])
 
 module.exports = {

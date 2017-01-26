@@ -17,10 +17,37 @@ contract Arbitrator is ownable, executor {
   function set_feePicoperun(uint256 _feePicoperun) require_isOwner(msg.sender) { feePicoperun = _feePicoperun; }
   bytes public metaMultihash;
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
-  bytes32[] public approvedStoreAliases;
-  function set_approvedStoreAliases(bytes32[] _approvedStoreAliases) require_isOwner(msg.sender) { approvedStoreAliases = _approvedStoreAliases; }
 
-
+  /* START approvedStoreAlias unique array */
+  
+  bytes32[] public approvedStoreAlias_array;
+  mapping(bytes32 => bool) public approvedStoreAlias_map;
+  
+  function get_approvedStoreAlias_array_length() constant returns (uint256) {
+    return approvedStoreAlias_array.length;
+  }
+  
+  function add_approvedStoreAlias(bytes32 approvedStoreAlias) require_isOwner(msg.sender) {
+    if (approvedStoreAlias_map[approvedStoreAlias]) {
+      throw;
+    }
+    approvedStoreAlias_array.push(approvedStoreAlias);
+    approvedStoreAlias_map[approvedStoreAlias] = true;
+  }
+  
+  function remove_approvedStoreAlias(uint256 index, bytes32 approvedStoreAlias) require_isOwner(msg.sender) {
+    if (!approvedStoreAlias_map[approvedStoreAlias]) {
+      throw;
+    }
+    if (approvedStoreAlias_array[index] != approvedStoreAlias) {
+      throw;
+    }
+    approvedStoreAlias_array[index] = approvedStoreAlias_array[approvedStoreAlias_array.length - 1];
+    approvedStoreAlias_array.length = approvedStoreAlias_array.length - 1;
+    approvedStoreAlias_map[approvedStoreAlias] = false;
+  }
+  
+  /* END approvedStoreAlias unique array */
 
   function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {
     _execute(addr, calldataLengths, calldatas);
