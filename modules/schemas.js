@@ -57,8 +57,8 @@ const Store = new Contract('Store', [
 const Arbitrator = new Contract('Arbitrator', [
   new Variable('bool', 'isOpen'),
   new Variable('bytes4', 'currency'),
-  new Variable('uint256', 'escrowFeeTerabase'),
-  new Variable('uint256', 'escrowFeePicoperun'),
+  new Variable('uint256', 'feeTerabase'),
+  new Variable('uint256', 'feePicoperun'),
   new Variable('bytes', 'metaMultihash')
 ])
 

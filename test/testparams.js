@@ -41,8 +41,8 @@ const params = {
   quantity1:  5,
   quantity2:  7,
   address0:   '0x0000000000000000000000000000000000000000',
-  escrowFeeTerabase1:      50000,
-  escrowFeePicoperun1:    5,
+  feeTerabase1:      50000,
+  feePicoperun1:    5,
   bufferPicoperun1:       10,
   disputeSeconds1:         36000, //make sure this is high enough that normal test operation won't trip it
   minProductsTeratotal1:   1,

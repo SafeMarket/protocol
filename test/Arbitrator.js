@@ -29,8 +29,8 @@ describe('Arbitrator', () => {
       pseudoArbitrator.set_isOwner.getData(chaithereum.accounts[5], true),
       pseudoArbitrator.set_isOpen.getData(true),
       pseudoArbitrator.set_currency.getData(params.currency1),
-      pseudoArbitrator.set_escrowFeeTerabase.getData(params.escrowFeeTerabase1),
-      pseudoArbitrator.set_escrowFeePicoperun.getData(params.escrowFeePicoperun1),
+      pseudoArbitrator.set_feeTerabase.getData(params.feeTerabase1),
+      pseudoArbitrator.set_feePicoperun.getData(params.feePicoperun1),
       pseudoArbitrator.set_metaMultihash.getData(params.fileHash1)
     ].map((calldata) => {
       return calldata.replace('0x', '')
@@ -67,11 +67,11 @@ describe('Arbitrator', () => {
     return chaithereum.web3.Q.all([
       arbitrator.isOpen.q().should.eventually.equal(true),
       arbitrator.currency.q().should.eventually.be.ascii(params.currency1),
-      arbitrator.escrowFeeTerabase.q().should.eventually.be.bignumber.equal(
-        params.escrowFeeTerabase1
+      arbitrator.feeTerabase.q().should.eventually.be.bignumber.equal(
+        params.feeTerabase1
       ),
-      arbitrator.escrowFeePicoperun.q().should.eventually.be.bignumber.equal(
-        params.escrowFeePicoperun1
+      arbitrator.feePicoperun.q().should.eventually.be.bignumber.equal(
+        params.feePicoperun1
       ),
       arbitrator.metaMultihash.q().should.eventually.be.ascii(params.fileHash1)
     ]).should.be.fulfilled
