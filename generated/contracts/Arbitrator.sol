@@ -1,8 +1,9 @@
 pragma solidity ^0.4.6;
 
 import "ownable.sol";
+import "executor.sol";
 
-contract Arbitrator is ownable {
+contract Arbitrator is ownable, executor {
 
   function () payable {}
 
@@ -18,5 +19,9 @@ contract Arbitrator is ownable {
   function set_metaMultihash(bytes _metaMultihash) require_isOwner(msg.sender) { metaMultihash = _metaMultihash; }
 
 
+
+  function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {
+    _execute(addr, calldataLengths, calldatas);
+  }
 
 }

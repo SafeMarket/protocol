@@ -1,8 +1,9 @@
 pragma solidity {{solidityVersion}};
 
 import "ownable.sol";
+import "executor.sol";
 
-contract Arbitrator is ownable {
+contract Arbitrator is ownable, executor {
 
   function () payable {}
 
@@ -17,5 +18,9 @@ contract Arbitrator is ownable {
   {{#each schemas.Arbitrator.structs}}
   {{>struct.sol struct=this}}
   {{/each}}
+
+  function execute(address addr, uint[] calldataLengths, bytes calldatas) require_isOwner(msg.sender) {
+    _execute(addr, calldataLengths, calldatas);
+  }
 
 }
