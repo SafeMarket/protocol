@@ -39,7 +39,7 @@ function UniqueArray(type, name) {
   this.name = name
   this.mappingName = `${this.name}_map`
   this.arrayName = `${this.name}_array`
-  this.getMethodName = `${this.name}`
+  this.getMethodName = `${this.arrayName}`
   this.getMethodAbi = `${this.getMethodName}(uint256)`
   this.addMethodName = `add_${this.name}`
   this.addMethodAbi = `${this.addMethodName}(${this.type})`
