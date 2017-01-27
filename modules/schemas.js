@@ -44,7 +44,7 @@ function UniqueArray(type, name) {
   this.addMethodName = `add_${this.name}`
   this.addMethodAbi = `${this.addMethodName}(${this.type})`
   this.removeMethodName = `remove_${this.name}`
-  this.removeMethodAbi = `${this.removeMethodName}(uint26,${this.type})`
+  this.removeMethodAbi = `${this.removeMethodName}(uint256,${this.type})`
   this.getLengthMethodName = `get_${this.arrayName}_length`
   this.getLengthMethodAbi = `${this.getLengthMethodName}()`
 }
